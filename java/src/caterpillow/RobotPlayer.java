@@ -2,14 +2,12 @@ package caterpillow;
 
 import battlecode.common.*;
 import caterpillow.robot.Robot;
-import caterpillow.robot.agents.Mopper;
-import caterpillow.robot.agents.Soldier;
-import caterpillow.robot.agents.Splasher;
-import caterpillow.robot.towers.ChipTower;
-import caterpillow.robot.towers.DefenceTower;
-import caterpillow.robot.towers.PaintTower;
-
-import java.util.Random;
+import caterpillow.robot.agents.impl.Mopper;
+import caterpillow.robot.agents.impl.Soldier;
+import caterpillow.robot.agents.impl.Splasher;
+import caterpillow.robot.towers.impl.ChipTower;
+import caterpillow.robot.towers.impl.DefenceTower;
+import caterpillow.robot.towers.impl.PaintTower;
 
 public class RobotPlayer {
     static Robot bot;
