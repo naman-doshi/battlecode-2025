@@ -1,6 +1,6 @@
 # Battlecode 2025 Scaffold - Python
 
-This is the Battlecode 2025 Python scaffold, containing an `examplefuncsplayer`. Read https://play.battlecode.org/bc25python/quick_start !
+This is the Battlecode 2025 Python scaffold, containing an `caterpillow`. Read https://play.battlecode.org/bc25python/quick_start !
 
 
 ### Project Structure
@@ -22,8 +22,8 @@ This is the Battlecode 2025 Python scaffold, containing an `examplefuncsplayer`.
 
 ### How to get started
 
-You are free to directly edit `examplefuncsplayer`.
-However, we recommend you make a new bot by copying `examplefuncsplayer` to a new package (folder) under the `src` folder.
+You are free to directly edit `caterpillow`.
+However, we recommend you make a new bot by copying `caterpillow` to a new package (folder) under the `src` folder.
 
 ### Useful Commands
 

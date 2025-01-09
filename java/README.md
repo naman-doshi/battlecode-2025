@@ -1,6 +1,6 @@
 # Battlecode 2025 Scaffold - Java
 
-This is the Battlecode 2025 Java scaffold, containing an `examplefuncsplayer`. Read https://play.battlecode.org/bc25java/quick_start !
+This is the Battlecode 2025 Java scaffold, containing an `caterpillow`. Read https://play.battlecode.org/bc25java/quick_start !
 
 
 ### Project Structure
@@ -28,8 +28,8 @@ This is the Battlecode 2025 Java scaffold, containing an `examplefuncsplayer`. R
 
 ### How to get started
 
-You are free to directly edit `examplefuncsplayer`.
-However, we recommend you make a new bot by copying `examplefuncsplayer` to a new package under the `src` folder.
+You are free to directly edit `caterpillow`.
+However, we recommend you make a new bot by copying `caterpillow` to a new package under the `src` folder.
 
 ### Useful Commands
 

@@ -1,4 +1,4 @@
-package examplefuncsplayer;
+package caterpillow;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
