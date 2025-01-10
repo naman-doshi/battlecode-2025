@@ -1,18 +1,18 @@
-package caterpillow.robot.agents.impl;
+package caterpillow.robot.agents;
 
 import battlecode.common.*;
-import caterpillow.robot.agents.Agent;
 
-import static caterpillow.Util.rng;
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
 public class Mopper extends Agent {
     @Override
-    public void init(RobotController rc) {
+    public void init() {
 
     }
 
     @Override
-    public void runTick(RobotController rc) throws GameActionException {
+    public void runTick() throws GameActionException {
         // Move and attack randomly.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);

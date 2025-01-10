@@ -1,19 +1,21 @@
-package caterpillow.robot.towers.impl;
+package caterpillow.robot.towers;
 
 import battlecode.common.*;
-import caterpillow.robot.towers.Tower;
 
 import static caterpillow.Util.rng;
 
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
+
 public class DefenceTower extends Tower {
     @Override
-    public void init(RobotController rc) {
-        super.init(rc);
+    public void init() {
+        super.init();
         types = new battlecode.common.UnitType[] {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_TWO_DEFENSE_TOWER, UnitType.LEVEL_THREE_DEFENSE_TOWER};
     }
 
     @Override
-    public void runTick(RobotController rc) throws GameActionException {
+    public void runTick() throws GameActionException {
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);

@@ -1,20 +1,21 @@
 package caterpillow;
 
+import static caterpillow.Game.*;
 import battlecode.common.*;
 import caterpillow.robot.Robot;
-import caterpillow.robot.agents.impl.Mopper;
-import caterpillow.robot.agents.impl.Soldier;
-import caterpillow.robot.agents.impl.Splasher;
-import caterpillow.robot.towers.impl.ChipTower;
-import caterpillow.robot.towers.impl.DefenceTower;
-import caterpillow.robot.towers.impl.PaintTower;
+import caterpillow.robot.agents.Mopper;
+import caterpillow.robot.agents.Soldier;
+import caterpillow.robot.agents.Splasher;
+import caterpillow.robot.towers.ChipTower;
+import caterpillow.robot.towers.DefenceTower;
+import caterpillow.robot.towers.PaintTower;
 
 public class RobotPlayer {
     static Robot bot;
 
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
-
+        Game.rc = rc;
         switch (rc.getType()) {
             case SOLDIER:
                 bot = new Soldier();
@@ -38,14 +39,11 @@ public class RobotPlayer {
                 assert false : "illegal unit type";
         }
 
-        bot.init(rc);
+        bot.init();
 
         while (true) {
-            Game.time++;
-
-
-
-            bot.runTick(rc);
+            time++;
+            bot.runTick();
             Clock.yield();
         }
     }

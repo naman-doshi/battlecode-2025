@@ -1,20 +1,20 @@
-package caterpillow.robot.agents.impl;
+package caterpillow.robot.agents;
 
 import battlecode.common.*;
 import caterpillow.pathfinding.ShittyPathfinder;
-import caterpillow.robot.agents.Agent;
 
-import static caterpillow.Util.rng;
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
 public class Soldier extends Agent {
 
     @Override
-    public void init(RobotController rc) {
+    public void init() {
         pathfinder = new ShittyPathfinder(rc);
     }
 
     @Override
-    public void runTick(RobotController rc) throws GameActionException {
+    public void runTick() throws GameActionException {
         if (!rc.isActionReady()) return;
 
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();

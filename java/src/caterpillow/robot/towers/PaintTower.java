@@ -1,19 +1,13 @@
-package caterpillow.robot.towers.impl;
+package caterpillow.robot.towers;
 
 import battlecode.common.*;
-import caterpillow.robot.towers.Tower;
 
-import static caterpillow.Util.rng;
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
-public class ChipTower extends Tower {
+public class PaintTower extends Tower {
     @Override
-    public void init(RobotController rc) {
-        super.init(rc);
-        types = new battlecode.common.UnitType[] {UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_TWO_MONEY_TOWER, UnitType.LEVEL_THREE_MONEY_TOWER};
-    }
-
-    @Override
-    public void runTick(RobotController rc) throws GameActionException {
+    public void runTick() throws GameActionException {
         // Pick a direction to build in.
         Direction dir = directions[rng.nextInt(directions.length)];
         MapLocation nextLoc = rc.getLocation().add(dir);

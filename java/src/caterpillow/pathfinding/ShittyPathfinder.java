@@ -1,9 +1,11 @@
 package caterpillow.pathfinding;
 
 import battlecode.common.Direction;
-import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
+
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
 public class ShittyPathfinder extends AbstractPathfinder {
 

@@ -1,6 +1,5 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.RobotController;
 import battlecode.common.UnitType;
 import caterpillow.robot.Robot;
 
@@ -15,7 +14,7 @@ public abstract class Tower extends Robot {
     }
 
     @Override
-    public void init(RobotController rc) {
+    public void init() {
         level = 0;
     }
 

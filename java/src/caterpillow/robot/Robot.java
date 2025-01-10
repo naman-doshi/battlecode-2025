@@ -2,7 +2,6 @@ package caterpillow.robot;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
 import battlecode.common.UnitType;
 
 public abstract class Robot {
@@ -19,7 +18,7 @@ public abstract class Robot {
 
     public abstract UnitType getType();
 
-    public abstract void init(RobotController rc);
+    public abstract void init();
 
-    public abstract void runTick(RobotController rc) throws GameActionException;
+    public abstract void runTick() throws GameActionException;
 }
