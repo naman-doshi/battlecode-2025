@@ -2,13 +2,14 @@ package caterpillow.robot.towers;
 
 import battlecode.common.*;
 
-import static caterpillow.Util.rng;
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
 public class PaintTower extends Tower {
     @Override
-    public void runTick(RobotController rc) throws GameActionException {
+    public void runTick() throws GameActionException {
         // Pick a direction to build in.
-        Direction dir = directions[rng.nextInt(directions.length)];
+        Direction dir = Direction.NORTH;
         MapLocation nextLoc = rc.getLocation().add(dir);
         // Pick a random robot type to build.
         int robotType = rng.nextInt(3);

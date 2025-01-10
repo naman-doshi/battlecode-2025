@@ -2,8 +2,9 @@ package caterpillow.robot;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.RobotController;
 import battlecode.common.UnitType;
+import caterpillow.packet.packets.AdoptionPacket;
+import caterpillow.packet.packets.TestPacket;
 
 public abstract class Robot {
     protected static final Direction[] directions = {
@@ -19,7 +20,11 @@ public abstract class Robot {
 
     public abstract UnitType getType();
 
-    public abstract void init(RobotController rc);
+    public abstract void init() throws GameActionException;
 
-    public abstract void runTick(RobotController rc) throws GameActionException;
+    public abstract void runTick() throws GameActionException;
+
+    public void handleTestPacket(TestPacket packet, int senderID) {}
+    public void handleAdoptionPacket(AdoptionPacket packet, int senderID) {}
+
 }

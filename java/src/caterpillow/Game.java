@@ -1,12 +1,12 @@
 package caterpillow;
 
+import battlecode.common.RobotController;
+import caterpillow.packet.PacketManager;
+import caterpillow.robot.Robot;
+
 public class Game {
-    // im trusting u guys to not accidentally change this number
-    static int time = 0;
-
-//    static CellType[][] map;
-
-//    static void init() {
-
-//    }
+    public static int time = 0;
+    public static RobotController rc;
+    public static PacketManager pm;
+    public static Robot bot;
 }
