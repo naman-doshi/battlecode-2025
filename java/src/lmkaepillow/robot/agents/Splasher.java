@@ -7,7 +7,6 @@ import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
-import battlecode.common.PaintType;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
@@ -62,7 +61,7 @@ public class Splasher extends Agent {
         }
 
         for (MapInfo tile : nearbyTiles) {
-            if (tile.hasRuin() && tile.getMapLocation() == enemy) {
+            if (tile.hasRuin()) {
                 attackMode = false;
             }
         }
@@ -153,59 +152,92 @@ public class Splasher extends Agent {
             }
         } else {
             
-            // build a tower for fun
-            MapInfo curRuin = null;
-            for (MapInfo tile : nearbyTiles){
-                if (tile.hasRuin()){
-                    curRuin = tile;
+            // // build a tower for fun
+            // MapInfo curRuin = null;
+            // for (MapInfo tile : nearbyTiles){
+            //     if (tile.hasRuin()){
+            //         curRuin = tile;
+            //     }
+            // }
+
+            // if (curRuin != null){
+            //     MapLocation targetLoc = curRuin.getMapLocation();
+                
+            //     // mark pattern if needed
+            //     MapLocation shouldBeMarked = curRuin.getMapLocation().add(Direction.EAST);
+            //     if (rc.canSenseLocation(shouldBeMarked) && rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
+            //         rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+            //         System.out.println("Trying to build a tower at " + targetLoc);
+            //     }
+
+            //     // clear everything that's in reach
+            //     boolean filled = false;
+            //     for (MapInfo patternTile : rc.senseNearbyMapInfos()){
+            //         if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY && (patternTile.getPaint() == PaintType.ENEMY_PRIMARY || patternTile.getPaint() == PaintType.ENEMY_SECONDARY)){
+            //             boolean useSecondaryColor = patternTile.getMark() == PaintType.ALLY_SECONDARY;
+            //             if (rc.canAttack(patternTile.getMapLocation())) {
+            //                 System.out.println("mop colour there is " + patternTile.getPaint());
+            //                 rc.attack(patternTile.getMapLocation(), useSecondaryColor);
+            //                 System.out.println("Filled a tile at " + patternTile.getMapLocation());
+            //                 filled = true;
+            //             }  
+            //         }
+            //     }
+
+            //     // if we couldn't reach anything, move towards something we can fill
+            //     if (!filled) {
+            //         System.out.println("mop Couldn't fill anything, moving towards a tile we can fill");
+            //         for (MapInfo patternTile : nearbyTiles) {
+            //             if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY  && (patternTile.getPaint() == PaintType.ENEMY_PRIMARY || patternTile.getPaint() == PaintType.ENEMY_SECONDARY)){
+            //                 Direction dir = pathfinder.getMove(patternTile.getMapLocation(), rc);
+            //                 if (dir != null && rc.canMove(dir)){
+            //                     rc.move(dir);
+            //                     return;
+            //                 } 
+            //             }
+            //         }
+            //     }
+
+            //     // ge
+
+            //     // complete the ruin if we can.
+            //     if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
+            //         rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
+            //         rc.setTimelineMarker("Tower built", 0, 255, 0);
+            //         System.out.println("Built a tower at " + targetLoc + "!");
+            //     }
+            // }
+
+            // fill viable tiles
+            for (MapInfo tile : nearbyTiles) {
+                // check all blocks in a radius of sqrt 2 from this
+                int numAlly = 0;
+                for (MapInfo tile2 : rc.senseNearbyMapInfos(tile.getMapLocation(), 2)){
+                    if (tile2.getPaint().isAlly()){
+                        numAlly++;
+                    }
+                }
+                if (numAlly < 2 && rc.canAttack(tile.getMapLocation())){
+                    rc.attack(tile.getMapLocation());
+                    return;
                 }
             }
 
-            if (curRuin != null){
-                MapLocation targetLoc = curRuin.getMapLocation();
-                
-                // mark pattern if needed
-                MapLocation shouldBeMarked = curRuin.getMapLocation().add(Direction.EAST);
-                if (rc.canSenseLocation(shouldBeMarked) && rc.senseMapInfo(shouldBeMarked).getMark() == PaintType.EMPTY && rc.canMarkTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
-                    rc.markTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
-                    System.out.println("Trying to build a tower at " + targetLoc);
-                }
-
-                // clear everything that's in reach
-                boolean filled = false;
-                for (MapInfo patternTile : rc.senseNearbyMapInfos()){
-                    if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY && (patternTile.getPaint() == PaintType.ENEMY_PRIMARY || patternTile.getPaint() == PaintType.ENEMY_SECONDARY)){
-                        boolean useSecondaryColor = patternTile.getMark() == PaintType.ALLY_SECONDARY;
-                        if (rc.canAttack(patternTile.getMapLocation())) {
-                            System.out.println("mop colour there is " + patternTile.getPaint());
-                            rc.attack(patternTile.getMapLocation(), useSecondaryColor);
-                            System.out.println("Filled a tile at " + patternTile.getMapLocation());
-                            filled = true;
-                        }  
+            // move towards a tile we can fill
+            for (MapInfo Tile : nearbyTiles) {
+                int numAlly = 0;
+                for (MapInfo tile2 : rc.senseNearbyMapInfos(Tile.getMapLocation(), 2)){
+                    if (tile2.getPaint().isAlly()){
+                        numAlly++;
                     }
                 }
 
-                // if we couldn't reach anything, move towards something we can fill
-                if (!filled) {
-                    System.out.println("mop Couldn't fill anything, moving towards a tile we can fill");
-                    for (MapInfo patternTile : nearbyTiles) {
-                        if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY  && (patternTile.getPaint() == PaintType.ENEMY_PRIMARY || patternTile.getPaint() == PaintType.ENEMY_SECONDARY)){
-                            Direction dir = pathfinder.getMove(patternTile.getMapLocation(), rc);
-                            if (dir != null && rc.canMove(dir)){
-                                rc.move(dir);
-                                return;
-                            } 
-                        }
+                if (numAlly < 2 && !rc.canAttack(Tile.getMapLocation())){
+                    Direction dir = pathfinder.getMove(Tile.getMapLocation(), rc);
+                    if (dir != null && rc.canMove(dir)){
+                        rc.move(dir);
+                        return;
                     }
-                }
-
-                // ge
-
-                // complete the ruin if we can.
-                if (rc.canCompleteTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc)){
-                    rc.completeTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER, targetLoc);
-                    rc.setTimelineMarker("Tower built", 0, 255, 0);
-                    System.out.println("Built a tower at " + targetLoc + "!");
                 }
             }
 
