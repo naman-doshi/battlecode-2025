@@ -3,6 +3,7 @@ package caterpillow.packet;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Message;
+import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.packet.packets.TestPacket;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,9 +26,9 @@ public class PacketManager {
             switch (type) {
                 case 1: // make sure these packet types are synced
                     bot.handleTestPacket(new TestPacket(payload), msg.getSenderID());
-                    System.out.println("chat i got smth\n");
                     break;
                 case 2:
+                    bot.handleAdoptionPacket(new AdoptionPacket(payload), msg.getSenderID());
                     break;
                 case 3:
                     break;
@@ -39,11 +40,16 @@ public class PacketManager {
         }
     }
 
-    public void send(MapLocation loc, Packet packet) throws GameActionException {
-        if (packet instanceof TestPacket) {
-            rc.sendMessage(loc, packet.enc() + (1 << PAYLOAD_SIZE)); // 1 is the packet type
-        } else {
-            assert false;
+    // fml
+    public void send(MapLocation loc, Packet packet) {
+        try {
+            if (packet instanceof TestPacket) {
+                rc.sendMessage(loc, packet.enc() + (1 << PAYLOAD_SIZE)); // 1 is the packet type
+            } else if (packet instanceof AdoptionPacket) {
+                rc.sendMessage(loc, packet.enc() + (2 << PAYLOAD_SIZE));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

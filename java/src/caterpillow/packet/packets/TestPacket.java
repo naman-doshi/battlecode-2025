@@ -6,8 +6,8 @@ public class TestPacket extends Packet {
 
     public int value;
 
-    public TestPacket(int value) {
-        this.value = value;
+    public TestPacket(int payload) {
+        this.value = payload;
     }
 
     @Override

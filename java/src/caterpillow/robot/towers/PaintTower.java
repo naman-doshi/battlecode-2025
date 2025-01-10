@@ -9,7 +9,7 @@ public class PaintTower extends Tower {
     @Override
     public void runTick() throws GameActionException {
         // Pick a direction to build in.
-        Direction dir = directions[rng.nextInt(directions.length)];
+        Direction dir = Direction.NORTH;
         MapLocation nextLoc = rc.getLocation().add(dir);
         // Pick a random robot type to build.
         int robotType = rng.nextInt(3);

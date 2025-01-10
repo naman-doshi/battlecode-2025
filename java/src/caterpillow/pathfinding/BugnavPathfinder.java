@@ -1,16 +1,14 @@
-package bugnav.pathfinding;
+package caterpillow.pathfinding;
 
 import battlecode.common.Direction;
-import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 
-import static bugnav.Util.*;
+import static caterpillow.Util.*;
+import static caterpillow.Game.*;
 
 public class BugnavPathfinder extends AbstractPathfinder {
-    public BugnavPathfinder(RobotController rc) {
-        super(rc);
-    }
+
     public MapLocation target;
     public Direction bottomDir;
     public Direction topDir;
@@ -19,20 +17,20 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     @Override
     public Direction getMove(MapLocation to) {
-        if(target == null || !target.equals(to)) {
+        if (target == null || !target.equals(to)) {
             target = to;
             stackSize = 0;
             topDir = bottomDir = rc.getLocation().directionTo(target);
         }
-        if(leftTurn) {
-            if(!rc.getLocation().directionTo(target).equals(bottomDir)) {
-                if(rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
+        if (leftTurn) {
+            if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
+                if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateRight();
-                } else if(rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
+                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateLeft();
-                    if(stackSize < 0) {
+                    if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
@@ -41,25 +39,25 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if(stackSize >= 2 && rc.canMove(topDir.rotateRight().rotateRight())) {
+            if (stackSize >= 2 && rc.canMove(topDir.rotateRight().rotateRight())) {
                 stackSize -= 2;
                 topDir = topDir.rotateRight().rotateRight();
                 return topDir;
             }
-            if(stackSize >= 1 && rc.canMove(topDir.rotateRight())) {
+            if (stackSize >= 1 && rc.canMove(topDir.rotateRight())) {
                 stackSize--;
                 topDir = topDir.rotateRight();
                 return topDir;
             }
         } else {
-            if(!rc.getLocation().directionTo(target).equals(bottomDir)) {
-                if(rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
+            if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
+                if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateLeft();
-                } else if(rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
+                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateRight();
-                    if(stackSize < 0) {
+                    if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
@@ -68,12 +66,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if(stackSize >= 2 && rc.canMove(topDir.rotateLeft().rotateLeft())) {
+            if (stackSize >= 2 && rc.canMove(topDir.rotateLeft().rotateLeft())) {
                 stackSize -= 2;
                 topDir = topDir.rotateLeft().rotateLeft();
                 return topDir;
             }
-            if(stackSize >= 1 && rc.canMove(topDir.rotateLeft())) {
+            if (stackSize >= 1 && rc.canMove(topDir.rotateLeft())) {
                 stackSize--;
                 topDir = topDir.rotateLeft();
                 return topDir;
@@ -81,22 +79,21 @@ public class BugnavPathfinder extends AbstractPathfinder {
         }
         int iters = 0;
         while(!rc.canMove(topDir)) {
-            if(stackSize == 0) {
-                if(rc.canMove(topDir.rotateRight())) leftTurn = false;
-                else if(rc.canMove(topDir.rotateLeft())) leftTurn = true;
-                else if(rc.canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
-                else if(rc.canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
+            if (stackSize == 0) {
+                if (rc.canMove(topDir.rotateRight())) leftTurn = false;
+                else if (rc.canMove(topDir.rotateLeft())) leftTurn = true;
+                else if (rc.canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
+                else if (rc.canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
                 else leftTurn = rng.nextInt(0, 1) == 1;
             }
-            if(leftTurn) topDir = topDir.rotateLeft();
+            if (leftTurn) topDir = topDir.rotateLeft();
             else topDir = topDir.rotateRight();
             stackSize++;
             iters++;
-            if(iters == 8) {
-                stackSize -= 8;
-                return Direction.CENTER;
+            if (iters == 8) {
             }
         }
+        assert rc.canMove(topDir);
         return topDir;
     }
 }

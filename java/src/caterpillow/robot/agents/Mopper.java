@@ -1,14 +1,16 @@
 package caterpillow.robot.agents;
 
 import battlecode.common.*;
+import caterpillow.pathfinding.BugnavPathfinder;
 
 import static caterpillow.Util.*;
 import static caterpillow.Game.*;
 
 public class Mopper extends Agent {
     @Override
-    public void init() {
-
+    public void init() throws GameActionException {
+        super.init();
+        pathfinder = new BugnavPathfinder();
     }
 
     @Override
