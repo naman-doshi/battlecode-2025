@@ -1,6 +1,7 @@
 package caterpillow.robot.agents;
 
 import battlecode.common.*;
+import caterpillow.packet.packets.TestPacket;
 import caterpillow.pathfinding.ShittyPathfinder;
 
 import static caterpillow.Util.*;
@@ -14,8 +15,21 @@ public class Soldier extends Agent {
     }
 
     @Override
+    public void handleTestPacket(TestPacket packet, int senderID) {
+        System.out.println("Testing packet: " + packet.value);
+    }
+
+    @Override
     public void runTick() throws GameActionException {
         if (!rc.isActionReady()) return;
+
+        for (RobotInfo bot : rc.senseNearbyRobots()) {
+            if (bot.getTeam() != rc.getTeam()) continue;
+            if (rc.canSendMessage(bot.getLocation())) {
+                pm.send(bot.getLocation(), new TestPacket(5));
+                System.out.println("Sent message to " + bot.getLocation());
+            }
+        }
 
         MapInfo[] nearbyTiles = rc.senseNearbyMapInfos();
 

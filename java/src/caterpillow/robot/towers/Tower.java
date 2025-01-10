@@ -1,6 +1,7 @@
 package caterpillow.robot.towers;
 
 import battlecode.common.UnitType;
+import caterpillow.packet.packets.TestPacket;
 import caterpillow.robot.Robot;
 
 public abstract class Tower extends Robot {
