@@ -17,6 +17,8 @@ public class RobotPlayer {
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
 
+        lmkaepillow.Game.rc = rc;
+
         switch (rc.getType()) {
             case SOLDIER:
                 bot = new Soldier();

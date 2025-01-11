@@ -7,8 +7,6 @@ import battlecode.common.Message;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
-import static lmkaepillow.Util.rng;
-
 public class PaintTower extends Tower {
 
     public int spawned;
@@ -23,7 +21,7 @@ public class PaintTower extends Tower {
     @Override
     public void runTick(RobotController rc) throws GameActionException {
         // Pick a direction to build in.
-        Direction dir = directions[rng.nextInt(directions.length)];
+        Direction dir = directions[0];
         MapLocation nextLoc = rc.getLocation().add(dir);
         // Pick a random robot type to build.
         //int robotType = rng.nextInt(3);

@@ -10,7 +10,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
-import lmkaepillow.pathfinding.ShittyPathfinder;
+import lmkaepillow.pathfinding.BugnavPathfinder;
 
 
 public class Splasher extends Agent {
@@ -21,7 +21,7 @@ public class Splasher extends Agent {
 
     @Override
     public void init(RobotController rc) {
-        pathfinder = new ShittyPathfinder(rc);
+        pathfinder = new BugnavPathfinder();
         
         // is the map mirrored hor or vert?
         int dist_hormiddle = Math.abs(rc.getLocation().x - rc.getMapWidth() / 2);
@@ -233,7 +233,7 @@ public class Splasher extends Agent {
                 }
 
                 if (numAlly < 2 && !rc.canAttack(Tile.getMapLocation())){
-                    Direction dir = pathfinder.getMove(Tile.getMapLocation(), rc);
+                    Direction dir = pathfinder.getMove(Tile.getMapLocation());
                     if (dir != null && rc.canMove(dir)){
                         rc.move(dir);
                         return;

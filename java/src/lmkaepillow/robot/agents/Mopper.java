@@ -11,7 +11,7 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
-import lmkaepillow.pathfinding.ShittyPathfinder;
+import lmkaepillow.pathfinding.BugnavPathfinder;
 
 public class Mopper extends Agent {
     int enemyX = 0;
@@ -20,7 +20,7 @@ public class Mopper extends Agent {
 
     @Override
     public void init(RobotController rc) {
-        pathfinder = new ShittyPathfinder(rc);
+        pathfinder = new BugnavPathfinder();
         
         // is the map mirrored hor or vert?
         int dist_hormiddle = Math.abs(rc.getLocation().x - rc.getMapWidth() / 2);
@@ -188,7 +188,7 @@ public class Mopper extends Agent {
                     System.out.println("mop Couldn't fill anything, moving towards a tile we can fill");
                     for (MapInfo patternTile : nearbyTiles) {
                         if (patternTile.getMark() != patternTile.getPaint() && patternTile.getMark() != PaintType.EMPTY  && (patternTile.getPaint() == PaintType.ENEMY_PRIMARY || patternTile.getPaint() == PaintType.ENEMY_SECONDARY)){
-                            Direction dir = pathfinder.getMove(patternTile.getMapLocation(), rc);
+                            Direction dir = pathfinder.getMove(patternTile.getMapLocation());
                             if (dir != null && rc.canMove(dir)){
                                 rc.move(dir);
                                 return;
