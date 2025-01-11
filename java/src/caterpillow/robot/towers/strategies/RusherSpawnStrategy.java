@@ -5,9 +5,7 @@ import caterpillow.Game;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Soldier;
 import caterpillow.robot.towers.Tower;
-import caterpillow.world.GameStage;
 
 import java.util.Random;
 
@@ -31,6 +29,7 @@ public class RusherSpawnStrategy extends Strategy {
     }
 
     private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {
+        println("spawning soldier!\n");
         bot.build(UnitType.SOLDIER, loc);
         pm.send(loc, new SeedPacket(seed));
         pm.send(loc, new StrategyPacket(strat));
@@ -52,15 +51,14 @@ public class RusherSpawnStrategy extends Strategy {
                 }
                 if (todo > 0) {
                     // build soldiers
-                    // this might be computationally expensive
-                    // try to spawn as close as possible to the centre
-                    MapInfo spawn = getClosestCellTo(centre, cell -> connectedByPaint(cell.getMapLocation(), rc.getLocation(), true) && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
-                    if (spawn != null) {
-                        spawnSoldier(spawn.getMapLocation(), 1);
-                        return;
-                    }
+                    // this part uses too much compute
+//                    MapInfo spawn = getClosestCellTo(centre, cell -> connectedByPaint(cell.getMapLocation(), rc.getLocation(), true) && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
+//                    if (spawn != null) {
+//                        spawnSoldier(spawn.getMapLocation(), 1);
+//                        return;
+//                    }
                     // just spawn adjacent
-                    spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
+                    MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
                     if (spawn != null) {
                         spawnSoldier(spawn.getMapLocation(), 1);
                         return;

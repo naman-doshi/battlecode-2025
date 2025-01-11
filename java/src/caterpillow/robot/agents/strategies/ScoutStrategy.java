@@ -29,6 +29,6 @@ public class ScoutStrategy extends Strategy {
     public void runTick() throws GameActionException {
         if (!rc.isActionReady()) return;
         rc.move(bot.pathfinder.getMove(target));
-        rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
+        rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 0);
     }
 }

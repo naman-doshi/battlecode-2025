@@ -8,7 +8,6 @@ public class ShittyPathfinder extends AbstractPathfinder {
 
     public ShittyPathfinder(RobotController rc) {
         super(rc);
-        System.out.println("poop");
     }
 
     @Override

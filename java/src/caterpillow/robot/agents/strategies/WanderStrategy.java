@@ -35,6 +35,6 @@ public class WanderStrategy extends Strategy {
             target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
         }
         rc.move(bot.pathfinder.getMove(target));
-        rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
+        rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);
     }
 }

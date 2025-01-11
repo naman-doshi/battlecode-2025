@@ -5,8 +5,10 @@ import battlecode.common.*;
 import java.util.*;
 
 import static caterpillow.Game.*;
+import static java.lang.Math.abs;
 
 public class Util {
+    public static final int VISION_RAD = 20;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -17,6 +19,18 @@ public class Util {
             Direction.WEST,
             Direction.NORTHWEST,
     };
+
+    public static MapLocation flipHor(MapLocation loc) {
+        return new MapLocation(rc.getMapWidth() - 1 - loc.x, loc.y);
+    }
+
+    public static MapLocation flipVer(MapLocation loc) {
+        return new MapLocation(loc.x, rc.getMapHeight() - 1 - loc.y);
+    }
+
+    public static MapLocation rot180(MapLocation loc) {
+        return new MapLocation(rc.getMapWidth() - 1 - loc.x, rc.getMapHeight() - 1 - loc.y);
+    }
 
     final static int SIZE = 60;
     public static MapLocation decodeLoc(int code) {
@@ -32,6 +46,12 @@ public class Util {
     public static void dead(Object msg) {
         println("Robot " + rc.getID() + " hit a dead end: " + msg);
         rc.disintegrate();
+    }
+
+    public static Pair<Double, Double> relativeDistsToCentre(MapLocation loc) {
+        double relX = (double) loc.x / (double) rc.getMapWidth();
+        double relY = (double) loc.y / (double) rc.getMapHeight();
+        return  new Pair(abs(relX - 0.5), abs(relY - 0.5));
     }
 
     public static RobotInfo getBestRobot(GameBinaryOperator<RobotInfo> comp, GamePredicate<RobotInfo> pred) throws GameActionException {
@@ -102,6 +122,7 @@ public class Util {
     }
 
     public static void println(Object obj) {
+        if (time > 100) return;
         System.out.println(obj);
     }
 
@@ -182,10 +203,6 @@ public class Util {
 
         int mapWidth = rc.getMapWidth();
         int mapHeight = rc.getMapHeight();
-
-        double magnitude = Math.sqrt(dx * dx + dy * dy);
-        dx /= magnitude;
-        dy /= magnitude;
 
         double tMin = Double.MAX_VALUE;
 

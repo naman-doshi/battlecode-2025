@@ -1,9 +1,6 @@
 package caterpillow.robot.agents.strategies.soldier;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
@@ -35,8 +32,8 @@ public class ShitEverywhereStrategy extends Strategy {
         rc.setIndicatorString("SHITTING EVERYWHERE");
         wander.runTick();
         if (rc.isActionReady()) {
-            MapInfo target = getNearestCell(c -> rc.canPaint(c.getMapLocation()));
-            if (target != null) {
+            MapInfo target = getNearestCell(c -> rc.canPaint(c.getMapLocation()) && c.getPaint().equals(PaintType.EMPTY));
+            if (target != null && rc.canAttack(target.getMapLocation())) {
                 rc.attack(target.getMapLocation());
             }
         }

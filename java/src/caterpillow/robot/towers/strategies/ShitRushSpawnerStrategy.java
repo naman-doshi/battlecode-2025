@@ -54,13 +54,13 @@ public class ShitRushSpawnerStrategy extends Strategy {
                     // build soldiers
                     // this might be computationally expensive
                     // try to spawn as close as possible to the centre
-                    MapInfo spawn = getClosestCellTo(centre, cell -> connectedByPaint(cell.getMapLocation(), rc.getLocation(), true) && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
-                    if (spawn != null) {
-                        spawnSoldier(spawn.getMapLocation(), 2);
-                        return;
-                    }
+//                    MapInfo spawn = getClosestCellTo(centre, cell -> connectedByPaint(cell.getMapLocation(), rc.getLocation(), true) && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
+//                    if (spawn != null) {
+//                        spawnSoldier(spawn.getMapLocation(), 2);
+//                        return;
+//                    }
                     // just spawn adjacent
-                    spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
+                    MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
                     if (spawn != null) {
                         spawnSoldier(spawn.getMapLocation(), 2);
                         return;

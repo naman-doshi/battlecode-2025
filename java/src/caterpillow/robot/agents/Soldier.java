@@ -9,6 +9,11 @@ import caterpillow.robot.agents.strategies.soldier.RushStrategy;
 import caterpillow.robot.agents.strategies.WanderStrategy;
 import caterpillow.robot.agents.strategies.soldier.ShitEverywhereStrategy;
 import caterpillow.robot.agents.strategies.soldier.ShitRushStrategy;
+import caterpillow.robot.agents.strategies.soldier.SnipeStrategy;
+import caterpillow.robot.towers.strategies.SniperSpawnStrategy;
+
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
 
 public class Soldier extends Agent {
 
@@ -35,7 +40,7 @@ public class Soldier extends Agent {
 //        }
 
         pathfinder = new BugnavPathfinder();
-        primaryStrategy = new WanderStrategy();
+        primaryStrategy = new EmptyStrategy();
         secondaryStrategy = new LinkStrategy(home);
     }
 
@@ -52,10 +57,14 @@ public class Soldier extends Agent {
                 primaryStrategy = new WanderStrategy();
                 break;
             case 1:
+                println("set strategy to rush");
                 primaryStrategy = new RecursiveStrategy(RushStrategy::new);
                 break;
             case 2:
                 primaryStrategy = new ShitRushStrategy();
+                break;
+            case 3:
+                primaryStrategy = new SnipeStrategy();
                 break;
         }
     }

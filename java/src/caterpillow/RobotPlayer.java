@@ -10,11 +10,14 @@ import caterpillow.robot.towers.ChipTower;
 import caterpillow.robot.towers.DefenceTower;
 import caterpillow.robot.towers.PaintTower;
 
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
+
 public class RobotPlayer {
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
+        time = rc.getRoundNum();
         Game.rc = rc;
-        Game.pm = new PacketManager();
         Game.preInit();
 
         switch (rc.getType()) {
@@ -45,11 +48,11 @@ public class RobotPlayer {
 
         while (true) {
             Game.upd();
-            time++;
-            pm.read(time - 1);
+            time = rc.getRoundNum();
+            pm.read();
             bot.runTick();
-            Clock.yield();
             pm.flush();
+            Clock.yield();
         }
     }
 }
