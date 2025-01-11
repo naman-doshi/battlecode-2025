@@ -55,20 +55,15 @@ public abstract class Tower extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
-        if (secondaryStrategy != null) {
-            if (secondaryStrategy.isComplete()) {
-                secondaryStrategy = null;
-            }
-        }
-        if (secondaryStrategy != null) {
+        if (secondaryStrategy != null && !secondaryStrategy.isComplete()) {
             secondaryStrategy.runTick();
-        } else {
-            if (primaryStrategy.isComplete()) {
-                dead("primary strategy completed");
-                return;
-            }
-            primaryStrategy.runTick();
+            return;
         }
+        if (primaryStrategy.isComplete()) {
+            dead("primary strategy completed");
+            return;
+        }
+        primaryStrategy.runTick();
     }
 
     public void upgrade() {

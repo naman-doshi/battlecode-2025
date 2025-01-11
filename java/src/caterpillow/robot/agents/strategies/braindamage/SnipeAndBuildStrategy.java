@@ -1,25 +1,25 @@
-package caterpillow.robot.agents.strategies.soldier;
+package caterpillow.robot.agents.strategies.braindamage;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.strategies.AttackTowerStrategy;
 import caterpillow.robot.agents.strategies.HomeStrategy;
 import caterpillow.robot.agents.strategies.TraverseStrategy;
+import caterpillow.robot.agents.strategies.soldier.BuildTowerStrategy;
 import caterpillow.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-public class SnipeStrategy extends Strategy {
+public class SnipeAndBuildStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
@@ -30,7 +30,7 @@ public class SnipeStrategy extends Strategy {
     Strategy primary;
     Strategy secondary;
 
-    public SnipeStrategy() {
+    public SnipeAndBuildStrategy() {
         bot = (Agent) Game.bot;
         target = null;
         todo = new ArrayList<>();
@@ -58,12 +58,9 @@ public class SnipeStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("RUSHING");
+        rc.setIndicatorString("SNIPE AND BUILD");
         // go home if its run out of things to do (which is unlikely since itll probably die first)
-        if (target == null && todo.isEmpty()) {
-            if (!(primary instanceof HomeStrategy)) {
-                primary = new HomeStrategy();
-            }
+        if (primary instanceof ShitEverywhereStrategy || primary instanceof BuildTowerStrategy) {
             primary.runTick();
             return;
         }
@@ -82,17 +79,20 @@ public class SnipeStrategy extends Strategy {
 
         if (secondary != null) {
             if (secondary.isComplete()) {
+                println("\ntime to build a tower!\n");
                 secondary = null;
+                primary = new BuildTowerStrategy(target, UnitType.LEVEL_ONE_MONEY_TOWER);
+                runTick();
             } else {
                 secondary.runTick();
-                return;
             }
+            return;
         }
 
         if (primary.isComplete()) {
             if (todo.isEmpty()) {
-                // start going home
                 target = null;
+                primary = new ShitEverywhereStrategy();
                 runTick();
                 return;
             }

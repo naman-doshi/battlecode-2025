@@ -1,4 +1,4 @@
-package caterpillow.robot.agents.strategies.soldier;
+package caterpillow.robot.agents.strategies.braindamage;
 
 import battlecode.common.*;
 import caterpillow.Game;

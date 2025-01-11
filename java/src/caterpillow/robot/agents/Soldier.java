@@ -3,17 +3,14 @@ package caterpillow.robot.agents;
 import battlecode.common.*;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
-import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.strategies.LinkStrategy;
+import caterpillow.robot.agents.strategies.braindamage.SnipeAndBuildStrategy;
 import caterpillow.robot.agents.strategies.soldier.RushStrategy;
 import caterpillow.robot.agents.strategies.WanderStrategy;
-import caterpillow.robot.agents.strategies.soldier.ShitEverywhereStrategy;
-import caterpillow.robot.agents.strategies.soldier.ShitRushStrategy;
-import caterpillow.robot.agents.strategies.soldier.SnipeStrategy;
-import caterpillow.robot.towers.strategies.SniperSpawnStrategy;
+import caterpillow.robot.agents.strategies.braindamage.ShitRushStrategy;
+import caterpillow.robot.agents.strategies.braindamage.SnipeStrategy;
 
 import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
 
 public class Soldier extends Agent {
 
@@ -65,6 +62,9 @@ public class Soldier extends Agent {
                 break;
             case 3:
                 primaryStrategy = new SnipeStrategy();
+                break;
+            case 4:
+                primaryStrategy = new SnipeAndBuildStrategy();
                 break;
         }
     }

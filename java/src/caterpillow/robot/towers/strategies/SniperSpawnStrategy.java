@@ -60,7 +60,7 @@ public class SniperSpawnStrategy extends Strategy {
                     // just spawn adjacent
                     MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
                     if (spawn != null) {
-                        spawnSoldier(spawn.getMapLocation(), 3);
+                        spawnSoldier(spawn.getMapLocation(), 4);
                         return;
                     }
                 }

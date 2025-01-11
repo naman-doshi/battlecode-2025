@@ -1,4 +1,4 @@
-package caterpillow.robot.agents.strategies.soldier;
+package caterpillow.robot.agents.strategies.braindamage;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -9,85 +9,93 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.strategies.AttackTowerStrategy;
 import caterpillow.robot.agents.strategies.HomeStrategy;
 import caterpillow.robot.agents.strategies.TraverseStrategy;
+import caterpillow.util.Pair;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Random;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-public class ShitRushStrategy extends Strategy {
+public class SnipeStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
+
+    // REMEMBER WE TRY TARGETS FROM THE BACK
     ArrayList<MapLocation> todo;
 
     Strategy primary;
     Strategy secondary;
 
-    public ShitRushStrategy() {
+    public SnipeStrategy() {
         bot = (Agent) Game.bot;
-        MapLocation mvec = subtract(centre, origin);
-        target = project(origin, mvec);
+        target = null;
         todo = new ArrayList<>();
 
-        MapLocation pivot = add(origin, scale(mvec, 0.75));
-        // add backup targets
-        todo.add(project(pivot, rotl(mvec)));
-        todo.add(project(pivot, rotr(mvec)));
+        todo.add(flipHor(bot.home));
+        todo.add(rot180(bot.home));
+        todo.add(flipVer(bot.home));
 
-        Collections.shuffle(todo, new Random(seed));
+        // if vertical flip is less likely than horizontal flip, reverse the array
+        Pair<Double, Double> dists = relativeDistsToCentre(bot.home);
+        if (dists.first > dists.second) {
+            Collections.reverse(todo);
+        }
 
         // starting strategy
-        primary = new TraverseStrategy(target, rc.getType().actionRadiusSquared);
+        target = todo.getLast();
+        todo.removeLast();
+        primary = new TraverseStrategy(target, VISION_RAD);
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        return false;
+        return primary instanceof HomeStrategy && primary.isComplete();
     }
 
     @Override
     public void runTick() throws GameActionException {
+        rc.setIndicatorString("RUSHING");
+        // go home if its run out of things to do (which is unlikely since itll probably die first)
         if (primary instanceof ShitEverywhereStrategy) {
             primary.runTick();
             return;
         }
 
         if (secondary == null) {
-            RobotInfo nearest = getNearestRobot(b -> !isFriendly(b) && b.getType().isTowerType());
-            if (nearest != null) {
-                secondary = new AttackTowerStrategy(nearest.getLocation());
+            if (rc.canSenseLocation(target)) {
+                RobotInfo info = rc.senseRobotAtLocation(target);
+                if (info != null && !isFriendly(info) && info.getType().isTowerType()) {
+                    // found target
+                    secondary = new AttackTowerStrategy(info.getLocation());
+                    secondary.runTick();
+                    return;
+                }
             }
         }
 
         if (secondary != null) {
             if (secondary.isComplete()) {
-                // broken tower
-                // immediately start shitting everywhere
                 secondary = null;
                 primary = new ShitEverywhereStrategy();
                 runTick();
-                return;
             } else {
                 secondary.runTick();
-                return;
             }
+            return;
         }
-
-        rc.setIndicatorString("SHIT RUSH STRATEGY");
 
         if (primary.isComplete()) {
             if (todo.isEmpty()) {
-                primary = new ShitEverywhereStrategy();
                 target = null;
+                primary = new ShitEverywhereStrategy();
                 runTick();
                 return;
             }
             target = todo.getLast();
             todo.removeLast();
-            primary = new TraverseStrategy(target, rc.getType().actionRadiusSquared);
+            primary = new TraverseStrategy(target, VISION_RAD);
         }
         primary.runTick();
     }

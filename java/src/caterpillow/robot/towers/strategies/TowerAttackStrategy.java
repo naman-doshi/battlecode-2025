@@ -6,7 +6,7 @@ import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-public class DefenceStrategy extends Strategy {
+public class TowerAttackStrategy extends Strategy {
 
     private boolean isInDanger() throws GameActionException {
         return getNearestRobot(bot -> !isFriendly(bot)) != null;
@@ -19,28 +19,16 @@ public class DefenceStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        RobotInfo nearest = getNearestRobot(bot -> !isFriendly(bot));
-        assert nearest != null;
-        int enemyCount = countNearbyBots(bot -> !isFriendly(bot));
-        int friendlyCount = countNearbyBots(bot -> bot.getType().equals(UnitType.MOPPER) && isFriendly(bot));
-        // dont want to spawn too many moppers
-        // limit moppers <= aggressors
-        if (friendlyCount < enemyCount) {
-            MapInfo spawn = getClosestNeighbourTo(nearest.getLocation(), cell -> rc.canBuildRobot(UnitType.MOPPER, cell.getMapLocation()));
-            if (spawn != null) {
-                rc.buildRobot(UnitType.MOPPER, spawn.getMapLocation());
-            }
-        }
         RobotInfo info = getBestRobot((a, b) -> {
-            boolean a1 = a.getType().equals(UnitType.SOLDIER);
-            boolean b1 = b.getType().equals(UnitType.SOLDIER);
+            int a1 = a.getType().ordinal();
+            int b1 = b.getType().ordinal();
             int h1 = a.getHealth();
             int h2 = b.getHealth();
             if (a1 == b1) {
                 if (h1 > h2) return b;
                 else return a;
             } else {
-                if (a1) return a;
+                if (a1 < b1) return a;
                 else return b;
             }
         }, e -> !isFriendly(e) && e.getType().isRobotType() && rc.canAttack(e.getLocation()));

@@ -46,9 +46,6 @@ public class RobotPlayer {
 
         while (true) {
             Game.time++;
-
-
-
             bot.runTick(rc);
             Clock.yield();
         }

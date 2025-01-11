@@ -2,6 +2,7 @@ package caterpillow.robot.towers;
 
 import battlecode.common.*;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.EmptyStrategy;
 import caterpillow.robot.towers.strategies.*;
 
 import static caterpillow.util.Util.*;
@@ -13,10 +14,11 @@ public class PaintTower extends Tower {
     public void init() {
         super.init();
         if (isStarter) {
-            primaryStrategy = new SniperSpawnStrategy();
+//            primaryStrategy = new SniperSpawnStrategy();
         } else {
-            primaryStrategy = new SpawnStrategy();
+//            primaryStrategy = new SpawnStrategy();
         }
-        secondaryStrategy = new DefenceStrategy();
+//        secondaryStrategy = new DefenceStrategy();
+        primaryStrategy = new EmptyStrategy();
     }
 }

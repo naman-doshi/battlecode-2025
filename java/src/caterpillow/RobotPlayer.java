@@ -47,6 +47,7 @@ public class RobotPlayer {
         Game.postInit();
 
         while (true) {
+            println("sussy");
             Game.upd();
             time = rc.getRoundNum();
             pm.read();

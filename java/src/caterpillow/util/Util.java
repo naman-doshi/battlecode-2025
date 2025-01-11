@@ -32,6 +32,38 @@ public class Util {
         return new MapLocation(rc.getMapWidth() - 1 - loc.x, rc.getMapHeight() - 1 - loc.y);
     }
 
+    public static boolean getMoneyTowerColour(MapLocation centre, MapLocation loc) throws GameActionException {
+        MapLocation ind = add(subtract(loc, centre), new MapLocation(2, 2));
+        return rc.getTowerPattern(UnitType.LEVEL_ONE_MONEY_TOWER)[ind.x][ind.y];
+    }
+
+    public static int manhattan(MapLocation a, MapLocation b) {
+        return abs(a.x - b.x) + abs(a.y - b.y);
+    }
+
+    public static boolean getPaintTowerColour(MapLocation centre, MapLocation loc) throws GameActionException {
+        MapLocation ind = add(subtract(loc, centre), new MapLocation(2, 2));
+        return rc.getTowerPattern(UnitType.LEVEL_ONE_PAINT_TOWER)[ind.x][ind.y];
+    }
+
+    public static boolean getDefenseTowerColour(MapLocation centre, MapLocation loc) throws GameActionException {
+        MapLocation ind = add(subtract(loc, centre), new MapLocation(2, 2));
+        return rc.getTowerPattern(UnitType.LEVEL_ONE_DEFENSE_TOWER)[ind.x][ind.y];
+    }
+
+    public static boolean getCellColour(MapLocation centre, MapLocation loc, UnitType type) throws GameActionException {
+        switch (type) {
+            case LEVEL_ONE_MONEY_TOWER:
+                return getMoneyTowerColour(centre, loc);
+            case LEVEL_ONE_PAINT_TOWER:
+                return getPaintTowerColour(centre, loc);
+            case LEVEL_ONE_DEFENSE_TOWER:
+                return getDefenseTowerColour(centre, loc);
+        }
+        assert false;
+        return false;
+    }
+
     final static int SIZE = 60;
     public static MapLocation decodeLoc(int code) {
         assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
@@ -51,7 +83,7 @@ public class Util {
     public static Pair<Double, Double> relativeDistsToCentre(MapLocation loc) {
         double relX = (double) loc.x / (double) rc.getMapWidth();
         double relY = (double) loc.y / (double) rc.getMapHeight();
-        return  new Pair(abs(relX - 0.5), abs(relY - 0.5));
+        return new Pair(abs(relX - 0.5), abs(relY - 0.5));
     }
 
     public static RobotInfo getBestRobot(GameBinaryOperator<RobotInfo> comp, GamePredicate<RobotInfo> pred) throws GameActionException {

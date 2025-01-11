@@ -58,16 +58,12 @@ public class PacketManager {
 
     public void read() {
         Message[] prev = rc.readMessages(time - 1);
-        if (time < 10)
-            println("prev " + prev.length);
         for (int i = prev_read; i < prev.length; i++) {
             processMessage(prev[i]);
             println(prev[i].getBytes() >>> PAYLOAD_SIZE);
         }
         Message[] cur = rc.readMessages(time);
         prev_read = cur.length;
-        if (time < 10)
-            println("cur " + cur.length);
         for (Message msg : cur) {
             processMessage(msg);
             println(msg.getBytes() >>> PAYLOAD_SIZE);
@@ -76,7 +72,6 @@ public class PacketManager {
 
     // fml
     public void send(int botID, Packet packet) {
-        println("queued packet for " + botID);
         queue.add(new Pair(botID, packet));
     }
 
@@ -99,7 +94,6 @@ public class PacketManager {
         } else if (packet instanceof StrategyPacket strategyPacket) {
             type = 3;
             payload = strategyPacket.strategyID;
-            println("queud strategy packet for " + payload + " to " + loc);
         } else {
             System.out.println("wtf is this packet");
             return;
@@ -115,16 +109,13 @@ public class PacketManager {
             queue.pop();
         }
 
-        println("todo " + queue.size());
         Iterator<Pair<Integer, Packet>> it = queue.iterator();
         while (it.hasNext()) {
             Pair<Integer, Packet> el = it.next();
-            println("trying to send packet to " + el.first);
             for (RobotInfo bot : rc.senseNearbyRobots()) {
                 if (bot.getID() == el.first) {
                     if (rc.canSendMessage(bot.getLocation())) {
                         processPacket(bot.getLocation(), el.second);
-                        println("sending packet to " + bot.getID());
                         it.remove();
                         break;
                     }
