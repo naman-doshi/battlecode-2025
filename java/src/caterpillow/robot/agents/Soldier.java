@@ -7,6 +7,8 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.strategies.LinkStrategy;
 import caterpillow.robot.agents.strategies.soldier.RushStrategy;
 import caterpillow.robot.agents.strategies.WanderStrategy;
+import caterpillow.robot.agents.strategies.soldier.ShitEverywhereStrategy;
+import caterpillow.robot.agents.strategies.soldier.ShitRushStrategy;
 
 public class Soldier extends Agent {
 
@@ -51,6 +53,9 @@ public class Soldier extends Agent {
                 break;
             case 1:
                 primaryStrategy = new RecursiveStrategy(RushStrategy::new);
+                break;
+            case 2:
+                primaryStrategy = new ShitRushStrategy();
                 break;
         }
     }

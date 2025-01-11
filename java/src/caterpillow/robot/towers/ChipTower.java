@@ -4,6 +4,7 @@ import battlecode.common.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.strategies.DefenceStrategy;
 import caterpillow.robot.towers.strategies.RusherSpawnStrategy;
+import caterpillow.robot.towers.strategies.ShitRushSpawnerStrategy;
 import caterpillow.robot.towers.strategies.SpawnStrategy;
 
 import static caterpillow.util.Util.*;
@@ -17,7 +18,7 @@ public class ChipTower extends Tower {
     public void init() {
         super.init();
         if (isStarter) {
-            primaryStrategy = new RusherSpawnStrategy();
+            primaryStrategy = new ShitRushSpawnerStrategy();
         } else {
             primaryStrategy = new SpawnStrategy();
         }
