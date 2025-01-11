@@ -5,6 +5,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Message;
 import battlecode.common.RobotController;
+import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import static lmkaepillow.Util.rng;
 
@@ -27,19 +28,41 @@ public class ChipTower extends Tower {
         // Pick a random robot type to build.
         //int robotType = rng.nextInt(3);
         
-        if (spawned % 3 == 0 && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
+        if ((spawned < 2 || spawned % 2 == 0) && rc.canBuildRobot(UnitType.SOLDIER, nextLoc)){
             rc.buildRobot(UnitType.SOLDIER, nextLoc);
             System.out.println("BUILT A SOLDIER");
             spawned++;
-        } else if (spawned % 3 == 1 && rc.canBuildRobot(UnitType.MOPPER, nextLoc)){
-            rc.buildRobot(UnitType.MOPPER, nextLoc);
-            System.out.println("BUILT A MOPPER");
-            spawned++;
-        } else if (spawned % 3 == 2 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
+        } else if (spawned % 2 == 1 && rc.canBuildRobot(UnitType.SPLASHER, nextLoc)){
             rc.buildRobot(UnitType.SPLASHER, nextLoc);
             System.out.println("BUILT A SPLASHER");
             spawned++;
         }
+
+        // do aoe attack
+        if (rc.canAttack(null)) rc.attack(null);
+
+        // do single target attack on bots (soldier > splasher > mopper)
+        // take the lowest hp of each type first
+        RobotInfo[] nearbyRobots = rc.senseNearbyRobots();
+        RobotInfo target = null;
+        for (RobotInfo robot : nearbyRobots) {
+            if (robot.getTeam() != rc.getTeam()) {
+                if (target == null) {
+                    target = robot;
+                } else {
+                    if (robot.getType() == UnitType.SOLDIER && (target.getType() != UnitType.SOLDIER || (target.getType() == UnitType.SOLDIER && robot.health < target.health))) {
+                        target = robot;
+                    } else if (robot.getType() == UnitType.SPLASHER && target.getType() != UnitType.SOLDIER && robot.health < target.health) {
+                        target = robot;
+                    } else if (robot.getType() == UnitType.MOPPER && target.getType() != UnitType.SOLDIER && target.getType() != UnitType.SPLASHER && robot.health < target.health) {
+                        target = robot;
+                    }
+                }
+            }
+        }
+        if (target != null && rc.canAttack(target.getLocation())) rc.attack(target.getLocation());
+
+
 
 
 
