@@ -1,9 +1,6 @@
 package caterpillow;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
 import caterpillow.robot.towers.Tower;
@@ -14,31 +11,38 @@ import java.util.Random;
 import static caterpillow.util.Util.*;
 
 public class Game {
-    public static int time = 0;
+    public static int time;
     public static RobotController rc;
     public static PacketManager pm;
     public static Robot bot;
     public static MapLocation origin, centre;
     public static boolean isStarter;
-    public static GameStage gameStage = GameStage.EARLY;
-    public static int seed = 0;
+    public static GameStage gameStage;
+    public static int seed;
     public static Random rng;
+
+    public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
 
     private static int midTime, lateTime;
 
     // this is called *before* the robot object is instantiated
     public static void preInit() throws GameActionException {
+        Game.pm = new PacketManager();
         rng = new Random(rc.getID());
+        symmetry = -1;
+        isStarter = (time <= 10);
         if (rc.getType().isTowerType()) {
-            MapInfo cell = getNearestCell(c -> c.getPaint().isAlly());
-            isStarter = (cell == null);
             origin = rc.getLocation();
         } else {
-            isStarter = !rc.senseMapInfo(rc.getLocation()).getPaint().isAlly();
+            RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
+            assert nearest != null;
+            origin = nearest.getLocation();
         }
         midTime = 200 + (rc.getMapWidth() * rc.getMapHeight()) / 6; // random ass formula
         lateTime = midTime + (rc.getMapWidth() * rc.getMapHeight()) / 6;
         centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
+        gameStage = GameStage.EARLY;
+        seed = 0;
     }
 
     public static void postInit() throws GameActionException {

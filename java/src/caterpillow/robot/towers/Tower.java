@@ -8,6 +8,7 @@ import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.packet.packets.OriginPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Robot;
+import caterpillow.robot.Strategy;
 
 import java.util.ArrayList;
 
@@ -18,6 +19,8 @@ public abstract class Tower extends Robot {
     // im indexing levels from 0
     public int level;
     protected UnitType[] types;
+    Strategy primaryStrategy;
+    Strategy secondaryStrategy;
 
     public ArrayList<Integer> kids;
 
@@ -48,6 +51,24 @@ public abstract class Tower extends Robot {
     public void init() {
         level = 0;
         kids = new ArrayList<>();
+    }
+
+    @Override
+    public void runTick() throws GameActionException {
+        if (secondaryStrategy != null) {
+            if (secondaryStrategy.isComplete()) {
+                secondaryStrategy = null;
+            }
+        }
+        if (secondaryStrategy != null) {
+            secondaryStrategy.runTick();
+        } else {
+            if (primaryStrategy.isComplete()) {
+                dead("primary strategy completed");
+                return;
+            }
+            primaryStrategy.runTick();
+        }
     }
 
     public void upgrade() {

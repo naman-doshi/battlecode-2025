@@ -31,6 +31,6 @@ public class TraverseStrategy extends Strategy {
     public void runTick() throws GameActionException {
         if (!rc.isMovementReady()) return;
         rc.move(bot.pathfinder.getMove(target));
-        rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
+        rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
     }
 }

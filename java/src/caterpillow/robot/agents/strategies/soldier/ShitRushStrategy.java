@@ -28,11 +28,11 @@ public class ShitRushStrategy extends Strategy {
 
     public ShitRushStrategy() {
         bot = (Agent) Game.bot;
-        MapLocation mvec = subtract(centre, rc.getLocation());
-        MapLocation pivot = add(rc.getLocation(), scale(mvec, 0.75));
-        target = project(rc.getLocation(), mvec);
+        MapLocation mvec = subtract(centre, origin);
+        target = project(origin, mvec);
         todo = new ArrayList<>();
 
+        MapLocation pivot = add(origin, scale(mvec, 0.75));
         // add backup targets
         todo.add(project(pivot, rotl(mvec)));
         todo.add(project(pivot, rotr(mvec)));
@@ -80,7 +80,7 @@ public class ShitRushStrategy extends Strategy {
 
         if (primary.isComplete()) {
             if (todo.isEmpty()) {
-                // start going home
+                primary = new ShitEverywhereStrategy();
                 target = null;
                 runTick();
                 return;
