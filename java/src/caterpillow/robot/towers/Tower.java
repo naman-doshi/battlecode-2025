@@ -1,15 +1,17 @@
 package caterpillow.robot.towers;
 
+import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.packet.packets.AdoptionPacket;
-import caterpillow.packet.packets.TestPacket;
+import caterpillow.packet.packets.OriginPacket;
+import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Robot;
 
 import java.util.ArrayList;
 
-import static caterpillow.Util.*;
+import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public abstract class Tower extends Robot {
@@ -23,11 +25,18 @@ public abstract class Tower extends Robot {
         kids.add(id);
     }
 
-    @Override
+    // USE THIS INSTEAD OF THE DEFAULT BUILD
+    public void build(UnitType type, MapLocation loc) throws GameActionException {
+        rc.buildRobot(type, loc);
+        RobotInfo newBot = rc.senseRobotAtLocation(loc);
+        kids.add(newBot.getID());
+        pm.send(newBot.getID(), new OriginPacket(origin));
+    }
+
     public void handleAdoptionPacket(AdoptionPacket packet, int senderID) {
         super.handleAdoptionPacket(packet, senderID);
-        registerKid(packet.child_id);
-        System.out.println("added " + packet.child_id + " to kids");
+        registerKid(senderID);
+        System.out.println("Tower adopted " + senderID);
     }
 
     @Override

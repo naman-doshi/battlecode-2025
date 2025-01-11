@@ -2,9 +2,8 @@ package caterpillow.pathfinding;
 
 import battlecode.common.Direction;
 import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
 
-import static caterpillow.Util.*;
+import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -84,7 +83,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 else if (rc.canMove(topDir.rotateLeft())) leftTurn = true;
                 else if (rc.canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
                 else if (rc.canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
-                else leftTurn = rng.nextInt(0, 1) == 1;
+                else leftTurn = rng.nextInt(0, 1) == 1; // change later
             }
             if (leftTurn) topDir = topDir.rotateLeft();
             else topDir = topDir.rotateRight();

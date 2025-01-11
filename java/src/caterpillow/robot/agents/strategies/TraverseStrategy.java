@@ -6,34 +6,30 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 
-import java.util.Random;
-
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-// pathfinding testing
-public class WanderStrategy extends Strategy {
+// *just* in case we optimise this in the future
+public class TraverseStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    Random rng;
+    int distSquared;
 
-    public WanderStrategy() {
+    public TraverseStrategy(MapLocation target, int distSquared) {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+        this.target = target;
+        this.distSquared = distSquared;
     }
 
     @Override
     public boolean isComplete() {
-        return false;
+        return rc.getLocation().distanceSquaredTo(target) <= distSquared;
     }
 
     @Override
     public void runTick() throws GameActionException {
-        if (!rc.isActionReady()) return;
-        if (target == null || rc.getLocation().equals(target)) {
-            target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
-        }
+        if (!rc.isMovementReady()) return;
         rc.move(bot.pathfinder.getMove(target));
         rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
     }

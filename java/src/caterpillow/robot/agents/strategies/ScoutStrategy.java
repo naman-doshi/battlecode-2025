@@ -6,21 +6,18 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 
-import java.util.Random;
-
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-// pathfinding testing
-public class WanderStrategy extends Strategy {
+// TODO
+public class ScoutStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    Random rng;
 
-    public WanderStrategy() {
+    public ScoutStrategy() {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+//        target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
+//        target = findOpposingLoc(rc.getLocation());
     }
 
     @Override
@@ -31,9 +28,6 @@ public class WanderStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         if (!rc.isActionReady()) return;
-        if (target == null || rc.getLocation().equals(target)) {
-            target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
-        }
         rc.move(bot.pathfinder.getMove(target));
         rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
     }

@@ -3,8 +3,11 @@ package caterpillow.robot;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.UnitType;
+import caterpillow.Game;
 import caterpillow.packet.packets.AdoptionPacket;
-import caterpillow.packet.packets.TestPacket;
+import caterpillow.packet.packets.OriginPacket;
+import caterpillow.packet.packets.SeedPacket;
+import caterpillow.packet.packets.StrategyPacket;
 
 public abstract class Robot {
     protected static final Direction[] directions = {
@@ -24,7 +27,12 @@ public abstract class Robot {
 
     public abstract void runTick() throws GameActionException;
 
-    public void handleTestPacket(TestPacket packet, int senderID) {}
     public void handleAdoptionPacket(AdoptionPacket packet, int senderID) {}
-
+    public void handleOriginPacket(OriginPacket packet, int senderID) {
+        Game.origin = packet.loc;
+    }
+    public void handleSeedPacket(SeedPacket packet, int senderID) {
+        Game.seed = packet.seed;
+    }
+    public void handleStrategyPacket(StrategyPacket packet, int senderID) {}
 }

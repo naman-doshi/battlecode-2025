@@ -3,7 +3,6 @@ package caterpillow;
 import static caterpillow.Game.*;
 import battlecode.common.*;
 import caterpillow.packet.PacketManager;
-import caterpillow.robot.Robot;
 import caterpillow.robot.agents.Mopper;
 import caterpillow.robot.agents.Soldier;
 import caterpillow.robot.agents.Splasher;
@@ -16,6 +15,8 @@ public class RobotPlayer {
     public static void run(RobotController rc) throws GameActionException {
         Game.rc = rc;
         Game.pm = new PacketManager();
+        Game.preInit();
+
         switch (rc.getType()) {
             case SOLDIER:
                 bot = new Soldier();
@@ -40,12 +41,15 @@ public class RobotPlayer {
         }
 
         bot.init();
+        Game.postInit();
 
         while (true) {
+            Game.upd();
             time++;
             pm.read(time - 1);
             bot.runTick();
             Clock.yield();
+            pm.flush();
         }
     }
 }
