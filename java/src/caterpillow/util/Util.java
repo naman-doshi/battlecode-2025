@@ -412,6 +412,6 @@ public class Util {
     }
 
     public static PaintType checkerboardPaint(MapLocation loc) {
-        return (loc.x + loc.y) % 2 == 0 ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        return (loc.x + loc.y) % 2 == 1 ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
     }
 }
