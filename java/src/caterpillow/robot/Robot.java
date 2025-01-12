@@ -21,8 +21,6 @@ public abstract class Robot {
             Direction.NORTHWEST,
     };
 
-    public abstract UnitType getType();
-
     public abstract void init() throws GameActionException;
 
     public abstract void runTick() throws GameActionException;
@@ -34,5 +32,5 @@ public abstract class Robot {
     public void handleSeedPacket(SeedPacket packet, int senderID) {
         Game.seed = packet.seed;
     }
-    public void handleStrategyPacket(StrategyPacket packet, int senderID) {}
+    public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {}
 }

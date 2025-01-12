@@ -5,9 +5,10 @@ import caterpillow.Game;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static caterpillow.util.Util.*;
@@ -19,9 +20,18 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
     int todo, seed;
     Tower bot;
 
+    // we can *maybe* turn this into a special class if it gets too repetitive
+    // ill just hardcode for now to make sure it works
+    List<TowerStrategy> strats;
+
     public StarterMoneyTowerStrategy() {
         bot = (Tower) Game.bot;
         seed = new Random(rc.getID()).nextInt();
+
+        strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
+        strats.add(new TowerAttackStrategy());
+        strats.add(new RefillStrategy());
     }
 
     private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {
@@ -34,6 +44,9 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
+        for (TowerStrategy strat : strats) {
+            strat.runTick();
+        }
         switch (gameStage) {
             // TODO: implement strategies for all game times
             // currently just spam soldiers

@@ -18,7 +18,6 @@ import static caterpillow.Game.*;
 public abstract class Tower extends Robot {
     // im indexing levels from 0
     public int level;
-    protected UnitType[] types;
     public Strategy primaryStrategy;
 
     public ArrayList<Integer> kids;
@@ -41,10 +40,6 @@ public abstract class Tower extends Robot {
         System.out.println("Tower adopted " + senderID);
     }
 
-    @Override
-    public UnitType getType() {
-        return types[level];
-    }
 
     @Override
     public void init() {

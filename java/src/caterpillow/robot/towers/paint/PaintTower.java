@@ -1,5 +1,6 @@
 package caterpillow.robot.towers.paint;
 
+import battlecode.common.UnitType;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.towers.SpawnStrategy;
 import caterpillow.robot.towers.Tower;

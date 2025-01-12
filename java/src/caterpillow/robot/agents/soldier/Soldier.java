@@ -22,20 +22,6 @@ public class Soldier extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        // bruh i can just get the tower to check
-//        RobotInfo nearest = getNearestRobot(bot -> bot.getType().isTowerType());
-//        assert nearest != null;
-//        assert rc.senseMapInfo(rc.getLocation()).getPaint().isAlly();
-//        pm.send(nearest.getID(), new AdoptionPacket(rc.getID()));
-
-        // by default, make sure u can talk to ur tower
-//        MapInfo info = rc.senseMapInfo(rc.getLocation());
-//        if (!info.getPaint().isAlly()) {
-//            assert rc.canAttack(rc.getLocation());
-//            // TODO: make this match the pattern to build towers
-//            rc.attack(rc.getLocation(), getColour(rc.getLocation()));
-//        }
-
         pathfinder = new BugnavPathfinder();
         primaryStrategy = new EmptyStrategy();
         secondaryStrategy = new LinkStrategy(home);
@@ -47,7 +33,7 @@ public class Soldier extends Agent {
     }
 
     @Override
-    public void handleStrategyPacket(StrategyPacket packet, int senderID) {
+    public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
             case 0:
