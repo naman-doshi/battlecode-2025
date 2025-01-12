@@ -86,7 +86,7 @@ public class Mopper extends Agent {
     }
 
     @Override
-    public void handleStrategyPacket(StrategyPacket packet, int senderID) {
+    public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
             case 0:
@@ -95,6 +95,10 @@ public class Mopper extends Agent {
             case 1:
                 primaryStrategy = new MopperOffenceStrategy();
                 System.out.println("set strategy to offence");
+                break;
+            case 2:
+                // TODO: assign a primary strategy
+                secondaryStrategy = new MopperRespawnStrategy();
                 break;
         }
     }

@@ -53,9 +53,4 @@ public abstract class Agent extends Robot {
             primaryStrategy.runTick();
         }
     }
-
-    @Override
-    public UnitType getType() {
-        return type;
-    }
 }

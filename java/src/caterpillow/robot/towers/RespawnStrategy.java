@@ -1,9 +1,8 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
+import caterpillow.packet.packets.StrategyPacket;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
@@ -16,6 +15,8 @@ todo: spawn moppers that clean bad cells (if applicable), and spawn soldiers tha
 */
 
 public class RespawnStrategy extends TowerStrategy {
+
+    int lastSpawnTime;
     Tower bot;
 
     public boolean isEnemyPaintBlocking() throws GameActionException {
@@ -50,19 +51,31 @@ public class RespawnStrategy extends TowerStrategy {
         return inc != null;
     }
 
-    public boolean hasDeployedMopper() {
-        return false;
+    public boolean shouldSpawnNewMopper() throws GameActionException {
+        return time - lastSpawnTime > 10 || getNearestRobot(b -> bot.kids.contains(b.getID()) && b.getType().equals(UnitType.MOPPER)) != null;
     }
 
     public RespawnStrategy() {
         bot = (Tower) Game.bot;
+        lastSpawnTime = -69696969;
+    }
+
+    public void spawnMopper(MapLocation loc) throws GameActionException {
+        lastSpawnTime = time;
+        bot.build(UnitType.MOPPER, loc);
+        pm.send(loc, new StrategyPacket(2));
     }
 
     @Override
     public void runTick() throws GameActionException {
         // if people are rushing with both mopper and soldier then its actually wraps
         if (isInDanger()) {
-
+            if (shouldSpawnNewMopper()) {
+                MapInfo spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
+                if (spawnLoc != null) {
+                    spawnMopper(spawnLoc.getMapLocation());
+                }
+            }
         }
     }
 }

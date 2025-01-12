@@ -2,6 +2,7 @@ package caterpillow.util;
 
 import battlecode.common.*;
 import caterpillow.Game;
+import caterpillow.robot.agents.soldier.BuildTowerStrategy;
 
 import java.util.*;
 
@@ -190,6 +191,41 @@ public class Util {
             }
         }
         return best;
+    }
+
+    public static boolean canMove(MapLocation loc) throws GameActionException {
+        Direction dir = getDiff(rc.getLocation(), loc);
+        return rc.canMove(dir);
+    }
+
+    public static Direction getClosestDirTo(MapLocation dest, GamePredicate<MapInfo> pred) throws GameActionException {
+        Direction best = null;
+        for (Direction dir : directions) {
+            if (dir == Direction.CENTER) continue;
+            MapLocation newLoc = rc.getLocation().add(dir);
+            MapInfo newInfo = rc.senseMapInfo(newLoc);
+            if (pred.test(newInfo)) {
+                if (best == null || rc.getLocation().add(best).distanceSquaredTo(dest) > newLoc.distanceSquaredTo(dest)) {
+                    best = dir;
+                }
+            }
+        }
+        return best;
+    }
+
+    public static int missingPaint(RobotInfo b) {
+        return b.getType().paintCapacity - b.getPaintAmount();
+    }
+
+    public static Direction getDiff(MapLocation src, MapLocation dest) throws GameActionException {
+        int dx = dest.x - src.x;
+        int dy = dest.y - src.y;
+        for (Direction dir : directions) {
+            if (dir.getDeltaX() == dx && dir.getDeltaY() == dy) {
+                return dir;
+            }
+        }
+        return null;
     }
 
     public static int paintPriority(PaintType type) {

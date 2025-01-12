@@ -5,9 +5,10 @@ import caterpillow.Game;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static caterpillow.util.Util.*;
@@ -15,6 +16,7 @@ import static caterpillow.Game.*;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
+    List<TowerStrategy> strats;
     // in case we get rushed
     int todo, seed;
     Tower bot;
@@ -22,6 +24,11 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
     public StarterPaintTowerStrategy() {
         bot = (Tower) Game.bot;
         seed = new Random(rc.getID()).nextInt();
+
+        strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
+        strats.add(new TowerAttackStrategy());
+        strats.add(new RefillStrategy());
     }
 
     private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {
@@ -34,6 +41,9 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
+        for (TowerStrategy strat : strats) {
+            strat.runTick();
+        }
         switch (gameStage) {
             // TODO: implement strategies for all game times
             // currently just spam soldiers

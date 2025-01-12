@@ -10,6 +10,5 @@ public class EmptyStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-
     }
 }

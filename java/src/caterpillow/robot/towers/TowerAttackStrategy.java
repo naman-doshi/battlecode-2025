@@ -13,7 +13,7 @@ public class TowerAttackStrategy extends TowerStrategy {
 
     int countEnemies() throws GameActionException {
         int count = 0;
-        for (RobotInfo info : rc.senseNearbyRobots(bot.getType().actionRadiusSquared)) {
+        for (RobotInfo info : rc.senseNearbyRobots(rc.getType().actionRadiusSquared)) {
             if (!isFriendly(info)) {
                 count++;
             }

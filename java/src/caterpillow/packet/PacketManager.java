@@ -29,7 +29,7 @@ public class PacketManager {
         queue = new LinkedList<>();
     }
 
-    public void processMessage(Message msg) {
+    public void processMessage(Message msg) throws GameActionException {
         int type = (msg.getBytes() >>> PAYLOAD_SIZE);
         int payload = (msg.getBytes() & (-1 >>> TYPE_SIZE));
         int sender = msg.getSenderID();
@@ -47,7 +47,7 @@ public class PacketManager {
                 break;
             case 3:
                 int id = payload >>> StrategyPacket.STRATEGY_DATA_SIZE;
-                int data = payload & (-1 >>> StrategyPacket.STRATEGY_ID_SIZE);
+                int data = payload & (-1 >>> (StrategyPacket.STRATEGY_ID_SIZE + TYPE_SIZE));
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
@@ -58,7 +58,7 @@ public class PacketManager {
         }
     }
 
-    public void read() {
+    public void read() throws GameActionException {
         Message[] prev = rc.readMessages(time - 1);
         for (int i = prev_read; i < prev.length; i++) {
             processMessage(prev[i]);

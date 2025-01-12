@@ -1,8 +1,6 @@
 package caterpillow.robot.agents.mopper;
 
-import battlecode.common.GameActionException;
-import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 
@@ -22,7 +20,7 @@ public class MopperRespawnStrategy extends Strategy {
     }
 
     private boolean isInDanger() throws GameActionException {
-        return getNearestRobot(bot -> !isFriendly(bot)) != null;
+        return getNearestRobot(bot -> !isFriendly(bot) && bot.getType().isRobotType()) != null;
     }
 
     @Override
@@ -44,7 +42,13 @@ public class MopperRespawnStrategy extends Strategy {
             }
         } else {
             // fight
-
+            RobotInfo target = bot.getBestTarget();
+            assert target != null;
+            Direction dir = getClosestDirTo(target.getLocation(), c -> isCellInTowerBounds(bot.home, c.getMapLocation()) && canMove(c.getMapLocation()));
+            if (dir != null) {
+                rc.move(dir);
+            }
+            bot.doBestAttack();
         }
     }
 }
