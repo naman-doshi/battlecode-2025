@@ -52,7 +52,7 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public boolean shouldSpawnNewMopper() throws GameActionException {
-        return time - lastSpawnTime > 10 || getNearestRobot(b -> bot.kids.contains(b.getID()) && b.getType().equals(UnitType.MOPPER)) != null;
+        return time - lastSpawnTime > 20 || (getNearestRobot(b -> bot.kids.contains(b.getID()) && b.getType().equals(UnitType.MOPPER)) == null);
     }
 
     public RespawnStrategy() {
@@ -61,6 +61,7 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public void spawnMopper(MapLocation loc) throws GameActionException {
+        println("spawning defensive mopper");
         lastSpawnTime = time;
         bot.build(UnitType.MOPPER, loc);
         pm.send(loc, new StrategyPacket(2));

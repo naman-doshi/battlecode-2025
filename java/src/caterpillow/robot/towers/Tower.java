@@ -31,6 +31,7 @@ public abstract class Tower extends Robot {
         rc.buildRobot(type, loc);
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
+        println("added " + newBot.getID() + " to kids");
         pm.send(newBot.getID(), new OriginPacket(origin));
     }
 
@@ -39,7 +40,6 @@ public abstract class Tower extends Robot {
         registerKid(senderID);
         System.out.println("Tower adopted " + senderID);
     }
-
 
     @Override
     public void init() {

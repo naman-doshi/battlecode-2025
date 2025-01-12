@@ -10,7 +10,7 @@ public class MoneyTower extends Tower {
     public void init() {
         super.init();
         if (isStarter) {
-            primaryStrategy = new MopperSpawnStrategy();
+            primaryStrategy = new StarterMoneyTowerStrategy();
         } else {
             primaryStrategy = new EmptyStrategy();
         }
