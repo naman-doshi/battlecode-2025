@@ -12,6 +12,7 @@ import static caterpillow.Game.*;
 /*
 
 the person who first is unable to find a new tile to paint (cuz its finished) is the person who finishes the tower
+YOU MUST CALL ISCOMPLETE BEFORE RUNTICK ON THIS STRATEGY
 
 */
 
@@ -20,7 +21,7 @@ public class BuildTowerStrategy extends Strategy {
     Agent bot;
     MapLocation target;
     UnitType typePref;
-    boolean isFinisher;
+    UnitType patternToFinish;
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
 
@@ -83,7 +84,7 @@ public class BuildTowerStrategy extends Strategy {
             for (int dy = -2; dy <= 2; dy++) {
                 if (dx == 0 && dy == 0) continue;
                 MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
-                if (info.getPaint().isSecondary() != getCellColour(centre, info.getMapLocation(), type)) {
+                if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) {
                     if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > info.getMapLocation().distanceSquaredTo(rc.getLocation())) {
                         best = info;
                     }
@@ -93,7 +94,7 @@ public class BuildTowerStrategy extends Strategy {
         if (best == null) {
             return new Pair<>(null, null);
         } else {
-            return new Pair<>(best.getMapLocation(), getCellColour(centre, best.getMapLocation(), type));
+            return new Pair<>(best.getMapLocation(), getCellColour(target, best.getMapLocation(), type));
         }
     }
 
@@ -101,7 +102,7 @@ public class BuildTowerStrategy extends Strategy {
         bot = (Agent) Game.bot;
         this.target = target;
         this.typePref = typePref;
-        isFinisher = false;
+        patternToFinish = null;
     }
 
     @Override
@@ -109,6 +110,7 @@ public class BuildTowerStrategy extends Strategy {
         if (isInView()) {
             if (rc.senseRobotAtLocation(target) != null) {
                 // tower already therer
+                println("return cuz robot there");
                 return true;
             }
             if (!isBuildable()) {
@@ -116,9 +118,16 @@ public class BuildTowerStrategy extends Strategy {
                 return true;
             }
             Pair<MapLocation, Boolean> next = getNextTile();
-            if (next.first == null) {
+            if (next.first == null) { // no more building needed
+                MapLocation markLoc = target.add(getOffset(getShownPattern())); // this is the stupidest line of code ever
+                if (!rc.senseMapInfo(markLoc).getMark().equals(PaintType.EMPTY)) { // mark is still there
+                    println("set bot to finisher");
+                    patternToFinish = getShownPattern();
+                    assert rc.canRemoveMark(markLoc);
+                    rc.removeMark(markLoc);
+                }
                 // finished pattern
-                return !isFinisher;
+                return patternToFinish == null;
             }
         }
         return false;
@@ -131,6 +140,15 @@ public class BuildTowerStrategy extends Strategy {
         if (rc.isMovementReady()) {
             rc.move(bot.pathfinder.getMove(target));
         }
+
+        // im putting this up here idc anymore
+        if (patternToFinish != null) {
+            if (rc.canCompleteTowerPattern(patternToFinish, target)) {
+                bot.build(patternToFinish, target);
+            }
+            return;
+        }
+
 //        println("is in view " + isInView());
         if (!isInView()) {
             return;
@@ -154,10 +172,7 @@ public class BuildTowerStrategy extends Strategy {
         Pair<MapLocation, Boolean> todo = getNextTile();
         println(todo.first + " " + todo.second);
         if (todo.first == null) {
-            isFinisher = true;
-            if (rc.canBuildRobot(pattern, target)) {
-                bot.build(pattern, target);
-            }
+            assert false : "this shouldnt be runnning";
         } else {
             if (rc.canAttack(todo.first)) {
                 rc.attack(todo.first, todo.second);

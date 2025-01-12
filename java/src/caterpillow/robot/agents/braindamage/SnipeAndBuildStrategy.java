@@ -53,7 +53,7 @@ public class SnipeAndBuildStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
-        return primary instanceof HomeStrategy && primary.isComplete();
+        return primary instanceof BuildTowerStrategy && primary.isComplete();
     }
 
     @Override
