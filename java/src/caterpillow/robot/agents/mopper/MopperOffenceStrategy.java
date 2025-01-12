@@ -67,7 +67,7 @@ public class MopperOffenceStrategy extends Strategy {
             return;
         }
         // wait until andy's buffed pathfinder
-        rc.move(bot.pathfinder.getMove(loc));
+        bot.pathfinder.makeMove(loc);
     }
 
     @Override

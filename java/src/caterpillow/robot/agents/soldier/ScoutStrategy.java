@@ -24,7 +24,7 @@ public class ScoutStrategy extends Strategy {
     List<MapLocation> goals;
 
     Agent bot;
-    MapLocation target;
+    UnitType towerPref;
 
     HandleRuinStrategy handleRuinStrategy;
 
@@ -38,9 +38,9 @@ public class ScoutStrategy extends Strategy {
         traverse.runTick();
     }
 
-    public ScoutStrategy() {
+    public ScoutStrategy(UnitType towerPref) {
         bot = (Agent) Game.bot;
-
+        this.towerPref = towerPref;
         visitedRuins = new ArrayList<>();
         skippedRuins = new ArrayList<>();
         goals = new LinkedList<MapLocation>();
@@ -83,7 +83,8 @@ public class ScoutStrategy extends Strategy {
 
         MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null);
         if (target != null) {
-            handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation());
+            println("starting handle ruin strat");
+            handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation(), (towerPref == null ? nextTowerType() : towerPref));
             runTick();
             return;
         }

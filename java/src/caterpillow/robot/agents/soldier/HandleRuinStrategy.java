@@ -23,10 +23,10 @@ public class HandleRuinStrategy extends QueueStrategy {
         return info == null || !isFriendly(info);
     }
 
-    public HandleRuinStrategy(MapLocation target) {
+    public HandleRuinStrategy(MapLocation target, UnitType type) {
         bot = (Agent) Game.bot;
         this.target = target;
-        push(new BuildTowerStrategy(target, nextTowerType()));
+        push(new BuildTowerStrategy(target, type));
         push(new TrollRuinStrategy(target));
     }
 

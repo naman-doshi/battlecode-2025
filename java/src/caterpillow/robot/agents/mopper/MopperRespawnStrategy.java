@@ -36,7 +36,7 @@ public class MopperRespawnStrategy extends Strategy {
     public void runTick() throws GameActionException {
         if (isTowerDead()) {
             // go respawn
-            rc.move(bot.pathfinder.getMove(bot.home));
+            bot.pathfinder.makeMove(bot.home);
             if (rc.canCompleteTowerPattern(homeType, bot.home)) {
                 bot.build(homeType, bot.home);
             }

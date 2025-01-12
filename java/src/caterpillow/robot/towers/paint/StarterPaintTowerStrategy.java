@@ -18,28 +18,22 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
     List<TowerStrategy> strats;
     // in case we get rushed
-    int todo, seed;
+    int todo;
     Tower bot;
+    Random rng;
 
     public StarterPaintTowerStrategy() {
+        todo = 1;
         bot = (Tower) Game.bot;
-        seed = new Random(rc.getID()).nextInt();
-
+        rng = new Random(seed);
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
     }
 
-    private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {
-        println("spawning soldier!\n");
-        bot.build(UnitType.SOLDIER, loc);
-        pm.send(loc, new SeedPacket(seed));
-        pm.send(loc, new StrategyPacket(strat));
-        todo--;
-    }
-
     @Override
     public void runTick() throws GameActionException {
+        rc.setIndicatorString("STARTER");
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
@@ -49,16 +43,17 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
             case LATE:
             case MID:
             case EARLY:
-                if (rc.getPaint() >= 2 * UnitType.SOLDIER.paintCost && rc.getChips() >= 2 * UnitType.SOLDIER.moneyCost) {
-                    todo = 2;
+                if (rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST && time > 30) {
                     Random random = new Random(seed);
                     seed = random.nextInt();
+                    todo += 1;
                 }
                 if (todo > 0) {
                     // just spawn adjacent
                     MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
                     if (spawn != null && rc.canBuildRobot(UnitType.SOLDIER, spawn.getMapLocation())) {
-                        spawnSoldier(spawn.getMapLocation(), 0);
+                        bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(0));
+                        todo--;
                         return;
                     }
                 }

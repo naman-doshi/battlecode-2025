@@ -1,9 +1,9 @@
 package caterpillow.pathfinding;
 
 import battlecode.common.Direction;
+import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -16,6 +16,9 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     @Override
     public Direction getMove(MapLocation to) {
+        if (rc.getLocation().equals(to)) {
+            return null;
+        }
         if (target == null || !target.equals(to)) {
             target = to;
             stackSize = 0;
@@ -83,7 +86,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 else if (rc.canMove(topDir.rotateLeft())) leftTurn = true;
                 else if (rc.canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
                 else if (rc.canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
-                else leftTurn = rng.nextInt(0, 1) == 1; // change later
+                else leftTurn = trng.nextInt(0, 1) == 1; // change later
             }
             if (leftTurn) topDir = topDir.rotateLeft();
             else topDir = topDir.rotateRight();
@@ -94,5 +97,15 @@ public class BugnavPathfinder extends AbstractPathfinder {
         }
         assert rc.canMove(topDir);
         return topDir;
+    }
+
+    @Override
+    public void makeMove(MapLocation to) throws GameActionException {
+        if (rc.isMovementReady()) {
+            Direction dir = getMove(to);
+            if (dir != null) {
+                rc.move(dir);
+            }
+        }
     }
 }

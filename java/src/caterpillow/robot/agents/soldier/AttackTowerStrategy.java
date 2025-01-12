@@ -31,9 +31,7 @@ public class AttackTowerStrategy extends Strategy {
     public void runTick() throws GameActionException {
         rc.setIndicatorString("ATTACKING TOWER");
         // TODO: running from enemy (hitting those circle strafes)
-        if (rc.isMovementReady()) {
-            rc.move(bot.pathfinder.getMove(target));
-        }
+        bot.pathfinder.makeMove(target);
         if (rc.isActionReady()) {
             if (rc.canAttack(target)) {
                 rc.attack(target);

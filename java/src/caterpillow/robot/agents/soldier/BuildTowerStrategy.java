@@ -143,6 +143,9 @@ public class BuildTowerStrategy extends QueueStrategy {
     @Override
     public boolean isComplete() throws GameActionException {
         if (!super.isComplete()) return false;
+        if (!rc.canSenseLocation(target)) {
+            return false;
+        }
         if (rc.senseRobotAtLocation(target) != null) {
             return true;
         }
@@ -198,9 +201,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
 
         // go home if if its run out of things to do (which is unlikely since itll probably die first)
-        if (rc.isMovementReady()) {
-            rc.move(bot.pathfinder.getMove(target));
-        }
+        bot.pathfinder.makeMove(target);
 
         // im putting this up here idc anymore
         if (patternToFinish != null) {

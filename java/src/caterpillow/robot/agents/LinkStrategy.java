@@ -33,7 +33,7 @@ public class LinkStrategy extends Strategy {
                 rc.attack(rc.getLocation(), false);
             }
         } else {
-            rc.move(bot.pathfinder.getMove(target));
+            bot.pathfinder.makeMove(target);
             rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
         }
     }

@@ -2,7 +2,6 @@ package caterpillow.util;
 
 import battlecode.common.*;
 import caterpillow.Game;
-import caterpillow.robot.agents.soldier.BuildTowerStrategy;
 
 import java.util.*;
 
@@ -28,6 +27,8 @@ public class Util {
             Direction.SOUTH,
             Direction.WEST
     };
+
+    public final static int TOWER_COST = 1000;
 
     public static MapLocation flipHor(MapLocation loc) {
         return new MapLocation(rc.getMapWidth() - 1 - loc.x, loc.y);
@@ -367,25 +368,25 @@ public class Util {
     }
 
     public static boolean isPatternComplete(MapLocation target, UnitType type) throws GameActionException {
-        int cnt = 0;
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = -2; dy <= 2; dy++) {
                 if (dx == 0 && dy == 0) continue;
                 MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
                 if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
-                    cnt++;
+                    return false;
                 }
             }
         }
-        return cnt == 24;
+        return true;
     }
 
     public static UnitType nextTowerType() {
-        if (rng.nextBoolean()) {
-            return UnitType.LEVEL_ONE_MONEY_TOWER;
-        } else {
-            return UnitType.LEVEL_ONE_PAINT_TOWER;
-        }
+//        if (trng.nextBoolean()) {
+//            return UnitType.LEVEL_ONE_MONEY_TOWER;
+//        } else {
+//            return UnitType.LEVEL_ONE_PAINT_TOWER;
+//        }
+        return UnitType.LEVEL_ONE_MONEY_TOWER;
     }
 
     public static MapLocation project(MapLocation cur, MapLocation moveVec, double maxDist) {

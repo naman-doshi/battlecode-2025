@@ -32,7 +32,7 @@ public class WanderStrategy extends Strategy {
         if (target == null || rc.getLocation().equals(target)) {
             target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
         }
-        rc.move(bot.pathfinder.getMove(target));
+        bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);
     }
 }

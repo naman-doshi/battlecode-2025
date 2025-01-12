@@ -28,8 +28,20 @@ public class TrollRuinStrategy extends Strategy {
         return true;
     }
 
-    MapLocation getPlaceCell() throws GameActionException {
-        return getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && !c.getPaint().isEnemy()).getMapLocation();
+    public boolean hasBeenTrolled() throws GameActionException {
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                MapLocation loc = target.translate(dx, dy);
+                if (rc.canSenseLocation(loc) && rc.senseMapInfo(loc).getPaint().isAlly()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    MapInfo getPlaceCell() throws GameActionException {
+        return getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && c.getPaint().equals(PaintType.EMPTY));
     }
 
     public TrollRuinStrategy(MapLocation target) {
@@ -39,19 +51,26 @@ public class TrollRuinStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
-        return isInView() && getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && c.getPaint().isAlly()) != null;
+        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null) return true;
+        if (hasBeenTrolled()) return true;
+        if (!isInView()) return false;
+        MapInfo cell = getPlaceCell();
+        if (cell == null) return true;
+        return false;
     }
 
     @Override
     public void runTick() throws GameActionException {
         rc.setIndicatorString("TROLLING");
+        println("trolling ruin");
         if (!isInView()) {
-            rc.move(bot.pathfinder.getMove(target));
+            bot.pathfinder.makeMove(target);
         } else {
-            MapLocation cell = getPlaceCell();
-            rc.move(bot.pathfinder.getMove(cell));
-            if (rc.canAttack(cell)) {
-                bot.checkerboardAttack(cell);
+            MapInfo cell = getPlaceCell();
+            assert cell != null : "how does this happen";
+            bot.pathfinder.makeMove(cell.getMapLocation());
+            if (rc.canAttack(cell.getMapLocation())) {
+                bot.checkerboardAttack(cell.getMapLocation());
             }
         }
     }

@@ -50,11 +50,11 @@ public class HomeStrategy extends Strategy {
         if (rc.isMovementReady()) {
             if (bot.home == null) {
                 rc.setIndicatorString("RETURNING ORIGIN " + origin.toString());
-                rc.move(bot.pathfinder.getMove(origin));
+                bot.pathfinder.makeMove(origin);
                 rc.setIndicatorLine(rc.getLocation(), origin, 0, 255, 0);
             } else {
                 rc.setIndicatorString("RETURNING HOME " + bot.home.toString());
-                rc.move(bot.pathfinder.getMove(bot.home));
+                bot.pathfinder.makeMove(bot.home);
                 rc.setIndicatorLine(rc.getLocation(), bot.home, 0, 255, 0);
             }
         }

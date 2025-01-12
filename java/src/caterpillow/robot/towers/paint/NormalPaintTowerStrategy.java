@@ -4,7 +4,6 @@ import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
-import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.*;
 
 import java.util.ArrayList;
@@ -17,7 +16,8 @@ import static caterpillow.Game.*;
 public class NormalPaintTowerStrategy extends TowerStrategy {
 
     // in case we get rushed
-    int todo, seed;
+    int nxt;
+    Random rng;
     Tower bot;
 
     // we can *maybe* turn this into a special class if it gets too repetitive
@@ -26,28 +26,40 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
 
     public NormalPaintTowerStrategy() {
         bot = (Tower) Game.bot;
-        seed = new Random(rc.getID()).nextInt();
+        rng = new Random(seed);
 
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
-    }
-
-    private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {
-        bot.build(UnitType.SOLDIER, loc);
-        pm.send(loc, new SeedPacket(seed));
-        pm.send(loc, new StrategyPacket(strat));
-        todo--;
+        nxt = 0;
     }
 
     @Override
     public void runTick() throws GameActionException {
+        rc.setIndicatorString("NORMAL");
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
-        MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-        if (spawn != null && rc.canBuildRobot(UnitType.SOLDIER, spawn.getMapLocation())) {
-            spawnSoldier(spawn.getMapLocation(), rng.nextInt(0, 2));
+
+        // shit code
+        if (nxt <= 2) {
+            MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
+            if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
+                bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(2));
+                nxt = trng.nextInt(5);
+            }
+        } else if (nxt <= 3) {
+            MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
+            if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
+                bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
+                nxt = trng.nextInt(5);
+            }
+        } else if (nxt <= 4) {
+            MapInfo spawn = getSafeSpawnLoc(UnitType.MOPPER);
+            if (spawn != null && rc.getPaint() >= UnitType.MOPPER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.MOPPER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
+                bot.build(UnitType.MOPPER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
+                nxt = trng.nextInt(5);
+            }
         }
     }
 }

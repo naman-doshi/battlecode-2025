@@ -88,9 +88,7 @@ public class ReinforceTowerStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         rc.setIndicatorString("REINFORCE");
-        if (rc.isMovementReady()) {
-            rc.move(bot.pathfinder.getMove(target));
-        }
+        bot.pathfinder.makeMove(target);
 
         if (!isInView()) {
             return;

@@ -32,18 +32,7 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public boolean isTowerRespawnReady() throws GameActionException {
-        if (isEnemyPaintBlocking()) {
-            return false;
-        }
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                MapLocation loc = add(rc.getLocation(), new MapLocation(dx, dy));
-                if (!rc.senseMapInfo(loc).getPaint().isAlly() || rc.senseMapInfo(loc).getPaint().isSecondary() == getCellColour(rc.getLocation(), loc, rc.getType())) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return isPatternComplete(rc.getLocation(), rc.getType());
     }
 
     public boolean isInDanger() throws GameActionException {
@@ -52,7 +41,7 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public boolean shouldSpawnNewMopper() throws GameActionException {
-        return time - lastSpawnTime > 20 || (getNearestRobot(b -> bot.kids.contains(b.getID()) && b.getType().equals(UnitType.MOPPER)) == null);
+        return time - lastSpawnTime > 30 || (getNearestRobot(b -> bot.kids.contains(b.getID()) && b.getType().equals(UnitType.MOPPER)) == null);
     }
 
     public RespawnStrategy() {
@@ -70,8 +59,8 @@ public class RespawnStrategy extends TowerStrategy {
     @Override
     public void runTick() throws GameActionException {
         // if people are rushing with both mopper and soldier then its actually wraps
-        if (isInDanger() && isTowerRespawnReady()) {
-            if (shouldSpawnNewMopper()) {
+        if (isInDanger()) {
+            if (shouldSpawnNewMopper() && isTowerRespawnReady()) {
                 MapInfo spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
                 if (spawnLoc != null) {
                     spawnMopper(spawnLoc.getMapLocation());

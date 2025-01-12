@@ -29,9 +29,7 @@ public class MopperDefenceStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         RobotInfo target = getNearestRobot(bot -> !isFriendly(bot));
-        if (rc.isMovementReady()) {
-            rc.move(bot.pathfinder.getMove(target.getLocation()));
-        }
+        bot.pathfinder.makeMove(target.getLocation());
 
         // temporary shitty solution to dump paint in tower if u can reach it
         if (rc.canSenseLocation(bot.home)) {

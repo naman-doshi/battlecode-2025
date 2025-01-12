@@ -3,7 +3,6 @@ package caterpillow;
 import battlecode.common.*;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
-import caterpillow.robot.towers.Tower;
 import caterpillow.world.GameStage;
 
 import java.util.Random;
@@ -19,7 +18,8 @@ public class Game {
     public static boolean isStarter;
     public static GameStage gameStage;
     public static int seed;
-    public static Random rng;
+    // this is for when we actually actually want random
+    public static Random trng;
 
     public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
 
@@ -28,7 +28,7 @@ public class Game {
     // this is called *before* the robot object is instantiated
     public static void preInit() throws GameActionException {
         Game.pm = new PacketManager();
-        rng = new Random(rc.getID());
+        trng = new Random(rc.getID() ^ time);
         symmetry = -1;
         isStarter = (time <= 10);
         if (isStarter) {

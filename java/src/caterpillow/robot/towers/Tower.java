@@ -1,8 +1,10 @@
 package caterpillow.robot.towers;
 
 import battlecode.common.*;
+import caterpillow.packet.Packet;
 import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.packet.packets.OriginPacket;
+import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
@@ -24,12 +26,16 @@ public abstract class Tower extends Robot {
     }
 
     // USE THIS INSTEAD OF THE DEFAULT BUILD
-    public void build(UnitType type, MapLocation loc) throws GameActionException {
+    public int build(UnitType type, MapLocation loc, Packet... packets) throws GameActionException {
         rc.buildRobot(type, loc);
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
         println("added " + newBot.getID() + " to kids");
         pm.send(newBot.getID(), new OriginPacket(origin));
+        for (Packet packet : packets) {
+            pm.send(newBot.getID(), packet);
+        }
+        return newBot.getID();
     }
 
     public void handleAdoptionPacket(AdoptionPacket packet, int senderID) {
