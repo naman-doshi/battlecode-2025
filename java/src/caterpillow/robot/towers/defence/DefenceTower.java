@@ -10,6 +10,5 @@ public class DefenceTower extends Tower {
     public void init() {
         super.init();
         primaryStrategy = new RusherSpawnStrategy();
-        secondaryStrategy = new DefenceStrategy();
     }
 }

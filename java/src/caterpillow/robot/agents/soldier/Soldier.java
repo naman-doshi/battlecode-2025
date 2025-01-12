@@ -4,6 +4,7 @@ import battlecode.common.*;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
+import caterpillow.robot.RecursiveStrategy;
 import caterpillow.robot.agents.*;
 import caterpillow.robot.agents.braindamage.SnipeAndBuildStrategy;
 import caterpillow.robot.agents.braindamage.ShitRushStrategy;
@@ -50,7 +51,7 @@ public class Soldier extends Agent {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
             case 0:
-                primaryStrategy = new WanderStrategy();
+                primaryStrategy = new StarterStrategy();
                 break;
             case 1:
                 println("set strategy to rush");

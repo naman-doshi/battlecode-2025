@@ -1,0 +1,68 @@
+package caterpillow.robot.towers;
+
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import caterpillow.Game;
+
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
+
+/*
+
+currently, its kinda beatable since itll only spawn a mopper
+todo: spawn moppers that clean bad cells (if applicable), and spawn soldiers that can refill cells
+
+*/
+
+public class RespawnStrategy extends TowerStrategy {
+    Tower bot;
+
+    public boolean isEnemyPaintBlocking() throws GameActionException {
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                MapLocation loc = add(rc.getLocation(), new MapLocation(dx, dy));
+                if (rc.senseMapInfo(loc).getPaint().isEnemy()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isTowerRespawnReady() throws GameActionException {
+        if (isEnemyPaintBlocking()) {
+            return false;
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                MapLocation loc = add(rc.getLocation(), new MapLocation(dx, dy));
+                if (!rc.senseMapInfo(loc).getPaint().isAlly() || rc.senseMapInfo(loc).getPaint().isSecondary() == getCellColour(rc.getLocation(), loc, rc.getType())) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean isInDanger() throws GameActionException {
+        RobotInfo inc = getNearestRobot(b -> b.getType().isRobotType() && !isFriendly(b));
+        return inc != null;
+    }
+
+    public boolean hasDeployedMopper() {
+        return false;
+    }
+
+    public RespawnStrategy() {
+        bot = (Tower) Game.bot;
+    }
+
+    @Override
+    public void runTick() throws GameActionException {
+        // if people are rushing with both mopper and soldier then its actually wraps
+        if (isInDanger()) {
+
+        }
+    }
+}

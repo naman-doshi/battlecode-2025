@@ -13,6 +13,7 @@ import static caterpillow.Game.*;
 
 the person who first is unable to find a new tile to paint (cuz its finished) is the person who finishes the tower
 YOU MUST CALL ISCOMPLETE BEFORE RUNTICK ON THIS STRATEGY
+this also includes logic for randomly painting to screw over enemies
 
 */
 
@@ -61,6 +62,22 @@ public class BuildTowerStrategy extends Strategy {
         return true;
     }
 
+    MapLocation getMarkLocation() throws GameActionException {
+        for (UnitType type : poss) {
+            Direction dir = getOffset(type);
+            MapLocation loc = target.add(dir);
+            if (rc.canSenseLocation(loc)) {
+                MapInfo info = rc.senseMapInfo(loc);
+                if (info.getMark().equals(PaintType.ALLY_SECONDARY)) {
+                    return target.add(dir);
+                }
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
     UnitType getShownPattern() throws GameActionException {
         for (UnitType type : poss) {
             Direction dir = getOffset(type);
@@ -77,6 +94,36 @@ public class BuildTowerStrategy extends Strategy {
         return null;
     }
 
+    int countTodo() throws GameActionException {
+        int count = 0;
+        UnitType type = getShownPattern();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 && dy == 0) continue;
+                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
+                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    int countPlaced() throws GameActionException {
+        int count = 0;
+        UnitType type = getShownPattern();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 && dy == 0) continue;
+                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
+                if (info.getPaint().isAlly()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     Pair<MapLocation, Boolean> getNextTile() throws GameActionException {
         UnitType type = getShownPattern();
         MapInfo best = null;
@@ -84,7 +131,7 @@ public class BuildTowerStrategy extends Strategy {
             for (int dy = -2; dy <= 2; dy++) {
                 if (dx == 0 && dy == 0) continue;
                 MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
-                if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) {
+                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
                     if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > info.getMapLocation().distanceSquaredTo(rc.getLocation())) {
                         best = info;
                     }
@@ -92,7 +139,7 @@ public class BuildTowerStrategy extends Strategy {
             }
         }
         if (best == null) {
-            return new Pair<>(null, null);
+            return null;
         } else {
             return new Pair<>(best.getMapLocation(), getCellColour(target, best.getMapLocation(), type));
         }
@@ -105,8 +152,12 @@ public class BuildTowerStrategy extends Strategy {
         patternToFinish = null;
     }
 
+    // tryingf to save some bytecode
+    boolean troll;
+
     @Override
     public boolean isComplete() throws GameActionException {
+        troll = false;
         if (isInView()) {
             if (rc.senseRobotAtLocation(target) != null) {
                 // tower already therer
@@ -114,12 +165,21 @@ public class BuildTowerStrategy extends Strategy {
                 return true;
             }
             if (!isBuildable()) {
-                // cant build so give up
-                return true;
+                if (countPlaced() > 0) {
+                    // already trolled
+                    return true;
+                } else if (countTodo() > 0) {
+                    // troll them
+                    troll = true;
+                    return false;
+                } else {
+                    // rip
+                    return true;
+                }
             }
             Pair<MapLocation, Boolean> next = getNextTile();
-            if (next.first == null) { // no more building needed
-                MapLocation markLoc = target.add(getOffset(getShownPattern())); // this is the stupidest line of code ever
+            if (next == null) { // no more building needed
+                MapLocation markLoc = getMarkLocation();
                 if (!rc.senseMapInfo(markLoc).getMark().equals(PaintType.EMPTY)) { // mark is still there
                     println("set bot to finisher");
                     patternToFinish = getShownPattern();
@@ -139,6 +199,14 @@ public class BuildTowerStrategy extends Strategy {
         // go home if if its run out of things to do (which is unlikely since itll probably die first)
         if (rc.isMovementReady()) {
             rc.move(bot.pathfinder.getMove(target));
+        }
+
+        if (troll) {
+            Pair<MapLocation, Boolean> todo = getNextTile();
+            if (todo != null && rc.canAttack(todo.first)) {
+                rc.attack(todo.first, todo.second);
+            }
+            return;
         }
 
         // im putting this up here idc anymore
@@ -170,8 +238,7 @@ public class BuildTowerStrategy extends Strategy {
             return;
         }
         Pair<MapLocation, Boolean> todo = getNextTile();
-        println(todo.first + " " + todo.second);
-        if (todo.first == null) {
+        if (todo == null) {
             assert false : "this shouldnt be runnning";
         } else {
             if (rc.canAttack(todo.first)) {

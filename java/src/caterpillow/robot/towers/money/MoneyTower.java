@@ -1,9 +1,8 @@
 package caterpillow.robot.towers.money;
 
-import caterpillow.robot.towers.DefenceStrategy;
-import caterpillow.robot.towers.SpawnStrategy;
+import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.braindamage.SniperSpawnStrategy;
+import caterpillow.robot.towers.paint.StarterPaintTowerStrategy;
 
 import static caterpillow.Game.*;
 
@@ -12,10 +11,9 @@ public class MoneyTower extends Tower {
     public void init() {
         super.init();
         if (isStarter) {
-            primaryStrategy = new SniperSpawnStrategy();
+            primaryStrategy = new StarterPaintTowerStrategy();
         } else {
-            primaryStrategy = new SpawnStrategy();
+            primaryStrategy = new EmptyStrategy();
         }
-        secondaryStrategy = new DefenceStrategy();
     }
 }

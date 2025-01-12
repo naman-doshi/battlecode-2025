@@ -20,7 +20,6 @@ public abstract class Tower extends Robot {
     public int level;
     protected UnitType[] types;
     public Strategy primaryStrategy;
-    public Strategy secondaryStrategy;
 
     public ArrayList<Integer> kids;
 
@@ -55,14 +54,7 @@ public abstract class Tower extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
-        if (secondaryStrategy != null && !secondaryStrategy.isComplete()) {
-            secondaryStrategy.runTick();
-            return;
-        }
-        if (primaryStrategy.isComplete()) {
-            dead("primary strategy completed");
-            return;
-        }
+        rc.attack(null);
         primaryStrategy.runTick();
     }
 

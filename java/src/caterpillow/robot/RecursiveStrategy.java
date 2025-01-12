@@ -1,7 +1,6 @@
-package caterpillow.robot.agents;
+package caterpillow.robot;
 
 import battlecode.common.GameActionException;
-import caterpillow.robot.Strategy;
 
 import java.util.function.Supplier;
 

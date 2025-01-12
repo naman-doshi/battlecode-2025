@@ -6,19 +6,17 @@ import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-public class DefenceStrategy extends Strategy {
+public class DefenceStrategy extends TowerStrategy {
 
     private boolean isInDanger() throws GameActionException {
         return getNearestRobot(bot -> !isFriendly(bot)) != null;
     }
 
     @Override
-    public boolean isComplete() throws GameActionException {
-        return !isInDanger();
-    }
-
-    @Override
     public void runTick() throws GameActionException {
+        if (!isInDanger()) {
+            return;
+        }
         RobotInfo nearest = getNearestRobot(bot -> !isFriendly(bot));
         assert nearest != null;
         int enemyCount = countNearbyBots(bot -> !isFriendly(bot));

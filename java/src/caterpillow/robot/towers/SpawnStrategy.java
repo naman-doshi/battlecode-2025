@@ -8,7 +8,7 @@ import caterpillow.world.GameStage;
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-public class SpawnStrategy extends Strategy {
+public class SpawnStrategy extends TowerStrategy {
 
     // in case we get rushed
     Tower bot;
@@ -16,11 +16,6 @@ public class SpawnStrategy extends Strategy {
 
     public SpawnStrategy() {
         bot = (Tower) Game.bot;
-    }
-
-    @Override
-    public boolean isComplete() {
-        return false;
     }
 
     @Override

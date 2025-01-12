@@ -2,67 +2,87 @@ package caterpillow.robot.agents.mopper;
 
 import java.util.List;
 
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.RobotInfo;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import battlecode.common.MapLocation;
 import caterpillow.Game;
-import caterpillow.Game.*;
+import caterpillow.util.GamePredicate;
+
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
 
 public class Mopper extends Agent {
 
-    List<MapLocation> enemyLocs = new java.util.LinkedList<MapLocation>();
-    MapLocation spawnLoc = null;
+    Mopper bot;
+    List<MapLocation> enemyLocs;
+    MapLocation spawnLoc;
 
-    public MapLocation reflectHor(MapLocation loc) {
-        return new MapLocation(Game.rc.getMapWidth() - 1 - loc.x, loc.y);
+    public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
+        return getBestRobot((a, b) -> {
+            int a1 = a.getType().ordinal();
+            int b1 = b.getType().ordinal();
+            int h1 = a.getPaintAmount();
+            int h2 = b.getPaintAmount();
+            if (a1 == b1) {
+                if (h1 > h2) return b;
+                else return a;
+            } else {
+                if (a1 < b1) return a;
+                else return b;
+            }
+        }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
     }
 
-    public MapLocation reflectVert(MapLocation loc) {
-        return new MapLocation(loc.x, Game.rc.getMapHeight() - 1 - loc.y);
+    public RobotInfo getBestTarget() throws GameActionException {
+        return getBestTarget(e -> true);
     }
 
-    public MapLocation reflectRot(MapLocation loc) {
-        return new MapLocation(Game.rc.getMapWidth() - 1 - loc.x, Game.rc.getMapHeight() - 1 - loc.y);
-    }
+    public void doBestAttack() throws GameActionException {
+        if (!rc.isActionReady()) {
+            return;
+        }
+        // try mop sweep
+        for (Direction dir : orthDirections) {
+            if (!rc.canMopSwing(dir)) {
+                continue;
+            }
+            // stupid code
+            MapLocation mainLoc = rc.getLocation().add(dir);
+            int cnt = 0;
+            for (Direction dir2 : directions) {
+                MapLocation loc = rc.getLocation().add(dir2);
+                if (mainLoc.distanceSquaredTo(loc) <= 1) {
+                    cnt++;
+                }
+            }
+            if (cnt == 3) {
+                // just do the mop sweep
+                // if there are >= 5 enemies around us its a lost cause anyways
+                rc.mopSwing(dir);
+                return;
+            }
+        }
 
-    public void populateEnemyLocs() throws GameActionException {
-        int dist_hormiddle = Math.abs(spawnLoc.x - Game.rc.getMapWidth() / 2);
-        int dist_vertmiddle = Math.abs(spawnLoc.y - Game.rc.getMapHeight() / 2);
-        if (dist_hormiddle > dist_vertmiddle) {
-            enemyLocs.addLast(reflectHor(spawnLoc));
-            // second is the rotation one.
-            enemyLocs.addLast(reflectRot(spawnLoc));
-            // third is the vert ref one
-            enemyLocs.addLast(reflectVert(spawnLoc));
-        } else if (dist_hormiddle < dist_vertmiddle) {
-            // first is vert ref
-            enemyLocs.addLast(reflectVert(spawnLoc));
-            // second is the rotation one.
-            enemyLocs.addLast(reflectRot(spawnLoc));
-            // third is the hor ref one
-            enemyLocs.addLast(reflectHor(spawnLoc));
-        } else {
-            // first is hor ref
-            enemyLocs.addLast(reflectHor(spawnLoc));
-            // second is vert ref
-            enemyLocs.addLast(reflectVert(spawnLoc));
-            // third is the rotation one
-            enemyLocs.addLast(reflectRot(spawnLoc));
+        // normal attack
+        RobotInfo target = getBestTarget(e -> rc.canAttack(e.getLocation()));
+        if (target != null) {
+            rc.attack(target.getLocation());
         }
     }
-    
+
     @Override
     public void init() throws GameActionException {
         super.init();
 
         pathfinder = new BugnavPathfinder();
         primaryStrategy = new EmptyStrategy();
-        Mopper mop = (Mopper) Game.bot;
-        spawnLoc = mop.home;
-
+        bot = (Mopper) Game.bot;
+        enemyLocs = guessEnemyLocs(bot.home);
     }
 
     @Override

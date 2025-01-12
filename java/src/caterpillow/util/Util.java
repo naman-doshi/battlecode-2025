@@ -1,6 +1,7 @@
 package caterpillow.util;
 
 import battlecode.common.*;
+import caterpillow.Game;
 
 import java.util.*;
 
@@ -18,6 +19,13 @@ public class Util {
             Direction.SOUTHWEST,
             Direction.WEST,
             Direction.NORTHWEST,
+    };
+
+    public static final Direction[] orthDirections = {
+            Direction.NORTH,
+            Direction.EAST,
+            Direction.SOUTH,
+            Direction.WEST
     };
 
     public static MapLocation flipHor(MapLocation loc) {
@@ -57,6 +65,12 @@ public class Util {
         rc.disintegrate();
     }
 
+    public static boolean isCellInTowerBounds(MapLocation tower, MapLocation loc) {
+        int d1 = abs(tower.x - loc.x);
+        int d2 = abs(tower.y - loc.y);
+        return d1 <= 2 && d2 <= 2;
+    }
+
     public static Pair<Double, Double> relativeDistsToCentre(MapLocation loc) {
         double relX = (double) loc.x / (double) rc.getMapWidth();
         double relY = (double) loc.y / (double) rc.getMapHeight();
@@ -75,6 +89,54 @@ public class Util {
             }
         }
         return best;
+    }
+
+    public static List<MapLocation> guessEnemyLocs(MapLocation src) throws GameActionException {
+        List<MapLocation> enemyLocs = new LinkedList<>();
+        int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
+        int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
+        if (dist_hormiddle > dist_vertmiddle) {
+            enemyLocs.addLast(flipVer(src));
+            // second is the rotation one.
+            enemyLocs.addLast(rot180(src));
+            // third is the vert ref one
+            enemyLocs.addLast(flipVer(src));
+        } else if (dist_hormiddle < dist_vertmiddle) {
+            // first is vert ref
+            enemyLocs.addLast(flipVer(src));
+            // second is the rotation one.
+            enemyLocs.addLast(rot180(src));
+            // third is the hor ref one
+            enemyLocs.addLast(flipVer(src));
+        } else {
+            // first is hor ref
+            enemyLocs.addLast(flipVer(src));
+            // second is vert ref
+            enemyLocs.addLast(flipVer(src));
+            // third is the rotation one
+            enemyLocs.addLast(rot180(src));
+        }
+        return enemyLocs;
+    }
+
+    public static List<MapLocation> guessSpawnLocs() throws GameActionException {
+        return guessEnemyLocs(origin);
+    }
+
+    public static UnitType downgrade(UnitType type) {
+        if (type.isRobotType()) {
+            assert false : "not a tower";
+            return type;
+        }
+        return switch (type) {
+            case LEVEL_ONE_PAINT_TOWER, LEVEL_TWO_PAINT_TOWER, LEVEL_THREE_PAINT_TOWER ->
+                    UnitType.LEVEL_ONE_PAINT_TOWER;
+            case LEVEL_ONE_MONEY_TOWER, LEVEL_TWO_MONEY_TOWER, LEVEL_THREE_MONEY_TOWER ->
+                    UnitType.LEVEL_ONE_MONEY_TOWER;
+            case LEVEL_ONE_DEFENSE_TOWER, LEVEL_TWO_DEFENSE_TOWER, LEVEL_THREE_DEFENSE_TOWER ->
+                    UnitType.LEVEL_ONE_DEFENSE_TOWER;
+            default -> null;
+        };
     }
 
     public static MapInfo getBestCell(GameBinaryOperator<MapInfo> comp, GamePredicate<MapInfo> pred) throws GameActionException {
@@ -128,6 +190,48 @@ public class Util {
             }
         }
         return best;
+    }
+
+    public static int paintPriority(PaintType type) {
+        if (type.isAlly()) return 2;
+        if (type.equals(PaintType.EMPTY)) return 1;
+        return 0;
+    }
+
+    public static MapInfo getSpawnLoc(UnitType type) throws GameActionException {
+        return getBestCell((MapInfo c1, MapInfo c2) -> {
+            int p1 = paintPriority(c1.getPaint());
+            int p2 = paintPriority(c2.getPaint());
+            if (p1 != p2) {
+                if (p1 > p2) return c1;
+                else return c2;
+            }
+            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                return c1;
+            } else {
+                return c2;
+            }
+        }, c -> {
+            return rc.canBuildRobot(type, c.getMapLocation());
+        });
+    }
+
+    public static MapInfo getSafeSpawnLoc(UnitType type) throws GameActionException {
+        return getBestCell((MapInfo c1, MapInfo c2) -> {
+            int p1 = paintPriority(c1.getPaint());
+            int p2 = paintPriority(c2.getPaint());
+            if (p1 != p2) {
+                if (p1 > p2) return c1;
+                else return c2;
+            }
+            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                return c1;
+            } else {
+                return c2;
+            }
+        }, c -> {
+            return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy();
+        });
     }
 
     public static void println(Object obj) {

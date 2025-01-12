@@ -16,9 +16,9 @@ import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
 
 public class PacketManager {
-    public final int TYPE_SIZE = 4;
-    public final int PAYLOAD_SIZE = 32 - TYPE_SIZE;
-    public final int MAX_PAYLOAD = 1 << PAYLOAD_SIZE;
+    public static final int TYPE_SIZE = 4;
+    public static final int PAYLOAD_SIZE = 32 - TYPE_SIZE;
+    public static final int MAX_PAYLOAD = 1 << PAYLOAD_SIZE;
     int prev_read = 0;
 
     // no priorities, can do later if needed
@@ -46,7 +46,9 @@ public class PacketManager {
                 bot.handleSeedPacket(seedPacket, sender);
                 break;
             case 3:
-                StrategyPacket strategyPacket = new StrategyPacket(payload);
+                int id = payload >>> StrategyPacket.STRATEGY_DATA_SIZE;
+                int data = payload & (-1 >>> StrategyPacket.STRATEGY_ID_SIZE);
+                StrategyPacket strategyPacket = new StrategyPacket(id, data);
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
@@ -93,7 +95,7 @@ public class PacketManager {
             payload = seedPacket.seed;
         } else if (packet instanceof StrategyPacket strategyPacket) {
             type = 3;
-            payload = strategyPacket.strategyID;
+            payload = strategyPacket.strategyData + (strategyPacket.strategyID << StrategyPacket.STRATEGY_DATA_SIZE);
         } else {
             System.out.println("wtf is this packet");
             return;
