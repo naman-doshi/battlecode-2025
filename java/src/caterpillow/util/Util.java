@@ -216,6 +216,7 @@ public class Util {
     public static int missingPaint(RobotInfo b) {
         return b.getType().paintCapacity - b.getPaintAmount();
     }
+    public static int missingPaint() { return rc.getType().paintCapacity - rc.getPaint(); }
 
     public static Direction getDiff(MapLocation src, MapLocation dest) throws GameActionException {
         int dx = dest.x - src.x;
@@ -226,6 +227,25 @@ public class Util {
             }
         }
         return null;
+    }
+
+    public static boolean isInAttackRange(MapLocation loc) {
+        return loc.distanceSquaredTo(rc.getLocation()) < rc.getType().actionRadiusSquared;
+    }
+
+    public static boolean isEnemyAgent(RobotInfo info) {
+        return info.getType().isRobotType() && !isFriendly(info);
+    }
+
+    public static boolean isVisiblyWithinRuin(MapLocation loc) {
+        for (MapInfo ruin : rc.senseNearbyMapInfos()) {
+            if (ruin.hasRuin()) {
+                if (isCellInTowerBounds(ruin.getMapLocation(), loc)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public static int paintPriority(PaintType type) {

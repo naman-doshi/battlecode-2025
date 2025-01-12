@@ -96,7 +96,7 @@ public class Mopper extends Agent {
                 System.out.println("set strategy to offence");
                 break;
             case 2:
-                // TODO: assign a primary strategy
+                primaryStrategy = new MopperOffenceStrategy();
                 secondaryStrategy = new MopperRespawnStrategy();
                 break;
         }
