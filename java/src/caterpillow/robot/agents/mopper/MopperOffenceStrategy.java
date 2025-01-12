@@ -10,6 +10,7 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
+import static caterpillow.util.Util.guessEnemyLocs;
 
 public class MopperOffenceStrategy extends Strategy {
 
@@ -18,9 +19,9 @@ public class MopperOffenceStrategy extends Strategy {
     public MapLocation enemy;
     public boolean enemyFound = false;
 
-    public MopperOffenceStrategy(List<MapLocation> enemyLocs) {
+    public MopperOffenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
-        this.enemyLocs = enemyLocs;
+        this.enemyLocs = guessEnemyLocs(bot.home);
         this.enemy = enemyLocs.get(0);
     }
 

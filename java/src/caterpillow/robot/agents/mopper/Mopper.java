@@ -4,17 +4,18 @@ import java.util.List;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import caterpillow.Game;
+import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
-import battlecode.common.MapLocation;
-import caterpillow.Game;
 import caterpillow.util.GamePredicate;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import static caterpillow.util.Util.getBestRobot;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.orthDirections;
 
 public class Mopper extends Agent {
 
@@ -82,7 +83,6 @@ public class Mopper extends Agent {
         pathfinder = new BugnavPathfinder();
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
-        enemyLocs = guessEnemyLocs(bot.home);
     }
 
     @Override
