@@ -31,9 +31,23 @@ public abstract class Agent extends Robot {
     @Override
     public void init() throws GameActionException {
         // set home
-        RobotInfo parent = getNearestRobot(info -> info.getType().isTowerType() && info.getTeam().isPlayer());
-        assert parent != null;
-        setParent(parent);
+        RobotInfo parent = getNearestRobot(info -> info.getType().isTowerType() && isFriendly(info));
+        if (parent != null) {
+            setParent(parent);
+        } else {
+            // rip parent died
+            // tiny edge case where your spawning tower dies at the same time you spawn
+            MapInfo ruin = getNearestCell(c -> c.hasRuin());
+            UnitType type = nextTowerType();
+            if (rc.canCompleteTowerPattern(type, ruin.getMapLocation())) {
+                rc.completeTowerPattern(type, ruin.getMapLocation());
+                setParent(rc.senseRobotAtLocation(ruin.getMapLocation()));
+            } else {
+                // there is this stupid edge case where you get spawned, and then the tower dies before it can send over a message
+                origin = ruin.getMapLocation();
+                home = ruin.getMapLocation();
+            }
+        }
     }
 
     @Override

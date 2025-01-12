@@ -8,9 +8,9 @@ import java.util.Queue;
 
 public class QueueStrategy extends Strategy {
 
-    Queue<Strategy> todo;
+    public Queue<Strategy> todo;
 
-    void push(Strategy strat) {
+    public void push(Strategy strat) {
         todo.add(strat);
     }
 

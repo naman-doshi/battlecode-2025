@@ -70,7 +70,7 @@ public class RespawnStrategy extends TowerStrategy {
     @Override
     public void runTick() throws GameActionException {
         // if people are rushing with both mopper and soldier then its actually wraps
-        if (isInDanger()) {
+        if (isInDanger() && isTowerRespawnReady()) {
             if (shouldSpawnNewMopper()) {
                 MapInfo spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
                 if (spawnLoc != null) {

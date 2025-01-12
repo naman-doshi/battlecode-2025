@@ -31,12 +31,14 @@ public class Game {
         rng = new Random(rc.getID());
         symmetry = -1;
         isStarter = (time <= 10);
-        if (rc.getType().isTowerType()) {
-            origin = rc.getLocation();
-        } else {
-            RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
-            assert nearest != null;
-            origin = nearest.getLocation();
+        if (isStarter) {
+            if (rc.getType().isTowerType()) {
+                origin = rc.getLocation();
+            } else {
+                RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
+                assert nearest != null;
+                origin = nearest.getLocation();
+            }
         }
         midTime = 200 + (rc.getMapWidth() * rc.getMapHeight()) / 6; // random ass formula
         lateTime = midTime + (rc.getMapWidth() * rc.getMapHeight()) / 6;

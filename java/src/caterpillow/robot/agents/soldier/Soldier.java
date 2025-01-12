@@ -50,8 +50,7 @@ public class Soldier extends Agent {
                 primaryStrategy = new StarterStrategy();
                 break;
             case 1:
-                println("set strategy to rush");
-                primaryStrategy = new RecursiveStrategy(RushStrategy::new);
+                primaryStrategy = new SRPStrategy();
                 break;
             case 2:
                 primaryStrategy = new ShitRushStrategy();
@@ -61,9 +60,6 @@ public class Soldier extends Agent {
                 break;
             case 4:
                 primaryStrategy = new SnipeAndBuildStrategy();
-                break;
-            case 5:
-                primaryStrategy = new SRPStrategy();
                 break;
         }
     }

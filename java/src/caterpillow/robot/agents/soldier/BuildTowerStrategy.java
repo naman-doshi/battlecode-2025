@@ -4,6 +4,8 @@ import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.RemoveMarkerStrategy;
+import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.util.Pair;
 
 import static caterpillow.util.Util.*;
@@ -11,17 +13,21 @@ import static caterpillow.Game.*;
 
 /*
 
-the person who first is unable to find a new tile to paint (cuz its finished) is the person who finishes the tower
 YOU MUST CALL ISCOMPLETE BEFORE RUNTICK ON THIS STRATEGY
-this also includes logic for randomly painting to screw over enemies
+
+bro this is so cooked, idek anymore
+ive like bandage fixed at least 10 things
+
+ceebs removing marks, its the tower's job to do that now
 
 */
 
-public class BuildTowerStrategy extends Strategy {
+public class BuildTowerStrategy extends QueueStrategy {
 
     Agent bot;
     MapLocation target;
     UnitType typePref;
+    UnitType readType;
     UnitType patternToFinish;
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
@@ -29,7 +35,7 @@ public class BuildTowerStrategy extends Strategy {
     Direction getOffset(UnitType type) {
         switch (type) {
             case LEVEL_ONE_DEFENSE_TOWER:
-                return Direction.NORTH;
+                return Direction.WEST;
             case LEVEL_ONE_PAINT_TOWER:
                 return Direction.EAST;
             case LEVEL_ONE_MONEY_TOWER:
@@ -50,7 +56,7 @@ public class BuildTowerStrategy extends Strategy {
         return true;
     }
 
-    boolean isBuildable() throws GameActionException {
+    public static boolean isBuildable(MapLocation target) throws GameActionException {
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = -2; dy <= 2; dy++) {
                 MapLocation loc = new MapLocation(target.x + dx, target.y + dy);
@@ -85,43 +91,13 @@ public class BuildTowerStrategy extends Strategy {
             if (rc.canSenseLocation(loc)) {
                 MapInfo info = rc.senseMapInfo(loc);
                 if (info.getMark().equals(PaintType.ALLY_SECONDARY)) {
-                    return type;
+                    return readType = type;
                 }
             } else {
                 return null;
             }
         }
         return null;
-    }
-
-    int countTodo() throws GameActionException {
-        int count = 0;
-        UnitType type = getShownPattern();
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx == 0 && dy == 0) continue;
-                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
-                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    int countPlaced() throws GameActionException {
-        int count = 0;
-        UnitType type = getShownPattern();
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx == 0 && dy == 0) continue;
-                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
-                if (info.getPaint().isAlly()) {
-                    count++;
-                }
-            }
-        }
-        return count;
     }
 
     Pair<MapLocation, Boolean> getNextTile() throws GameActionException {
@@ -145,102 +121,109 @@ public class BuildTowerStrategy extends Strategy {
         }
     }
 
+
+//    public boolean isAlreadyBuilt() throws GameActionException {
+//        for (UnitType type : poss) {
+//            if (isPatternComplete(target, type)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
     public BuildTowerStrategy(MapLocation target, UnitType typePref) {
+        super();
         bot = (Agent) Game.bot;
         this.target = target;
         this.typePref = typePref;
+        readType = null;
         patternToFinish = null;
     }
 
-    // tryingf to save some bytecode
-    boolean troll;
-
     @Override
     public boolean isComplete() throws GameActionException {
-        troll = false;
-        if (isInView()) {
-            if (rc.senseRobotAtLocation(target) != null) {
-                // tower already therer
-                println("return cuz robot there");
+        if (!super.isComplete()) return false;
+        if (rc.senseRobotAtLocation(target) != null) {
+            return true;
+        }
+        if (patternToFinish != null) {
+            return false;
+        }
+        if (!isInView()) {
+            return false;
+        }
+        if (isTowerBeingBuilt(target)) {
+            return true;
+        }
+        if (!isBuildable(target)) {
+            return true;
+        }
+        if (getShownPattern() != null) {
+            // there is a marker
+            Pair<MapLocation, Boolean> next = getNextTile();
+            if (next == null) {
+                // already completed
+                // try to claim completion privileges
+                MapLocation markLoc = target.add(Direction.NORTH);
+                if (rc.canMark(markLoc)) {
+                    rc.mark(markLoc, true);
+                    patternToFinish = getShownPattern();
+                }
+                return false;
+            } else {
+                // keep building
+                return false;
+            }
+        } else {
+            // there is no marker
+            if (readType != null) {
                 return true;
             }
-            if (!isBuildable()) {
-                if (countPlaced() > 0) {
-                    // already trolled
-                    return true;
-                } else if (countTodo() > 0) {
-                    // troll them
-                    troll = true;
-                    return false;
-                } else {
-                    // rip
-                    return true;
-                }
+
+            // set the pattern
+            MapLocation markLoc = target.add(getOffset(typePref));
+            if (rc.canMark(markLoc)) {
+                rc.mark(markLoc, true);
             }
-            Pair<MapLocation, Boolean> next = getNextTile();
-            if (next == null) { // no more building needed
-                MapLocation markLoc = getMarkLocation();
-                if (!rc.senseMapInfo(markLoc).getMark().equals(PaintType.EMPTY)) { // mark is still there
-                    println("set bot to finisher");
-                    patternToFinish = getShownPattern();
-                    assert rc.canRemoveMark(markLoc);
-                    rc.removeMark(markLoc);
-                }
-                // finished pattern
-                return patternToFinish == null;
-            }
+            return false;
         }
-        return false;
     }
 
     @Override
     public void runTick() throws GameActionException {
         rc.setIndicatorString("BUILDER");
+        if (!super.isComplete()) {
+            super.runTick();
+            return;
+        }
+
         // go home if if its run out of things to do (which is unlikely since itll probably die first)
         if (rc.isMovementReady()) {
             rc.move(bot.pathfinder.getMove(target));
-        }
-
-        if (troll) {
-            Pair<MapLocation, Boolean> todo = getNextTile();
-            if (todo != null && rc.canAttack(todo.first)) {
-                rc.attack(todo.first, todo.second);
-            }
-            return;
         }
 
         // im putting this up here idc anymore
         if (patternToFinish != null) {
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
                 bot.build(patternToFinish, target);
+                push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
+                runTick();
             }
             return;
         }
 
-//        println("is in view " + isInView());
         if (!isInView()) {
             return;
         }
-        if (getShownPattern() == null) {
-//            println("shown pattern is null");
-            // set the pattern
-            MapLocation markLoc = target.add(getOffset(typePref));
-//            println(markLoc);
-//            println("dist " + markLoc.distanceSquaredTo(rc.getLocation()));
-            if (rc.canMark(markLoc)) {
-//                println("mark at " + markLoc);
-                rc.mark(markLoc, true);
-            }
-        }
+
         UnitType pattern = getShownPattern();
-        println(pattern);
         if (pattern == null) {
             return;
         }
+
         Pair<MapLocation, Boolean> todo = getNextTile();
-        if (todo == null) {
-            assert false : "this shouldnt be runnning";
-        } else {
+        if (todo != null) {
             if (rc.canAttack(todo.first)) {
                 rc.attack(todo.first, todo.second);
             }

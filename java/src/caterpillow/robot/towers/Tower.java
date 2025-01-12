@@ -1,9 +1,6 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.packet.packets.OriginPacket;
 import caterpillow.packet.packets.StrategyPacket;
@@ -42,7 +39,7 @@ public abstract class Tower extends Robot {
     }
 
     @Override
-    public void init() {
+    public void init() throws GameActionException {
         level = 0;
         kids = new ArrayList<>();
     }

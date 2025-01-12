@@ -15,8 +15,6 @@ this is the strategy for starter soldiers
         however, the second strat *should* complete the first task as a side effect so its ok
     3. they need to then go scouting
 
-ima leave the rush strategy as the primary
-
 this class looks stupid since its basically has the same structure as the soldier's default pair of primary and secondary
 but its like against the philosophy of what those two are meant to represent,
 and reinforcing the starting tower is more of a part of the starting strategy than a sidequest ykwim
@@ -31,7 +29,7 @@ public class StarterStrategy extends QueueStrategy {
 
     public StarterStrategy() {
         bot = (Agent) Game.bot;
-        mainStrat = new SnipeAndBuildStrategy();
+        mainStrat = new ScoutStrategy();
         homework = new ReinforceTowerStrategy(bot.home);
     }
 

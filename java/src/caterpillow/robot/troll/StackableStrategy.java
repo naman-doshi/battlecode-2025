@@ -18,7 +18,7 @@ public abstract class StackableStrategy extends Strategy {
     }
 
     @Override
-    public boolean isComplete() throws GameActionException {
+    public final boolean isComplete() throws GameActionException {
         while (!stack.isEmpty() && stack.peek().isComplete()) {
             stack.pop();
         }
@@ -31,7 +31,7 @@ public abstract class StackableStrategy extends Strategy {
     public abstract boolean isBaseComplete();
 
     @Override
-    public void runTick() throws GameActionException {
+    public final void runTick() throws GameActionException {
         if (!stack.isEmpty()) {
             stack.peek().runTick();
         } else {

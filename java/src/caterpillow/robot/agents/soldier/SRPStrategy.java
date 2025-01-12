@@ -2,16 +2,16 @@ package caterpillow.robot.agents.soldier;
 
 import java.util.List;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
+import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.checkerboardPaint;
 import static caterpillow.util.Util.guessEnemyLocs;
+
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
 
 public class SRPStrategy extends Strategy {
 
@@ -20,7 +20,6 @@ public class SRPStrategy extends Strategy {
     // enemyLocs is more like "POI locs"
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
-    public List<GameSupplier<MapInfo>> suppliers;
 
     public SRPStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
@@ -35,42 +34,35 @@ public class SRPStrategy extends Strategy {
         return false;
     }
 
+    public void safeMove(MapLocation loc) throws GameActionException {
+        if (rc.getLocation().isAdjacentTo(loc) && rc.senseMapInfo(loc).getPaint().isEnemy()) {
+            return;
+        }
+        // wait until andy's buffed pathfinder
+        rc.move(bot.pathfinder.getMove(loc));
+    }
+
     @Override
     public void runTick() throws GameActionException {
-
-
+        rc.setIndicatorString("PAINTING SRPF");
         // TODO: better scouting system!!!
         if (rc.canSenseLocation(enemy)) {
             // if we can see the enemy, just go to the next enemy loc. it's kinda cyclic for now
             enemyLocs.addLast(enemy);
             enemyLocs.removeFirst();
-            enemy = enemyLocs.get(0);
+            enemy = enemyLocs.getFirst();
 
         }
 
-        MapInfo[] cells = rc.senseNearbyMapInfos();
-        for (MapInfo cell : cells) {
-            if (cell.getPaint() != checkerboardPaint(cell.getMapLocation()) && !cell.getPaint().isEnemy() && rc.canAttack(cell.getMapLocation()) && cell.isPassable()) {
-                //System.out.println("attacking cell " + cell.getMapLocation() + " with paint " + cell.getPaint() + " and checkerboard paint " + checkerboardPaint(cell.getMapLocation()));
-                bot.checkerboardAttack(cell.getMapLocation());
-                return;
+        MapInfo target = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && c.isPassable());
+        if (target != null) {
+            if (rc.canAttack(target.getMapLocation())) {
+                bot.checkerboardAttack(target.getMapLocation());
+            } else {
+                safeMove(target.getMapLocation());
             }
+        } else {
+            safeMove(enemy);
         }
-
-        for (MapInfo cell : cells) {
-            if (cell.getPaint() != checkerboardPaint(cell.getMapLocation()) && !cell.getPaint().isEnemy() && cell.isPassable()) {
-                Direction dir = bot.pathfinder.getMove(cell.getMapLocation());
-                if (dir != null && rc.canMove(dir) && !rc.senseMapInfo(rc.getLocation().add(dir)).getPaint().isEnemy()) {
-                    rc.move(dir);
-                    return;
-                }
-            }
-        }
-
-        Direction dir = bot.pathfinder.getMove(enemy);
-        if (dir != null && rc.canMove(dir) && !rc.senseMapInfo(rc.getLocation().add(dir)).getPaint().isEnemy()) {
-            rc.move(dir);
-        }
-        
     }
 }

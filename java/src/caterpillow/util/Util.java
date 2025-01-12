@@ -366,14 +366,40 @@ public class Util {
         return false;
     }
 
-    public static MapLocation project(MapLocation cur, MapLocation moveVec) {
+    public static boolean isPatternComplete(MapLocation target, UnitType type) throws GameActionException {
+        int cnt = 0;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 && dy == 0) continue;
+                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
+                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
+                    cnt++;
+                }
+            }
+        }
+        return cnt == 24;
+    }
+
+    public static UnitType nextTowerType() {
+        if (rng.nextBoolean()) {
+            return UnitType.LEVEL_ONE_MONEY_TOWER;
+        } else {
+            return UnitType.LEVEL_ONE_PAINT_TOWER;
+        }
+    }
+
+    public static MapLocation project(MapLocation cur, MapLocation moveVec, double maxDist) {
         double dx = moveVec.x;
         double dy = moveVec.y;
+
+        double magnitude = Math.sqrt(dx * dx + dy * dy);
+        dx /= magnitude;
+        dy /= magnitude;
 
         int mapWidth = rc.getMapWidth();
         int mapHeight = rc.getMapHeight();
 
-        double tMin = Double.MAX_VALUE;
+        double tMin = maxDist;
 
         if (dx < 0) {
             double t = -cur.x / dx;
@@ -402,6 +428,16 @@ public class Util {
         y = Math.max(0, Math.min(mapHeight - 1, y));
 
         return new MapLocation(x, y);
+    }
+
+    public static MapLocation project(MapLocation cur, MapLocation moveVec) {
+        return project(cur, moveVec, Double.MAX_VALUE);
+    }
+
+
+    public static boolean isTowerBeingBuilt(MapLocation target) throws GameActionException {
+        MapInfo info = rc.senseMapInfo(target.add(Direction.NORTH));
+        return !info.getMark().equals(PaintType.EMPTY);
     }
 
     public static MapLocation getOpposite(MapLocation cur) {
