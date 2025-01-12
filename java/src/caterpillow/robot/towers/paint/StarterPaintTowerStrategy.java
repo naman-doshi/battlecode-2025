@@ -28,7 +28,6 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
-        strats.add(new RefillStrategy());
     }
 
     private void spawnSoldier(MapLocation loc, int strat) throws GameActionException {

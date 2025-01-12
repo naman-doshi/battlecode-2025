@@ -34,8 +34,6 @@ public class MopperOffenceStrategy extends Strategy {
     public void runTick() throws GameActionException {
 
         // just checking and updating enemy locs:
-
-
         RobotInfo enemyThere = rc.senseRobotAtLocation(enemy);
         
         // if enemy hasn't been found, and we can sense it but it isn't there, update the enemy loc to the next one
