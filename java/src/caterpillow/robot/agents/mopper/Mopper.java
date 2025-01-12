@@ -10,7 +10,6 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
-import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.getBestRobot;
@@ -81,7 +80,7 @@ public class Mopper extends Agent {
         super.init();
 
         pathfinder = new BugnavPathfinder();
-        primaryStrategy = new EmptyStrategy();
+        primaryStrategy = new MopperOffenceStrategy();
         bot = (Mopper) Game.bot;
     }
 

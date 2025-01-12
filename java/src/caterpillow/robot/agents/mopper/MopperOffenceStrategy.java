@@ -15,6 +15,8 @@ import static caterpillow.util.Util.guessEnemyLocs;
 public class MopperOffenceStrategy extends Strategy {
 
     public Mopper bot;
+
+    // enemyLocs is more like "POI locs"
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
     public boolean enemyFound = false;
@@ -23,6 +25,7 @@ public class MopperOffenceStrategy extends Strategy {
         bot = (Mopper) Game.bot;
         this.enemyLocs = guessEnemyLocs(bot.home);
         this.enemy = enemyLocs.get(0);
+        enemyLocs.addLast(bot.home);
     }
 
     @Override
@@ -35,20 +38,17 @@ public class MopperOffenceStrategy extends Strategy {
 
         // just checking and updating enemy locs:
 
-
-        RobotInfo enemyThere = rc.senseRobotAtLocation(enemy);
-        
-        // if enemy hasn't been found, and we can sense it but it isn't there, update the enemy loc to the next one
-        if (!enemyFound && (enemyThere == null || enemyThere != null && enemyThere.getType().isRobotType())) {
+        if (rc.canSenseLocation(enemy)) {
+            
+            // if we can see the enemy, just go to the next enemy loc. it's kinda cyclic for now
+            enemyLocs.addLast(enemy);
             enemyLocs.removeFirst();
-            enemy = enemyLocs.getFirst();
+            enemy = enemyLocs.get(0);
+
         }
 
-        // if it hasn't been found and we can sense it and it is there, set enemyFound to true
-        if (!enemyFound && enemyThere != null && enemyThere.getType().isTowerType()) {
-            enemyFound = true;
-        }
-
+        //System.out.println("I'm at " + rc.getLocation() + " and I'm going to attack " + enemy);
+        
         
         // first: attack any enemy paint in reach
 
@@ -97,7 +97,7 @@ public class MopperOffenceStrategy extends Strategy {
             }
             if (enemyPaintLoc != null) {
                 Direction dir = bot.pathfinder.getMove(enemyPaintLoc);
-                if (rc.canMove(dir)) {
+                if (rc.canMove(dir) && !rc.senseMapInfo(rc.getLocation().add(dir)).getPaint().isEnemy()) {
                     rc.move(dir);
                 }
             }
@@ -105,8 +105,7 @@ public class MopperOffenceStrategy extends Strategy {
 
             // walk towards enemy location
             Direction dir = bot.pathfinder.getMove(enemy);
-
-            if (rc.canMove(dir)) {
+            if (rc.canMove(dir) && !rc.senseMapInfo(rc.getLocation().add(dir)).getPaint().isEnemy()) {
                 rc.move(dir);
             }
 
