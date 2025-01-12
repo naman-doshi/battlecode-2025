@@ -16,13 +16,13 @@ import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.getClosestNeighbourTo;
 import static caterpillow.util.Util.println;
 
-public class MopperSpawnStrategy extends Strategy {
+public class SoldierSpawnStrategy extends Strategy {
 
     // in case we get rushed
     int todo, seed;
     Tower bot;
 
-    public MopperSpawnStrategy() {
+    public SoldierSpawnStrategy() {
         bot = (Tower) Game.bot;
         seed = new Random(rc.getID()).nextInt();
     }
@@ -33,8 +33,8 @@ public class MopperSpawnStrategy extends Strategy {
     }
 
     private void spawnMopper(MapLocation loc, int strat) throws GameActionException {
-        println("spawning mopper!\n");
-        bot.build(UnitType.MOPPER, loc);
+        println("spawning soldier!\n");
+        bot.build(UnitType.SOLDIER, loc);
         pm.send(loc, new SeedPacket(seed));
         pm.send(loc, new StrategyPacket(strat));
         todo--;
@@ -51,7 +51,7 @@ public class MopperSpawnStrategy extends Strategy {
                 // strat 1 = offence
                 MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
                 if (spawn != null) {
-                    spawnMopper(spawn.getMapLocation(), 1);
+                    spawnMopper(spawn.getMapLocation(), 5);
                 }
         }
     }

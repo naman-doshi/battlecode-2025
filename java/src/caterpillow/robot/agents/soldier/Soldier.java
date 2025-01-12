@@ -1,16 +1,20 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.RecursiveStrategy;
-import caterpillow.robot.agents.*;
-import caterpillow.robot.agents.braindamage.SnipeAndBuildStrategy;
+import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.LinkStrategy;
 import caterpillow.robot.agents.braindamage.ShitRushStrategy;
+import caterpillow.robot.agents.braindamage.SnipeAndBuildStrategy;
 import caterpillow.robot.agents.braindamage.SnipeStrategy;
-
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.checkerboardPaint;
+import static caterpillow.util.Util.println;
 
 public class Soldier extends Agent {
 
@@ -32,6 +36,12 @@ public class Soldier extends Agent {
         super.runTick();
     }
 
+    public void checkerboardAttack(MapLocation loc) throws GameActionException {
+        if (rc.canAttack(loc)) {
+            rc.attack(loc, checkerboardPaint(loc)==PaintType.ALLY_SECONDARY);
+        }
+    }
+
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
@@ -51,6 +61,9 @@ public class Soldier extends Agent {
                 break;
             case 4:
                 primaryStrategy = new SnipeAndBuildStrategy();
+                break;
+            case 5:
+                primaryStrategy = new SRPStrategy();
                 break;
         }
     }

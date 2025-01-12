@@ -410,4 +410,8 @@ public class Util {
         int dy = centre.y - cur.y;
         return project(cur, new MapLocation(dx, dy));
     }
+
+    public static PaintType checkerboardPaint(MapLocation loc) {
+        return (loc.x + loc.y) % 2 == 0 ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+    }
 }
