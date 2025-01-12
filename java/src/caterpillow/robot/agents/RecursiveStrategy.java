@@ -14,7 +14,7 @@ public class RecursiveStrategy extends Strategy {
     public Strategy cur;
     Supplier<Strategy> factory;
 
-    RecursiveStrategy(Supplier<Strategy> factory) {
+    public RecursiveStrategy(Supplier<Strategy> factory) {
         this.factory = factory;
         cur = factory.get();
     }

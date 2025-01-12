@@ -2,16 +2,14 @@ package caterpillow;
 
 import static caterpillow.Game.*;
 import battlecode.common.*;
-import caterpillow.packet.PacketManager;
-import caterpillow.robot.agents.Mopper;
-import caterpillow.robot.agents.Soldier;
-import caterpillow.robot.agents.Splasher;
-import caterpillow.robot.towers.ChipTower;
-import caterpillow.robot.towers.DefenceTower;
-import caterpillow.robot.towers.PaintTower;
+import caterpillow.robot.agents.mopper.Mopper;
+import caterpillow.robot.agents.soldier.Soldier;
+import caterpillow.robot.agents.splasher.Splasher;
+import caterpillow.robot.towers.money.MoneyTower;
+import caterpillow.robot.towers.defence.DefenceTower;
+import caterpillow.robot.towers.paint.PaintTower;
 
 import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
 
 public class RobotPlayer {
     @SuppressWarnings("unused")
@@ -34,7 +32,7 @@ public class RobotPlayer {
                 bot = new DefenceTower();
                 break;
             case LEVEL_ONE_MONEY_TOWER:
-                bot = new ChipTower();
+                bot = new MoneyTower();
                 break;
             case LEVEL_ONE_PAINT_TOWER:
                 bot = new PaintTower();

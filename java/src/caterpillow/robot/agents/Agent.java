@@ -15,8 +15,8 @@ public abstract class Agent extends Robot {
     public MapLocation home;
     public int homeID;
 
-    Strategy primaryStrategy;
-    Strategy secondaryStrategy;
+    public Strategy primaryStrategy;
+    public Strategy secondaryStrategy;
 
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);

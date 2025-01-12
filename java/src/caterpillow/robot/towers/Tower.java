@@ -19,8 +19,8 @@ public abstract class Tower extends Robot {
     // im indexing levels from 0
     public int level;
     protected UnitType[] types;
-    Strategy primaryStrategy;
-    Strategy secondaryStrategy;
+    public Strategy primaryStrategy;
+    public Strategy secondaryStrategy;
 
     public ArrayList<Integer> kids;
 
