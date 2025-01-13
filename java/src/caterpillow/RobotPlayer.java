@@ -8,6 +8,7 @@ import caterpillow.robot.agents.splasher.Splasher;
 import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.defence.DefenceTower;
 import caterpillow.robot.towers.paint.PaintTower;
+import caterpillow.util.TowerTracker;
 
 import static caterpillow.util.Util.*;
 
@@ -48,8 +49,10 @@ public class RobotPlayer {
             Game.upd();
             time = rc.getRoundNum();
             pm.read();
+            TowerTracker.runTick();
             bot.runTick();
             pm.flush();
+            ticksExisted++;
             Clock.yield();
         }
     }

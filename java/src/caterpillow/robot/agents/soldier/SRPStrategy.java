@@ -20,6 +20,9 @@ import static caterpillow.util.Util.isVisiblyWithinRuin;
 import static caterpillow.util.Util.project;
 import static caterpillow.util.Util.subtract;
 
+import static caterpillow.Game.*;
+import static caterpillow.util.Util.*;
+
 public class SRPStrategy extends Strategy {
 
     public Soldier bot;
@@ -55,7 +58,7 @@ public class SRPStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("srp");
+        indicate("srp");
         // TODO: better scouting system!!!
 
         // get some paint from our towers if we're nearby one
@@ -89,7 +92,7 @@ public class SRPStrategy extends Strategy {
             }
             
             enemy = enemyLocs.getFirst();
-            //rc.setIndicatorString("NEW ENEMY LOC: " + enemy);
+            //indicate("NEW ENEMY LOC: " + enemy);
         }
 
         //System.out.println("Left after loc update: " + Clock.getBytecodesLeft());
@@ -159,11 +162,11 @@ public class SRPStrategy extends Strategy {
                 }
             } else {
                 safeMove(target.getMapLocation());
-                //rc.setIndicatorString("moving to target " + target.getMapLocation());
+                //indicate("moving to target " + target.getMapLocation());
             }
         } else {
             safeMove(enemy);
-            //rc.setIndicatorString("moving to enemy");
+            //indicate("moving to enemy");
         }
 
         //System.out.println("Left after atk: " + Clock.getBytecodesLeft());

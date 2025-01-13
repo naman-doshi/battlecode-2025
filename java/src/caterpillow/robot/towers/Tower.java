@@ -2,12 +2,10 @@ package caterpillow.robot.towers;
 
 import battlecode.common.*;
 import caterpillow.packet.Packet;
-import caterpillow.packet.packets.AdoptionPacket;
-import caterpillow.packet.packets.OriginPacket;
-import caterpillow.packet.packets.SeedPacket;
-import caterpillow.packet.packets.StrategyPacket;
+import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
+import caterpillow.util.TowerTracker;
 
 import java.util.ArrayList;
 
@@ -30,8 +28,13 @@ public abstract class Tower extends Robot {
         rc.buildRobot(type, loc);
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
-        println("added " + newBot.getID() + " to kids");
-        pm.send(newBot.getID(), new OriginPacket(origin));
+
+        if (TowerTracker.broken) {
+            pm.send(newBot.getID(), new InitPacket(origin, 0));
+        } else {
+            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.coinTowers));
+        }
+
         for (Packet packet : packets) {
             pm.send(newBot.getID(), packet);
         }

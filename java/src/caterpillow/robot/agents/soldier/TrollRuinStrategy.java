@@ -61,7 +61,7 @@ public class TrollRuinStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("TROLLING");
+        indicate("TROLLING");
         println("trolling ruin");
         if (!isInView()) {
             bot.pathfinder.makeMove(target);

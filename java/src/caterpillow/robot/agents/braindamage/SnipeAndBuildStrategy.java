@@ -58,7 +58,7 @@ public class SnipeAndBuildStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("SNIPE AND BUILD");
+        indicate("SNIPE AND BUILD");
         // go home if its run out of things to do (which is unlikely since itll probably die first)
         if (primary instanceof ShitEverywhereStrategy || primary instanceof BuildTowerStrategy) {
             primary.runTick();

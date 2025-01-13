@@ -1,32 +1,32 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.Game;
+import caterpillow.packet.Packet;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.TraverseStrategy;
+import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.util.Pair;
+import caterpillow.util.TowerTracker;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class ScoutStrategy extends Strategy {
 
+    int skipCooldown = 0;
     ArrayList<MapLocation> visitedRuins;
-    ArrayList<MapLocation> skippedRuins;
+    LinkedList<Pair<MapLocation, Integer>> skippedRuins;
     List<MapLocation> goals;
 
     Agent bot;
     UnitType towerPref;
 
     HandleRuinStrategy handleRuinStrategy;
+    WeakRefillStrategy refillStrategy;
 
     Strategy traverse;
     void move() throws GameActionException {
@@ -42,7 +42,7 @@ public class ScoutStrategy extends Strategy {
         bot = (Agent) Game.bot;
         this.towerPref = towerPref;
         visitedRuins = new ArrayList<>();
-        skippedRuins = new ArrayList<>();
+        skippedRuins = new LinkedList<>();
         goals = new LinkedList<MapLocation>();
         // populate goals
         Random rng = new Random(seed);
@@ -57,6 +57,11 @@ public class ScoutStrategy extends Strategy {
         }
 
         traverse = new TraverseStrategy(goals.getFirst(), VISION_RAD);
+        skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
+    }
+
+    void refresh() {
+        skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
     }
 
     @Override
@@ -66,12 +71,14 @@ public class ScoutStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("SCOUTING");
-        if (handleRuinStrategy!= null) {
+        refresh();
+        indicate("SCOUTING");
+        if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
-                visitedRuins.add(handleRuinStrategy.target);
                 if (handleRuinStrategy.didSkip()) {
-                    skippedRuins.add(handleRuinStrategy.target);
+                    skippedRuins.add(new Pair<>(handleRuinStrategy.target, time));
+                } else {
+                    visitedRuins.add(handleRuinStrategy.target);
                 }
                 handleRuinStrategy = null;
                 runTick();
@@ -81,10 +88,28 @@ public class ScoutStrategy extends Strategy {
             return;
         }
 
-        MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null);
+        if (refillStrategy != null) {
+            if (refillStrategy.isComplete()) {
+                refillStrategy = null;
+                runTick();
+            } else {
+                refillStrategy.runTick();
+            }
+            return;
+        }
+
+        if (isPaintBelowHalf()) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
+                runTick();
+            }
+        }
+
+        MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
         if (target != null) {
             println("starting handle ruin strat");
-            handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation(), (towerPref == null ? nextTowerType() : towerPref));
+            handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation(), TowerTracker.getNextType());
             runTick();
             return;
         }

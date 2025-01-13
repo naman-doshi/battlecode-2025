@@ -48,7 +48,7 @@ public class RushStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("RUSHING");
+        indicate("RUSHING");
         // go home if its run out of things to do (which is unlikely since itll probably die first)
         if (target == null && todo.isEmpty()) {
             if (!(primary instanceof HomeStrategy)) {

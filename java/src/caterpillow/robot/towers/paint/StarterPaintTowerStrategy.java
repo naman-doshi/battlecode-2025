@@ -33,7 +33,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("STARTER");
+        indicate("STARTER");
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
