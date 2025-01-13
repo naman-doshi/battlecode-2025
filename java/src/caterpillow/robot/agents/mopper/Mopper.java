@@ -79,7 +79,7 @@ public class Mopper extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder();
+        pathfinder = new BugnavPathfinder(loc -> {return rc.senseMapInfo(loc).getPaint().isEnemy();});
         primaryStrategy = new MopperOffenceStrategy();
         bot = (Mopper) Game.bot;
     }
