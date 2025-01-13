@@ -93,7 +93,6 @@ public class Mopper extends Agent {
                 break;
             case 1:
                 primaryStrategy = new MopperOffenceStrategy();
-                System.out.println("set strategy to offence");
                 break;
             case 2:
                 primaryStrategy = new MopperOffenceStrategy();

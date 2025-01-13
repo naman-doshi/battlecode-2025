@@ -12,16 +12,16 @@ public class TowerTracker {
     // if this is true, pretend its values are garbage
     public static boolean broken = false;
 
-    public static double targetRatio = 0.5; // for now, build equal amounts
+    public static double targetRatio = 0.75; // fraction of towers that should be coin
     public static UnitType getNextType() {
         if (!broken) {
-            if ((double) (totTowers - coinTowers) / (double) coinTowers < targetRatio) {
+            if ((double) coinTowers / (double) rc.getNumberTowers() > targetRatio) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
-            if (trng.nextBoolean()) {
+            if (trng.nextDouble() > targetRatio) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
@@ -30,7 +30,7 @@ public class TowerTracker {
     }
 
     public static int px = 0, x = 0; // last known coins
-    public static int totTowers = 0, coinTowers = 0;
+    public static int coinTowers = 0;
     public static int processedTicks = 0;
     public static int blindTicks = 0;
     public static boolean hasReceivedInitPacket = false;
@@ -49,12 +49,9 @@ public class TowerTracker {
 
     public static void runTick() {
         if (time % 20 == 0) {
-            println("paint: " + (totTowers - coinTowers) + ", coin: " + coinTowers + ", broken: " + broken);
+            println("paint: " + (rc.getNumberTowers() - coinTowers) + ", coin: " + coinTowers + ", broken: " + broken);
         }
 //        rc.setIndicatorString("paint: " + (totTowers - coinTowers) + " coin: " + coinTowers + " broken: " + broken);
-        if (totTowers >= 16) {
-            broken = true;
-        }
         if (broken) {
             return;
         }
@@ -78,7 +75,7 @@ public class TowerTracker {
                 if (foundSolution) {
                     break;
                 }
-                for (int pot = probablyMinCoinTowers(); pot <= totTowers; pot++) {
+                for (int pot = probablyMinCoinTowers(); pot <= rc.getNumberTowers(); pot++) {
                     if (pot * salary == x - px) {
                         foundSolution = true;
                         coinTowers = pot;
@@ -90,8 +87,6 @@ public class TowerTracker {
                 broken = true;
             }
             blindTicks = 0;
-        } else {
-            totTowers += max(0, ((px - x - 600) + 999) / 1000);
         }
     }
 }

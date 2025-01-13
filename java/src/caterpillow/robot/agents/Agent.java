@@ -24,16 +24,15 @@ public abstract class Agent extends Robot {
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);
 
-        int tot = TowerTracker.totTowers + 1;
         int coin = TowerTracker.coinTowers;
         if (type.equals(UnitType.LEVEL_ONE_MONEY_TOWER)) {
             coin++;
         }
 
-        if (TowerTracker.broken || tot >= 16) {
-            pm.send(loc, new InitPacket(origin, 0, 0));
+        if (TowerTracker.broken) {
+            pm.send(loc, new InitPacket(origin, 0));
         } else {
-            pm.send(loc, new InitPacket(origin, tot, coin));
+            pm.send(loc, new InitPacket(origin, coin));
         }
     }
 

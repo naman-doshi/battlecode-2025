@@ -30,9 +30,9 @@ public abstract class Tower extends Robot {
         kids.add(newBot.getID());
 
         if (TowerTracker.broken) {
-            pm.send(newBot.getID(), new InitPacket(origin, 0, 0));
+            pm.send(newBot.getID(), new InitPacket(origin, 0));
         } else {
-            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.totTowers, TowerTracker.coinTowers));
+            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.coinTowers));
         }
 
         for (Packet packet : packets) {

@@ -12,7 +12,7 @@ import caterpillow.util.Util;
 import java.util.*;
 
 import static caterpillow.Game.*;
-import static caterpillow.util.TowerTracker.totTowers;
+import static caterpillow.util.TowerTracker.coinTowers;
 import static caterpillow.util.Util.*;
 
 public class PacketManager {
@@ -60,11 +60,10 @@ public class PacketManager {
             case 4:
                 int encLoc = getBits(payload, 0, ENC_LOC_SIZE);
                 println("updated tower counts");
-                totTowers = getBits(payload, ENC_LOC_SIZE, TowerTracker.MAX_TOWER_BITS);
                 TowerTracker.coinTowers = getBits(payload, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
                 TowerTracker.hasReceivedInitPacket = true;
 
-                if (totTowers == 0) {
+                if (coinTowers == 0) {
                     TowerTracker.broken = true;
                 }
                 bot.handleOriginPacket(new OriginPacket(decodeLoc(encLoc)), sender);
@@ -122,7 +121,6 @@ public class PacketManager {
                 type = 4;
                 payload = 0;
                 payload = writeBits(payload, encodeLoc(initPacket.loc), 0, ENC_LOC_SIZE);
-                payload = writeBits(payload, initPacket.totTowers, ENC_LOC_SIZE, TowerTracker.MAX_TOWER_BITS);
                 payload = writeBits(payload, initPacket.coinTowers, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
             }
             case null, default -> {

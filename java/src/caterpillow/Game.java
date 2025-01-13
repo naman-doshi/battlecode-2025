@@ -43,7 +43,6 @@ public class Game {
         if (isStarter) {
             if (rc.getType().isTowerType()) {
                 origin = rc.getLocation();
-                TowerTracker.totTowers = 2;
                 TowerTracker.coinTowers = 1;
                 TowerTracker.hasReceivedInitPacket = true;
             } else {
