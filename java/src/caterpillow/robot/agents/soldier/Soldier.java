@@ -3,22 +3,16 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
-
+import battlecode.common.UnitType;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
-
-import battlecode.common.UnitType;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
-import caterpillow.robot.RecursiveStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
-import caterpillow.robot.agents.braindamage.ShitRushStrategy;
 import caterpillow.robot.agents.braindamage.SnipeAndBuildStrategy;
-import caterpillow.robot.agents.braindamage.SnipeStrategy;
 import static caterpillow.util.Util.checkerboardPaint;
-import static caterpillow.util.Util.println;
 
 public class Soldier extends Agent {
 
@@ -55,7 +49,7 @@ public class Soldier extends Agent {
                 primaryStrategy = new StarterStrategy(rc.senseRobotAtLocation(origin).getType());
                 break;
             case 1:
-                primaryStrategy = new SRPStrategy();
+                primaryStrategy = new SRPStrategy(rc.senseRobotAtLocation(origin).getType());
                 break;
             case 2:
                 primaryStrategy = new ScoutStrategy(UnitType.LEVEL_ONE_PAINT_TOWER);

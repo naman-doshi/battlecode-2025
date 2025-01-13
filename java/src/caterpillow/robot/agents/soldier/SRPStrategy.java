@@ -1,5 +1,7 @@
 package caterpillow.robot.agents.soldier;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -8,20 +10,29 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.util.Pair;
+import caterpillow.util.TowerTracker;
 import static caterpillow.util.Util.cheapGetNearestCell;
 import static caterpillow.util.Util.checkerboardPaint;
 import static caterpillow.util.Util.decodeLoc;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.getSRPIds;
 import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isPaintBelowHalf;
 import static caterpillow.util.Util.isVisiblyWithinRuin;
+import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.println;
 import static caterpillow.util.Util.project;
 import static caterpillow.util.Util.subtract;
-
-import static caterpillow.Game.*;
-import static caterpillow.util.Util.*;
 
 public class SRPStrategy extends Strategy {
 
@@ -30,8 +41,14 @@ public class SRPStrategy extends Strategy {
     // enemyLocs is more like "POI locs"
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
+    HandleRuinStrategy handleRuinStrategy;
+    WeakRefillStrategy refillStrategy;
+    UnitType towerPref;
+    int skipCooldown = 0;
+    ArrayList<MapLocation> visitedRuins;
+    LinkedList<Pair<MapLocation, Integer>> skippedRuins;
 
-    public SRPStrategy() throws GameActionException {
+    public SRPStrategy(UnitType towerPref) throws GameActionException {
         bot = (Soldier) Game.bot;
 
         // cursed way to only keep the first elem but idc
@@ -40,6 +57,12 @@ public class SRPStrategy extends Strategy {
         this.enemyLocs.removeLast();
         
         this.enemy = enemyLocs.get(0);
+
+        this.towerPref = towerPref;
+        visitedRuins = new ArrayList<>();
+        skippedRuins = new LinkedList<>();
+
+        skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
         
     }
 
@@ -56,23 +79,17 @@ public class SRPStrategy extends Strategy {
         bot.pathfinder.makeMove(loc);
     }
 
+    void refresh() {
+        skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
+    }
+
     @Override
     public void runTick() throws GameActionException {
         indicate("srp");
+        refresh();
         // TODO: better scouting system!!!
 
         // get some paint from our towers if we're nearby one
-        if (rc.getPaint() < 100) {
-            RobotInfo[] bots = rc.senseNearbyRobots(2);
-            for (RobotInfo robot : bots) {
-                if (robot.getTeam() == rc.getTeam() && rc.senseMapInfo(robot.getLocation()).hasRuin()) {
-                    if (rc.canTransferPaint(robot.getLocation(), -100)) {
-                        rc.transferPaint(robot.getLocation(), -100);
-                        return;
-                    }
-                }
-            }
-        }
         
         if (rc.canSenseLocation(enemy)) {
             // if we can see the enemy, just go to the next enemy loc.
@@ -95,57 +112,45 @@ public class SRPStrategy extends Strategy {
             //indicate("NEW ENEMY LOC: " + enemy);
         }
 
-        //System.out.println("Left after loc update: " + Clock.getBytecodesLeft());
+        if (handleRuinStrategy != null) {
+            if (handleRuinStrategy.isComplete()) {
+                if (handleRuinStrategy.didSkip()) {
+                    skippedRuins.add(new Pair<>(handleRuinStrategy.target, time));
+                } else {
+                    visitedRuins.add(handleRuinStrategy.target);
+                }
+                handleRuinStrategy = null;
+                runTick();
+            } else {
+                handleRuinStrategy.runTick();
+            }
+            return;
+        }
 
-        // check all visible cells. are any of them ruins?
-        // MapInfo[] visibleCells = rc.senseNearbyMapInfos();
-        // List<MapInfo> ruins = new ArrayList<>();
-        // Map<MapLocation, Boolean> ruinTrolled = new HashMap<>();
-        
-        // for (MapInfo cell : visibleCells) {
-            
-        //     if (cell.hasRuin() && rc.senseRobotAtLocation(cell.getMapLocation())!=null && rc.senseRobotAtLocation(cell.getMapLocation()).getTeam() != rc.getTeam()) {
-        //         ruins.add(cell);
-        //         ruinTrolled.put(cell.getMapLocation(), false);
-        //     }
-        // }
 
-        // // check if ruin is alr trolled
-        // for (MapInfo cell: visibleCells) {
-        //     for (MapInfo ruin: ruins) {
-        //         // if the cell is in the ruin's square and it's painted, mark it as trolled
-        //         if (isWithinRuin(cell.getMapLocation(), ruin.getMapLocation())) {
-        //             if (cell.getPaint().isAlly()) ruinTrolled.put(ruin.getMapLocation(), true);
-        //         }
-        //     }
-        // }
+        if (refillStrategy != null) {
+            if (refillStrategy.isComplete()) {
+                refillStrategy = null;
+                runTick();
+            } else {
+                refillStrategy.runTick();
+            }
+            return;
+        }
 
-        // MapInfo[] attackable = rc.senseNearbyMapInfos(9);
-
-        // // for all attackable squares, try troll first
-        // for (MapLocation ruinLoc : ruinTrolled.keySet()) {
-        //     if (!ruinTrolled.get(ruinLoc)) {
-        //         // if the ruin hasn't been trolled yet, troll it
-        //         for (MapInfo cell : attackable) {
-        //             if (isWithinRuin(cell.getMapLocation(), ruinLoc) && rc.canAttack(cell.getMapLocation())) {
-        //                 bot.checkerboardAttack(cell.getMapLocation());
-        //                 System.out.println("TROLLING RUIN" + ruinLoc);
-        //                 return;
-        //             }
-        //         }
-        //     }
-        // }
-
-        //System.out.println("Left after ruin trolling: " + Clock.getBytecodesLeft());
-
-        
-
-        //System.out.println("Left after paint transfer: " + Clock.getBytecodesLeft());
+        if (isPaintBelowHalf()) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
+                runTick();
+            }
+        }
 
         // first: it obviously needs to be the wrong colour, non-enemy paint, and passable
         // second: if it's outside a ruin OR a neutral colour, obviously paint it
         // but if it's inside and painted w ally, only paint it if there's more than one SRP on it (since one of them will be the ruin's SRP)
-        MapInfo target = cheapGetNearestCell(c -> c.getPaint()!=checkerboardPaint(c.getMapLocation()) && c.isPassable() && !c.getPaint().isEnemy() && (!isVisiblyWithinRuin(c.getMapLocation()) || c.getPaint()==PaintType.EMPTY || getSRPIds(c.getMapLocation()).size() > 1));
+        MapInfo target = cheapGetNearestCell(c -> c.getPaint()!=checkerboardPaint(c.getMapLocation()) && c.isPassable() && !c.getPaint().isEnemy() && 
+        (!isVisiblyWithinRuin(c.getMapLocation()) || c.getPaint()==PaintType.EMPTY || getSRPIds(c.getMapLocation()).size() > 1));
 
         //System.out.println("Left after target selection: " + Clock.getBytecodesLeft());
         
@@ -171,8 +176,13 @@ public class SRPStrategy extends Strategy {
 
         //System.out.println("Left after atk: " + Clock.getBytecodesLeft());
 
-        
-
+        MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
+        if (target1 != null) {
+            println("starting handle ruin strat");
+            handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), TowerTracker.getNextType());
+            runTick();
+            return;
+        }
 
     }
 }
