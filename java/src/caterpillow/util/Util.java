@@ -462,7 +462,7 @@ public class Util {
     }
 
     public static boolean isSRPCenter(MapLocation loc) {
-        return (loc.x-loc.y)%4==0 && (loc.y-2)%3==0;
+        return (loc.x - 3 * loc.y + 3) % 10 == 0;
     }
     
     public static boolean isWithinRuin(MapLocation loc, MapLocation ruin) {
@@ -473,19 +473,13 @@ public class Util {
         // cancer wtf
         List<MapLocation> res = new ArrayList<>();
 
-        // ok so y MUST be 2 + 3n for it to be an SRP center
-        int n = (loc.y - 2) / 3;
+        // ok so x - 3y = 10n - 3
+        int n = (loc.x - 3*loc.y + 3) / 10;
         for (int possibleN = n-1; possibleN <= n+1; possibleN++) {
-            int y = 2 + 3*possibleN;
-            // now we are DEFINITELY on a y level with SRPs
-            // x - y = 4m
-            // x = 4m + y
-            // the x we're looking for probably won't be too far from the current x
-            int m = (loc.x - y) / 4;
-            for (int possibleM = m-1; possibleM <= m+1; possibleM++) {
-                int x = 4*possibleM + y;
-                if (isSRPCenter(new MapLocation(x, y))) {
-                    res.add(new MapLocation(x, y));
+            for (int possibleY = loc.y-2; possibleY <= loc.y+2; possibleY++) {
+                int possibleX = 10*possibleN + 3*possibleY - 3;
+                if (isSRPCenter(new MapLocation(possibleX, possibleY))) {
+                    res.add(new MapLocation(possibleX, possibleY));
                 }
             }
         }
@@ -497,13 +491,11 @@ public class Util {
     }
 
     public static PaintType checkerboardPaint(MapLocation loc) {
-        // basically it's the centre of SRP when u project the diagonal to y=2, x = 2 + 4n, n is integer. also, x = 2 + (x-y)/4 + 3i and y = 2 + 3j
-        // x - (y-2) = 2 + 4n
-        // so x - y = 4n
-        return ((loc.x + loc.y) % 2 == 1 || isSRPCenter(loc)) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-        // 22, 55, 88...
-        // 62, 95, 12+8...
-        // 10+2, 13+5, 16+8...
+        
+        return ((loc.x + loc.y) % 2 == 0 || isSRPCenter(loc)) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        // 13+2, 16+3, 19+4, ...
+        // 3+2, 6+3, 9+4, ...
+        // -7+2, -4+3, -1+4, ...
     }
 
     public static List<Integer> getSRPIds(MapLocation loc) {
