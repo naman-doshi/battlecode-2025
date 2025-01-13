@@ -1,9 +1,7 @@
 package caterpillow.robot.towers.money;
 
-import static caterpillow.Game.isStarter;
-
 import battlecode.common.GameActionException;
-import caterpillow.robot.EmptyStrategy;
+import static caterpillow.Game.isStarter;
 import caterpillow.robot.towers.Tower;
 
 public class MoneyTower extends Tower {

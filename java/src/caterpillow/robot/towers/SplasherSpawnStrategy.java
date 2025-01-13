@@ -16,13 +16,13 @@ import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.getClosestNeighbourTo;
 import static caterpillow.util.Util.println;
 
-public class SoldierSpawnStrategy extends Strategy {
+public class SplasherSpawnStrategy extends Strategy {
 
     // in case we get rushed
     int todo, seed;
     Tower bot;
 
-    public SoldierSpawnStrategy() {
+    public SplasherSpawnStrategy() {
         bot = (Tower) Game.bot;
         seed = new Random(rc.getID()).nextInt();
     }
@@ -33,8 +33,8 @@ public class SoldierSpawnStrategy extends Strategy {
     }
 
     private void spawnMopper(MapLocation loc, int strat) throws GameActionException {
-        println("spawning soldier!\n");
-        bot.build(UnitType.SOLDIER, loc);
+        println("spawning splasher!\n");
+        bot.build(UnitType.SPLASHER, loc);
         pm.send(loc, new SeedPacket(seed));
         pm.send(loc, new StrategyPacket(strat));
         todo--;
@@ -49,9 +49,9 @@ public class SoldierSpawnStrategy extends Strategy {
             case MID:
             case EARLY:
                 // strat 1 = offence
-                MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
+                MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SPLASHER, cell.getMapLocation()));
                 if (spawn != null) {
-                    spawnMopper(spawn.getMapLocation(), 1);
+                    spawnMopper(spawn.getMapLocation(), 0);
                 }
         }
     }
