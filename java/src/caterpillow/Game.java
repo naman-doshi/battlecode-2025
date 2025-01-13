@@ -1,13 +1,18 @@
 package caterpillow;
 
-import battlecode.common.*;
-import caterpillow.packet.PacketManager;
-import caterpillow.robot.Robot;
-import caterpillow.world.GameStage;
-
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
-import static caterpillow.util.Util.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotController;
+import battlecode.common.RobotInfo;
+import caterpillow.packet.PacketManager;
+import caterpillow.robot.Robot;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.isFriendly;
+import caterpillow.world.GameStage;
 
 public class Game {
     public static int time;
@@ -22,6 +27,7 @@ public class Game {
     public static Random trng;
 
     public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
+    public static Map<Integer, Integer> lastPainted;
 
     private static int midTime, lateTime;
 
@@ -45,6 +51,7 @@ public class Game {
         centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
         gameStage = GameStage.EARLY;
         seed = 0;
+        lastPainted = new HashMap<>();
     }
 
     public static void postInit() throws GameActionException {

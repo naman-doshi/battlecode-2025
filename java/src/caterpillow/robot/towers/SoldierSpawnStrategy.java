@@ -51,7 +51,7 @@ public class SoldierSpawnStrategy extends Strategy {
                 // strat 1 = offence
                 MapInfo spawn = getClosestNeighbourTo(rc.getLocation(), cell -> cell.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1 && !cell.getPaint().isEnemy() && rc.canBuildRobot(UnitType.SOLDIER, cell.getMapLocation()));
                 if (spawn != null) {
-                    spawnMopper(spawn.getMapLocation(), 5);
+                    spawnMopper(spawn.getMapLocation(), 1);
                 }
         }
     }

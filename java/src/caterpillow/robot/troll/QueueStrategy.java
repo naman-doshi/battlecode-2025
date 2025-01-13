@@ -1,10 +1,10 @@
 package caterpillow.robot.troll;
 
-import battlecode.common.GameActionException;
-import caterpillow.robot.Strategy;
-
 import java.util.ArrayDeque;
 import java.util.Queue;
+
+import battlecode.common.GameActionException;
+import caterpillow.robot.Strategy;
 
 public class QueueStrategy extends Strategy {
 

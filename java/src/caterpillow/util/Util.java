@@ -51,14 +51,14 @@ public class Util {
         return rc.getTowerPattern(type)[ind.x][ind.y];
     }
 
-    final static int SIZE = 60;
+    final static int SIZE = 100;
     public static MapLocation decodeLoc(int code) {
-        assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
+        //assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
         return new MapLocation(code / SIZE, code % SIZE);
     }
 
     public static int encodeLoc(MapLocation loc) {
-        assert 0 <= loc.x && loc.x < SIZE && 0 <= loc.y && loc.y < SIZE;
+        //assert 0 <= loc.x && loc.x < SIZE && 0 <= loc.y && loc.y < SIZE;
         return loc.x * SIZE + loc.y;
     }
 
@@ -177,6 +177,19 @@ public class Util {
             }
         }
         return best;
+    }
+
+    public static MapInfo cheapGetNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
+        MapInfo best = null;
+        MapInfo[] cells = rc.senseNearbyMapInfos();
+        // sort by distance to rc.getLocation()
+        Arrays.sort(cells, Comparator.comparingInt(a -> a.getMapLocation().distanceSquaredTo(rc.getLocation())));
+        for (MapInfo cell : cells) {
+            if (pred.test(cell)) {
+                return cell;
+            }
+        }
+        return null;
     }
 
     public static MapInfo getClosestNeighbourTo(MapLocation dest, GamePredicate<MapInfo> pred) throws GameActionException {
@@ -448,7 +461,64 @@ public class Util {
         return project(cur, new MapLocation(dx, dy));
     }
 
-    public static PaintType checkerboardPaint(MapLocation loc) {
-        return (loc.x + loc.y) % 2 == 1 ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+    public static boolean isSRPCenter(MapLocation loc) {
+        return (loc.x-loc.y)%4==0 && (loc.y-2)%3==0;
     }
+    
+    public static boolean isWithinRuin(MapLocation loc, MapLocation ruin) {
+        return loc.isWithinDistanceSquared(ruin, 8) || (loc.distanceSquaredTo(ruin) == 9 && !(loc.x == ruin.x || loc.y == ruin.y));
+    }
+
+    public static List<MapLocation> findNearestSRPCenters(MapLocation loc) {
+        // cancer wtf
+        List<MapLocation> res = new ArrayList<>();
+
+        // ok so y MUST be 2 + 3n for it to be an SRP center
+        int n = (loc.y - 2) / 3;
+        for (int possibleN = n-1; possibleN <= n+1; possibleN++) {
+            int y = 2 + 3*possibleN;
+            // now we are DEFINITELY on a y level with SRPs
+            // x - y = 4m
+            // x = 4m + y
+            // the x we're looking for probably won't be too far from the current x
+            int m = (loc.x - y) / 4;
+            for (int possibleM = m-1; possibleM <= m+1; possibleM++) {
+                int x = 4*possibleM + y;
+                if (isSRPCenter(new MapLocation(x, y))) {
+                    res.add(new MapLocation(x, y));
+                }
+            }
+        }
+
+        // sort by distance
+        res.sort(Comparator.comparingInt(a -> loc.distanceSquaredTo(a)));
+        return res;
+        
+    }
+
+    public static PaintType checkerboardPaint(MapLocation loc) {
+        // basically it's the centre of SRP when u project the diagonal to y=2, x = 2 + 4n, n is integer. also, x = 2 + (x-y)/4 + 3i and y = 2 + 3j
+        // x - (y-2) = 2 + 4n
+        // so x - y = 4n
+        return ((loc.x + loc.y) % 2 == 1 || isSRPCenter(loc)) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        // 22, 55, 88...
+        // 62, 95, 12+8...
+        // 10+2, 13+5, 16+8...
+    }
+
+    public static List<Integer> getSRPIds(MapLocation loc) {
+        // since one cell can belong to multiple SRPs, up to 3, we need to return a list
+        List<MapLocation> centers = findNearestSRPCenters(loc);
+        List<Integer> res = new ArrayList<>();
+        for (MapLocation center : centers) {
+            // this includes only the square, so it's very accurate
+            if (isWithinRuin(loc, center)) {
+                res.add(encodeLoc(center));
+            }
+        }
+        return res;
+
+    }
+
+    
 }

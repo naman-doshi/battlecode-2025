@@ -1,14 +1,15 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
-import caterpillow.robot.Strategy;
+import static caterpillow.Game.rc;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.troll.QueueStrategy;
-import caterpillow.util.Pair;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isTowerBeingBuilt;
 
 public class HandleRuinStrategy extends QueueStrategy {
 
