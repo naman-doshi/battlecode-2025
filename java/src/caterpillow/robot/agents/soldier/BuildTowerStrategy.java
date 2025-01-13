@@ -59,8 +59,8 @@ public class BuildTowerStrategy extends QueueStrategy {
     public static boolean isBuildable(MapLocation target) throws GameActionException {
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = -2; dy <= 2; dy++) {
-                MapLocation loc = new MapLocation(target.x + dx, target.y + dy);
-                if (rc.senseMapInfo(loc).getPaint().isEnemy()) {
+                MapLocation loc = target.translate(dx, dy);
+                if (rc.senseMapInfo(loc).getPaint().isEnemy() || rc.senseMapInfo(loc).isWall()) {
                     return false;
                 }
             }
@@ -194,7 +194,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("BUILDER");
+        indicate("BUILDER");
         if (!super.isComplete()) {
             super.runTick();
             return;

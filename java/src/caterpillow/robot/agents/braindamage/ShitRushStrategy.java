@@ -75,7 +75,7 @@ public class ShitRushStrategy extends Strategy {
             }
         }
 
-        rc.setIndicatorString("SHIT RUSH STRATEGY");
+        indicate("SHIT RUSH STRATEGY");
 
         if (primary.isComplete()) {
             if (todo.isEmpty()) {

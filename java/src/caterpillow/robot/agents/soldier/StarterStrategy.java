@@ -5,6 +5,7 @@ import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.LinkStrategy;
 import caterpillow.robot.agents.braindamage.SnipeAndBuildStrategy;
 import caterpillow.robot.troll.QueueStrategy;
 
@@ -31,7 +32,7 @@ public class StarterStrategy extends QueueStrategy {
     public StarterStrategy(UnitType type) {
         bot = (Agent) Game.bot;
         mainStrat = new ScoutStrategy(type);
-        homework = new ReinforceTowerStrategy(bot.home);
+        homework = new LinkStrategy(bot.home);
     }
 
     @Override

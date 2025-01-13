@@ -10,6 +10,7 @@ import static java.lang.Math.abs;
 
 public class Util {
     public static final int VISION_RAD = 20;
+    public static final int ENC_LOC_SIZE = 12;
     static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
@@ -28,6 +29,25 @@ public class Util {
             Direction.WEST
     };
 
+    // inclusive exclusive
+    public static int getBits(int bits, int l, int len) {
+        int ret = 0;
+        for (int i = l + len - 1; i >= l; i--) {
+            ret <<= 1;
+            ret += (1 & (bits >>> i));
+        }
+        return ret;
+    }
+
+    public static int writeBits(int bits, int data, int st, int len) {
+        for (int i = 0; i < len; i++) {
+            // clear
+            bits &= ~(1 << (st + i));
+            bits |= (1 & (data >>> i)) << (st + i);
+        }
+        return bits;
+    }
+
     public final static int TOWER_COST = 1000;
 
     public static MapLocation flipHor(MapLocation loc) {
@@ -40,6 +60,11 @@ public class Util {
 
     public static MapLocation rot180(MapLocation loc) {
         return new MapLocation(rc.getMapWidth() - 1 - loc.x, rc.getMapHeight() - 1 - loc.y);
+    }
+
+    // for debugging purposes
+    public static void indicate(String str) {
+        rc.setIndicatorString(str);
     }
 
     public static int manhattan(MapLocation a, MapLocation b) {
@@ -305,7 +330,7 @@ public class Util {
     }
 
     public static void println(Object obj) {
-        if (time > 100) return;
+        if (time > 200) return;
         System.out.println(obj);
     }
 
@@ -393,13 +418,12 @@ public class Util {
         return true;
     }
 
-    public static UnitType nextTowerType() {
-//        if (trng.nextBoolean()) {
-//            return UnitType.LEVEL_ONE_MONEY_TOWER;
-//        } else {
-//            return UnitType.LEVEL_ONE_PAINT_TOWER;
-//        }
-        return UnitType.LEVEL_ONE_MONEY_TOWER;
+    public static boolean isPaintBelowHalf(RobotInfo bot) {
+        return bot.getPaintAmount() <= bot.getType().paintCapacity / 2;
+    }
+
+    public static boolean isPaintBelowHalf() {
+        return rc.getPaint() <= rc.getType().paintCapacity / 2;
     }
 
     public static MapLocation project(MapLocation cur, MapLocation moveVec, double maxDist) {

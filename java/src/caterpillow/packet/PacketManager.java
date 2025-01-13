@@ -4,15 +4,15 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Message;
 import battlecode.common.RobotInfo;
-import caterpillow.packet.packets.AdoptionPacket;
-import caterpillow.packet.packets.OriginPacket;
-import caterpillow.packet.packets.SeedPacket;
-import caterpillow.packet.packets.StrategyPacket;
+import caterpillow.packet.packets.*;
 import caterpillow.util.Pair;
+import caterpillow.util.TowerTracker;
+import caterpillow.util.Util;
 
 import java.util.*;
 
 import static caterpillow.Game.*;
+import static caterpillow.util.TowerTracker.totTowers;
 import static caterpillow.util.Util.*;
 
 public class PacketManager {
@@ -30,14 +30,18 @@ public class PacketManager {
     }
 
     public void processMessage(Message msg) throws GameActionException {
-        int type = (msg.getBytes() >>> PAYLOAD_SIZE);
-        int payload = (msg.getBytes() & (-1 >>> TYPE_SIZE));
+//        int type = (msg.getBytes() >>> PAYLOAD_SIZE);
+        int type = getBits(msg.getBytes(), PAYLOAD_SIZE, TYPE_SIZE);
+//        int payload = (msg.getBytes() & (-1 >>> TYPE_SIZE));
+        int payload = getBits(msg.getBytes(), 0, PAYLOAD_SIZE);
         int sender = msg.getSenderID();
+        println("reading msg " + type);
         switch (type) {
             case 0:
                 AdoptionPacket adoptionPacket = new AdoptionPacket();
                 bot.handleAdoptionPacket(adoptionPacket, sender);
             case 1: // make sure these packet types are synced
+                assert false : "we dont send these anymore\n";
                 OriginPacket originPacket = new OriginPacket(decodeLoc(payload));
                 bot.handleOriginPacket(originPacket, sender);
                 break;
@@ -46,12 +50,24 @@ public class PacketManager {
                 bot.handleSeedPacket(seedPacket, sender);
                 break;
             case 3:
-                int id = payload >>> StrategyPacket.STRATEGY_DATA_SIZE;
-                int data = payload & (-1 >>> (StrategyPacket.STRATEGY_ID_SIZE + TYPE_SIZE));
+//                int id = payload >>> StrategyPacket.STRATEGY_DATA_SIZE;
+                int id = getBits(payload, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
+//                int data = payload & (-1 >>> (StrategyPacket.STRATEGY_ID_SIZE + TYPE_SIZE));
+                int data = getBits(payload, 0, StrategyPacket.STRATEGY_DATA_SIZE);
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
+                int encLoc = getBits(payload, 0, ENC_LOC_SIZE);
+                println("updated tower counts");
+                totTowers = getBits(payload, ENC_LOC_SIZE, TowerTracker.MAX_TOWER_BITS);
+                TowerTracker.coinTowers = getBits(payload, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
+                TowerTracker.hasReceivedInitPacket = true;
+
+                if (totTowers == 0) {
+                    TowerTracker.broken = true;
+                }
+                bot.handleOriginPacket(new OriginPacket(decodeLoc(encLoc)), sender);
                 break;
             default:
                 assert false;
@@ -62,13 +78,11 @@ public class PacketManager {
         Message[] prev = rc.readMessages(time - 1);
         for (int i = prev_read; i < prev.length; i++) {
             processMessage(prev[i]);
-            println(prev[i].getBytes() >>> PAYLOAD_SIZE);
         }
         Message[] cur = rc.readMessages(time);
         prev_read = cur.length;
         for (Message msg : cur) {
             processMessage(msg);
-            println(msg.getBytes() >>> PAYLOAD_SIZE);
         }
     }
 
@@ -84,21 +98,37 @@ public class PacketManager {
     private void processPacket(MapLocation loc, Packet packet) throws GameActionException {
         int payload;
         int type;
-        if (packet instanceof AdoptionPacket adoptionPacket) {
-            type = 0;
-            payload = 0;
-        } else if (packet instanceof OriginPacket originPacket) {
-            type = 1;
-            payload = encodeLoc(originPacket.loc);
-        } else if (packet instanceof SeedPacket seedPacket) {
-            type = 2;
-            payload = seedPacket.seed;
-        } else if (packet instanceof StrategyPacket strategyPacket) {
-            type = 3;
-            payload = strategyPacket.strategyData + (strategyPacket.strategyID << StrategyPacket.STRATEGY_DATA_SIZE);
-        } else {
-            System.out.println("wtf is this packet");
-            return;
+        switch (packet) {
+            case AdoptionPacket adoptionPacket -> {
+                type = 0;
+                payload = 0;
+            }
+            case OriginPacket originPacket -> {
+                type = 1;
+                payload = encodeLoc(originPacket.loc);
+            }
+            case SeedPacket seedPacket -> {
+                type = 2;
+                payload = seedPacket.seed;
+            }
+            case StrategyPacket strategyPacket -> {
+                type = 3;
+                payload = 0;
+                payload = writeBits(payload, strategyPacket.strategyData, 0, StrategyPacket.STRATEGY_DATA_SIZE);
+                payload = writeBits(payload, strategyPacket.strategyID, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
+//            payload = strategyPacket.strategyData + (strategyPacket.strategyID << StrategyPacket.STRATEGY_DATA_SIZE);
+            }
+            case InitPacket initPacket -> {
+                type = 4;
+                payload = 0;
+                payload = writeBits(payload, encodeLoc(initPacket.loc), 0, ENC_LOC_SIZE);
+                payload = writeBits(payload, initPacket.totTowers, ENC_LOC_SIZE, TowerTracker.MAX_TOWER_BITS);
+                payload = writeBits(payload, initPacket.coinTowers, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
+            }
+            case null, default -> {
+                System.out.println("wtf is this packet");
+                return;
+            }
         }
         assert payload >= 0: "payload is negative";
         assert payload < MAX_PAYLOAD : "payload too large";
@@ -115,8 +145,12 @@ public class PacketManager {
         while (it.hasNext()) {
             Pair<Integer, Packet> el = it.next();
             for (RobotInfo bot : rc.senseNearbyRobots()) {
+                assert bot != null;
+                assert bot.getLocation() != null;
                 if (bot.getID() == el.first) {
+                    assert bot.getLocation() != null;
                     if (rc.canSendMessage(bot.getLocation())) {
+                        assert bot.getLocation() != null;
                         processPacket(bot.getLocation(), el.second);
                         it.remove();
                         break;

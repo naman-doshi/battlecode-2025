@@ -49,11 +49,11 @@ public class HomeStrategy extends Strategy {
         }
         if (rc.isMovementReady()) {
             if (bot.home == null) {
-                rc.setIndicatorString("RETURNING ORIGIN " + origin.toString());
+                indicate("RETURNING ORIGIN " + origin.toString());
                 bot.pathfinder.makeMove(origin);
                 rc.setIndicatorLine(rc.getLocation(), origin, 0, 255, 0);
             } else {
-                rc.setIndicatorString("RETURNING HOME " + bot.home.toString());
+                indicate("RETURNING HOME " + bot.home.toString());
                 bot.pathfinder.makeMove(bot.home);
                 rc.setIndicatorLine(rc.getLocation(), bot.home, 0, 255, 0);
             }

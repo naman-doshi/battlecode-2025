@@ -29,7 +29,7 @@ public class ShitEverywhereStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("SHITTING EVERYWHERE");
+        indicate("SHITTING EVERYWHERE");
         wander.runTick();
         if (rc.isActionReady()) {
             MapInfo target = getNearestCell(c -> rc.canPaint(c.getMapLocation()) && c.getPaint().equals(PaintType.EMPTY));

@@ -12,10 +12,13 @@ import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
 import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
+
+import caterpillow.util.TowerTracker;
 import caterpillow.world.GameStage;
 
 public class Game {
     public static int time;
+    public static int ticksExisted; // first runTick = 0
     public static RobotController rc;
     public static PacketManager pm;
     public static Robot bot;
@@ -40,6 +43,9 @@ public class Game {
         if (isStarter) {
             if (rc.getType().isTowerType()) {
                 origin = rc.getLocation();
+                TowerTracker.totTowers = 2;
+                TowerTracker.coinTowers = 1;
+                TowerTracker.hasReceivedInitPacket = true;
             } else {
                 RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
                 assert nearest != null;

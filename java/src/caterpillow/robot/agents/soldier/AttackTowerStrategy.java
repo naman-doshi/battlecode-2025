@@ -8,6 +8,7 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 
 import static caterpillow.Game.*;
+import static caterpillow.util.Util.*;
 
 // pathfinding testing
 public class AttackTowerStrategy extends Strategy {
@@ -29,7 +30,7 @@ public class AttackTowerStrategy extends Strategy {
     // TODO: combat micro
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("ATTACKING TOWER");
+        indicate("ATTACKING TOWER");
         // TODO: running from enemy (hitting those circle strafes)
         bot.pathfinder.makeMove(target);
         if (rc.isActionReady()) {

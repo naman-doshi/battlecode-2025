@@ -11,6 +11,9 @@ import caterpillow.robot.troll.QueueStrategy;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isTowerBeingBuilt;
 
+import static caterpillow.Game.*;
+import static caterpillow.util.Util.*;
+
 public class HandleRuinStrategy extends QueueStrategy {
 
     MapLocation target;
@@ -33,7 +36,7 @@ public class HandleRuinStrategy extends QueueStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("HANDLING RUIN");
+        indicate("HANDLING RUIN");
         super.runTick();
     }
 }

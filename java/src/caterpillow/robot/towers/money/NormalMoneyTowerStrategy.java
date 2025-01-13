@@ -40,9 +40,13 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("NORMAL");
+        indicate("NORMAL");
         for (TowerStrategy strat : strats) {
             strat.runTick();
+        }
+
+        if (ticksExisted <= 3) {
+            return;
         }
 
         // shit code

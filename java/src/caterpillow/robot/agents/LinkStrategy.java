@@ -6,6 +6,7 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 
 import static caterpillow.Game.*;
+import static caterpillow.util.Util.*;
 
 // TODO: make this smarter in the future ig?
 public class LinkStrategy extends Strategy {
@@ -25,16 +26,15 @@ public class LinkStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        rc.setIndicatorString("LINKING");
+        indicate("LINKING");
+        bot.pathfinder.makeMove(target);
+        rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
         if (!rc.isActionReady()) return;
         if (rc.getLocation().distanceSquaredTo(target) == 1) {
             if (rc.canAttack(rc.getLocation())) {
                 // TODO: calculate this colour properly
                 rc.attack(rc.getLocation(), false);
             }
-        } else {
-            bot.pathfinder.makeMove(target);
-            rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
         }
     }
 }
