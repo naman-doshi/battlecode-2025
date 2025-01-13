@@ -40,7 +40,6 @@ public class SRPStrategy extends Strategy {
         
     }
 
-
     @Override
     public boolean isComplete() throws GameActionException {
         return false;
@@ -51,7 +50,7 @@ public class SRPStrategy extends Strategy {
             return;
         }
         // wait until andy's buffed pathfinder
-        rc.move(bot.pathfinder.getMove(loc));
+        bot.pathfinder.makeMove(loc);
     }
 
     @Override
