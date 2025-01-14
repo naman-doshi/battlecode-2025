@@ -10,10 +10,9 @@ import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import caterpillow_v1.packet.PacketManager;
 import caterpillow_v1.robot.Robot;
+import caterpillow_v1.util.TowerTracker;
 import static caterpillow_v1.util.Util.getNearestRobot;
 import static caterpillow_v1.util.Util.isFriendly;
-
-import caterpillow_v1.util.TowerTracker;
 import caterpillow_v1.world.GameStage;
 
 public class Game {

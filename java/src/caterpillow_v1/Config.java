@@ -1,31 +1,34 @@
 package caterpillow_v1;
 
-import battlecode.common.MapLocation;
-import battlecode.common.UnitType;
-import caterpillow_v1.util.TowerTracker;
-
+import static java.lang.Math.max;
 import java.util.Random;
 
-import static caterpillow_v1.Game.*;
-import static caterpillow_v1.util.Util.*;
-import static java.lang.Math.max;
+import battlecode.common.MapLocation;
+import battlecode.common.UnitType;
+import static caterpillow_v1.Game.origin;
+import static caterpillow_v1.Game.rc;
+import static caterpillow_v1.Game.trng;
+import caterpillow_v1.util.TowerTracker;
+import static caterpillow_v1.util.Util.maxedTowers;
+import static caterpillow_v1.util.Util.project;
+import static caterpillow_v1.util.Util.subtract;
 
 public class Config {
 
-    public static double targetRatio = 0.75; // fraction of towers that should be coin
+    public static double targetRatio = 0.8; // fraction of towers that should be coin
 
     public static boolean canUpgrade(int level) {
         if (level == 2) {
             if (maxedTowers()) {
-                return rc.getChips() >= 4000;
+                return rc.getChips() >= 3000;
             } else {
-                return rc.getChips() >= 5000;
+                return rc.getChips() >= 400;
             }
         } else if (level == 3) {
             if (maxedTowers()) {
-                return rc.getChips() >= 8000;
+                return rc.getChips() >= 6000;
             } else {
-                return rc.getChips() >= 12000;
+                return rc.getChips() >= 7000;
             }
         }
         assert false : "wtf";

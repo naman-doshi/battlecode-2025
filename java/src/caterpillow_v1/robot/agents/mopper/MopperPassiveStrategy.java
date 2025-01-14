@@ -1,22 +1,27 @@
 package caterpillow_v1.robot.agents.mopper;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
-import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow_v1.Game;
 import static caterpillow_v1.Game.rc;
 import caterpillow_v1.robot.Strategy;
-import caterpillow_v1.util.GamePredicate;
+import caterpillow_v1.robot.agents.WeakRefillStrategy;
 import caterpillow_v1.util.GameSupplier;
-
-import static caterpillow_v1.util.Util.*;
-import static caterpillow_v1.Game.*;
+import static caterpillow_v1.util.Util.getNearestCell;
+import static caterpillow_v1.util.Util.getNearestRobot;
+import static caterpillow_v1.util.Util.guessEnemyLocs;
+import static caterpillow_v1.util.Util.isCellInTowerBounds;
+import static caterpillow_v1.util.Util.isEnemyAgent;
+import static caterpillow_v1.util.Util.isFriendly;
+import static caterpillow_v1.util.Util.isInAttackRange;
+import static caterpillow_v1.util.Util.isPaintBelowHalf;
+import static caterpillow_v1.util.Util.missingPaint;
 
 public class MopperPassiveStrategy extends Strategy {
 
@@ -26,6 +31,7 @@ public class MopperPassiveStrategy extends Strategy {
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
     public List<GameSupplier<MapInfo>> suppliers;
+    WeakRefillStrategy refillStrategy;
 
     public MopperPassiveStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
@@ -83,6 +89,32 @@ public class MopperPassiveStrategy extends Strategy {
             enemyLocs.removeFirst();
             enemy = enemyLocs.get(0);
 
+        }
+
+        // try refill ourselves
+        if (refillStrategy != null) {
+            if (refillStrategy.isComplete()) {
+                refillStrategy = null;
+                runTick();
+            } else {
+                refillStrategy.runTick();
+                //System.out.println("running refill strat");
+            }
+            return;
+        }
+
+        if (isPaintBelowHalf()) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+                runTick();
+            }
+        }
+
+        // fill bots we can see, if possible
+        RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isRobotType() && isPaintBelowHalf(b) && rc.getLocation().distanceSquaredTo(b.getLocation()) <= 2 && b.getType() != UnitType.MOPPER);
+        if (nearest != null && rc.canTransferPaint(nearest.getLocation(), 10)) {
+            rc.transferPaint(nearest.getLocation(), 10);
         }
 
         for (GameSupplier<MapInfo> pred : suppliers) {
