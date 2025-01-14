@@ -48,6 +48,8 @@ public class Splasher extends Agent {
             }
 
             for (MapInfo neigh : rc.senseNearbyMapInfos(info.getMapLocation(), 2)) {
+                if (neigh.isWall()) continue;
+                
                 if (neigh.getPaint().isEnemy()) {
                     enemyTiles++;
                 }
