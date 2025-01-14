@@ -31,7 +31,17 @@ public class Splasher extends Agent {
 
     public MapLocation bestAttackLocation() throws GameActionException {
         
+        
+
         MapInfo[] attackable = rc.senseNearbyMapInfos(4);
+
+        //if we can bomb an enemy tower, do it
+        for (MapInfo info : attackable) {
+            if (info.hasRuin() && rc.senseRobotAtLocation(info.getMapLocation()) != null && rc.senseRobotAtLocation(info.getMapLocation()).getTeam() != rc.getTeam()) {
+                return info.getMapLocation();
+            }
+        }
+
         // check if u can bomb only enemy/neutral tiles
         int bestEnemyTiles = 0;
         int bestNeutralTiles = 0;
@@ -42,13 +52,14 @@ public class Splasher extends Agent {
             int allyTiles = 0;
             boolean bad = false;
             
-            if (info.hasRuin() || info.isWall() || isEdge(info.getMapLocation())) {
+            if (isEdge(info.getMapLocation())) {
                 //System.out.println("bad " + info.getMapLocation());
                 continue;
             }
 
             for (MapInfo neigh : rc.senseNearbyMapInfos(info.getMapLocation(), 2)) {
-                if (neigh.isWall()) continue;
+                
+                if (neigh.isWall() || neigh.hasRuin()) continue;
                 
                 if (neigh.getPaint().isEnemy()) {
                     enemyTiles++;
@@ -62,7 +73,7 @@ public class Splasher extends Agent {
 
 
                 // adjustable
-                if (allyTiles >= 1) {
+                if (allyTiles > 2) {
                     bad = true;
                     break;
                 }
@@ -84,12 +95,6 @@ public class Splasher extends Agent {
             return bestLoc;
         }
 
-        //if we can bomb an enemy tower, do it
-        for (MapInfo info : attackable) {
-            if (info.hasRuin() && rc.senseRobotAtLocation(info.getMapLocation()) != null && rc.senseRobotAtLocation(info.getMapLocation()).getTeam() != rc.getTeam()) {
-                return info.getMapLocation();
-            }
-        }
         return null;
     }
 

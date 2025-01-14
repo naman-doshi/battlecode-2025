@@ -9,10 +9,12 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.RetreatStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isPaintBelowHalf;
 import static caterpillow.util.Util.missingPaint;
@@ -49,21 +51,25 @@ public class SplasherAggroStrategy extends Strategy {
                 bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.4);
                 bot.runTick();
                 return;
+            } else if (rc.getPaint() < 50) {
+                indicate("retreating with " + rc.getPaint());
+                bot.secondaryStrategy = new RetreatStrategy();
+                bot.runTick();
+                return;
             }
-        }
+        } 
+        
+        
 
         MapLocation target = bot.bestAttackLocation();
         if (target != null) {
+            indicate("attacking "+target);
             
             if (rc.canAttack(target)) {
                 rc.attack(target);
             }
 
-            // target would only be a ruin if it's an enemy tower
-            // BUT we dont want to approach it otherwise it'll attack us
-            if (rc.canSenseLocation(target) && !rc.senseMapInfo(target).hasRuin())  {
-                bot.pathfinder.makeMove(target);
-            }
+            bot.pathfinder.makeMove(target);
             
         } else {
             roamStrategy.runTick();
