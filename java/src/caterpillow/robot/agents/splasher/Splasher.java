@@ -38,7 +38,7 @@ public class Splasher extends Agent {
         }
 
         // check if u can bomb only enemy/neutral tiles
-        int bestEnemyTiles = 0;
+        int bestEnemyTiles = 3;
         MapLocation bestLoc = null;
         for (MapInfo info : attackable) {
             int cur = 0;
@@ -46,10 +46,6 @@ public class Splasher extends Agent {
             for (MapInfo neigh : rc.senseNearbyMapInfos(info.getMapLocation(), 2)) {
                 if (neigh.getPaint().isEnemy()) {
                     cur++;
-                }
-                if (neigh.getPaint().isAlly()) {
-                    bad = true;
-                    break;
                 }
             }
             if (!bad && cur >= bestEnemyTiles) {

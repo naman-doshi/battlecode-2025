@@ -3,8 +3,8 @@ package caterpillow.pathfinding;
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
-
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -153,7 +153,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public void makeMove(MapLocation to) throws GameActionException {
         if (rc.isMovementReady()) {
             Direction dir = getMove(to);
-            if (dir != null) {
+            if (dir != null && rc.canMove(dir)) {
                 rc.move(dir);
             }
         }

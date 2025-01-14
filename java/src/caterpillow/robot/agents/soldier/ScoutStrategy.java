@@ -23,7 +23,6 @@ public class ScoutStrategy extends Strategy {
     List<MapLocation> goals;
 
     Agent bot;
-    UnitType towerPref;
 
     HandleRuinStrategy handleRuinStrategy;
     WeakRefillStrategy refillStrategy;
@@ -38,9 +37,8 @@ public class ScoutStrategy extends Strategy {
         traverse.runTick();
     }
 
-    public ScoutStrategy(UnitType towerPref) {
+    public ScoutStrategy() {
         bot = (Agent) Game.bot;
-        this.towerPref = towerPref;
         visitedRuins = new ArrayList<>();
         skippedRuins = new LinkedList<>();
         goals = new LinkedList<MapLocation>();

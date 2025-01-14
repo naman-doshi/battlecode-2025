@@ -1,18 +1,24 @@
 package caterpillow.robot.towers.paint;
 
-import battlecode.common.*;
-import caterpillow.Game;
-import caterpillow.packet.packets.SeedPacket;
-import caterpillow.packet.packets.StrategyPacket;
-import caterpillow.robot.Strategy;
-import caterpillow.robot.towers.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.UnitType;
+import caterpillow.Game;
+import static caterpillow.Game.gameStage;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
+import caterpillow.packet.packets.SeedPacket;
+import caterpillow.packet.packets.StrategyPacket;
+import caterpillow.robot.towers.RespawnStrategy;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import static caterpillow.util.Util.getSafeSpawnLoc;
+import static caterpillow.util.Util.indicate;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -43,7 +49,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
             case LATE:
             case MID:
             case EARLY:
-                if (rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST && time > 30) {
+                if (rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost) {
                     Random random = new Random(seed);
                     seed = random.nextInt();
                     todo += 1;
@@ -52,7 +58,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                     // just spawn adjacent
                     MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
                     if (spawn != null && rc.canBuildRobot(UnitType.SOLDIER, spawn.getMapLocation())) {
-                        bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(0));
+                        bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
                         todo--;
                         return;
                     }

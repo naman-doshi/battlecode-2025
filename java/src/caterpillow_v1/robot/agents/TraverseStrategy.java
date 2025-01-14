@@ -1,0 +1,34 @@
+package caterpillow_v1.robot.agents;
+
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import caterpillow_v1.Game;
+import caterpillow_v1.robot.Strategy;
+
+import static caterpillow_v1.Game.*;
+
+// *just* in case we optimise this in the future
+public class TraverseStrategy extends Strategy {
+
+    Agent bot;
+    MapLocation target;
+    int distSquared;
+
+    public TraverseStrategy(MapLocation target, int distSquared) {
+        bot = (Agent) Game.bot;
+        this.target = target;
+        this.distSquared = distSquared;
+    }
+
+    @Override
+    public boolean isComplete() {
+        return rc.getLocation().distanceSquaredTo(target) <= distSquared;
+    }
+
+    @Override
+    public void runTick() throws GameActionException {
+        if (!rc.isMovementReady()) return;
+        bot.pathfinder.makeMove(target);
+        rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
+    }
+}

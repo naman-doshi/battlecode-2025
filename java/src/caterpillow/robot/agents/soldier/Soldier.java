@@ -3,8 +3,6 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
-import battlecode.common.UnitType;
-import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
@@ -46,18 +44,15 @@ public class Soldier extends Agent {
         switch (packet.strategyID) {
             case 0:
                 // init to root
-                primaryStrategy = new StarterStrategy(rc.senseRobotAtLocation(origin).getType());
+                primaryStrategy = new StarterStrategy(rc.senseRobotAtLocation(home).getType());
                 break;
             case 1:
-                primaryStrategy = new SRPStrategy(rc.senseRobotAtLocation(origin).getType());
+                primaryStrategy = new SRPStrategy();
                 break;
             case 2:
-                primaryStrategy = new ScoutStrategy(UnitType.LEVEL_ONE_PAINT_TOWER);
+                primaryStrategy = new ScoutStrategy();
                 break;
             case 3:
-                primaryStrategy = new ScoutStrategy(UnitType.LEVEL_ONE_MONEY_TOWER);
-                break;
-            case 4:
                 primaryStrategy = new SnipeAndBuildStrategy();
                 break;
         }
