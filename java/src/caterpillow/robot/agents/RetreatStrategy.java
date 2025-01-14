@@ -1,12 +1,9 @@
 package caterpillow.robot.agents;
 
-import java.util.Random;
-
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.Game.seed;
 import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.indicate;
 
@@ -14,12 +11,11 @@ import static caterpillow.util.Util.indicate;
 public class RetreatStrategy extends Strategy {
 
     Agent bot;
-    MapInfo target;
-    Random rng;
+    MapLocation target;
 
     public RetreatStrategy() {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+        target = Game.origin;
     }
 
     @Override
@@ -29,10 +25,9 @@ public class RetreatStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("RETREATING");
+        indicate("RETREATING to " + target);
         if (!rc.isMovementReady()) return;
-
-        bot.pathfinder.makeMove(Game.origin);
+        bot.pathfinder.makeMove(target);
         
     }
 }
