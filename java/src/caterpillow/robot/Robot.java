@@ -2,7 +2,6 @@ package caterpillow.robot;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.packet.packets.OriginPacket;

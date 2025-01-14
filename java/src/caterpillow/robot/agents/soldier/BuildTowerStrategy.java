@@ -2,7 +2,6 @@ package caterpillow.robot.agents.soldier;
 
 import battlecode.common.*;
 import caterpillow.Game;
-import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
@@ -143,6 +142,9 @@ public class BuildTowerStrategy extends QueueStrategy {
     @Override
     public boolean isComplete() throws GameActionException {
         if (!super.isComplete()) return false;
+        if (maxedTowers()) {
+            return true;
+        }
         if (!rc.canSenseLocation(target)) {
             return false;
         }

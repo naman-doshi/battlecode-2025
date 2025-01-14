@@ -1,24 +1,16 @@
 package caterpillow.robot.towers.paint;
 
+import battlecode.common.*;
+import caterpillow.Game;
+import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.spawner.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.UnitType;
-import caterpillow.Game;
-import static caterpillow.Game.gameStage;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.seed;
-import caterpillow.packet.packets.SeedPacket;
-import caterpillow.packet.packets.StrategyPacket;
-import caterpillow.robot.towers.RespawnStrategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerAttackStrategy;
-import caterpillow.robot.towers.TowerStrategy;
-import static caterpillow.util.Util.getSafeSpawnLoc;
-import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -35,6 +27,14 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
+        strats.add(new SpawnerStrategy(
+                    new ScoutSpawner(),
+                    new ScoutSpawner(),
+                    new LoopedSpawner(
+                            new SRPSpawner(),
+                            new OffenceMopperSpawner()
+                    )
+        ));
     }
 
     @Override
@@ -42,28 +42,6 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         indicate("STARTER");
         for (TowerStrategy strat : strats) {
             strat.runTick();
-        }
-        switch (gameStage) {
-            // TODO: implement strategies for all game times
-            // currently just spam soldiers
-            case LATE:
-            case MID:
-            case EARLY:
-                if (rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost) {
-                    Random random = new Random(seed);
-                    seed = random.nextInt();
-                    todo += 1;
-                }
-                if (todo > 0) {
-                    // just spawn adjacent
-                    MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                    if (spawn != null && rc.canBuildRobot(UnitType.SOLDIER, spawn.getMapLocation())) {
-                        bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                        todo--;
-                        return;
-                    }
-                }
-                break;
         }
     }
 }

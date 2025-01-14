@@ -23,7 +23,7 @@ public class Splasher extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder();
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
         primaryStrategy = new SplasherAggroStrategy();
         bot = (Splasher) Game.bot;
     }
@@ -38,7 +38,7 @@ public class Splasher extends Agent {
         }
 
         // check if u can bomb only enemy/neutral tiles
-        int bestEnemyTiles = 3;
+        int bestEnemyTiles = 0;
         MapLocation bestLoc = null;
         for (MapInfo info : attackable) {
             int cur = 0;
@@ -46,6 +46,10 @@ public class Splasher extends Agent {
             for (MapInfo neigh : rc.senseNearbyMapInfos(info.getMapLocation(), 2)) {
                 if (neigh.getPaint().isEnemy()) {
                     cur++;
+                }
+                if (neigh.getPaint().isAlly()) {
+                    bad = true;
+                    break;
                 }
             }
             if (!bad && cur >= bestEnemyTiles) {
@@ -60,11 +64,13 @@ public class Splasher extends Agent {
         return null;
     }
 
+    public static final int AGGRO_STRAT = 0;
+
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-            case 0:
+            case AGGRO_STRAT:
                 primaryStrategy = new SplasherAggroStrategy();
                 break;
         }

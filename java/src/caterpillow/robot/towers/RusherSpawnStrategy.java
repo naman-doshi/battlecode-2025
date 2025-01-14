@@ -4,7 +4,6 @@ import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
-import caterpillow.robot.Strategy;
 
 import java.util.Random;
 

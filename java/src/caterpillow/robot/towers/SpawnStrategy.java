@@ -2,7 +2,6 @@ package caterpillow.robot.towers;
 
 import battlecode.common.*;
 import caterpillow.Game;
-import caterpillow.robot.Strategy;
 import caterpillow.world.GameStage;
 
 import static caterpillow.util.Util.*;

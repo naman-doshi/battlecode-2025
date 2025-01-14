@@ -10,10 +10,9 @@ import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
+import caterpillow.util.TowerTracker;
 import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
-
-import caterpillow.util.TowerTracker;
 import caterpillow.world.GameStage;
 
 public class Game {
@@ -32,8 +31,6 @@ public class Game {
     public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
     public static Map<Integer, Integer> lastPainted;
 
-    private static int midTime, lateTime;
-
     // this is called *before* the robot object is instantiated
     public static void preInit() throws GameActionException {
         Game.pm = new PacketManager();
@@ -51,8 +48,6 @@ public class Game {
                 origin = nearest.getLocation();
             }
         }
-        midTime = 200 + (rc.getMapWidth() * rc.getMapHeight()) / 6; // random ass formula
-        lateTime = midTime + (rc.getMapWidth() * rc.getMapHeight()) / 6;
         centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
         gameStage = GameStage.EARLY;
         seed = 0;
@@ -63,11 +58,8 @@ public class Game {
     }
 
     public static void upd() {
-        if (time == midTime) {
+        if (time - TowerTracker.lastTowerChange > 50) {
             gameStage = GameStage.MID;
-        }
-        if (time == lateTime) {
-            gameStage = GameStage.LATE;
         }
     }
 }

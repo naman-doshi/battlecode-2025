@@ -4,8 +4,6 @@ import battlecode.common.MapLocation;
 import caterpillow.packet.Packet;
 
 import static caterpillow.Game.rc;
-import static caterpillow.util.TowerTracker.MAX_TOWER_BITS;
-import static caterpillow.util.Util.println;
 
 public class InitPacket extends Packet {
     public MapLocation loc;

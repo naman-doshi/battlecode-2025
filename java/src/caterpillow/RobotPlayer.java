@@ -10,8 +10,6 @@ import caterpillow.robot.towers.defence.DefenceTower;
 import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.util.TowerTracker;
 
-import static caterpillow.util.Util.*;
-
 public class RobotPlayer {
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {

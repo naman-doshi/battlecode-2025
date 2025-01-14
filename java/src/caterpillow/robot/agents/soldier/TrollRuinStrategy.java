@@ -3,8 +3,6 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Agent;
-import caterpillow.util.Pair;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;

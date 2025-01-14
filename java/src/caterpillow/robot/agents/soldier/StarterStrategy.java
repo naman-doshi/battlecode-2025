@@ -1,7 +1,6 @@
 package caterpillow.robot.agents.soldier;
 
 import battlecode.common.GameActionException;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
@@ -28,7 +27,7 @@ public class StarterStrategy extends QueueStrategy {
     Strategy mainStrat;
     Strategy homework;
 
-    public StarterStrategy(UnitType type) {
+    public StarterStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         mainStrat = new ScoutStrategy();
         homework = new LinkStrategy(bot.home);

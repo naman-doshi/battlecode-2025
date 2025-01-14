@@ -5,61 +5,55 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.util.Pair;
-import caterpillow.util.TowerTracker;
-import static caterpillow.util.Util.checkerboardPaint;
-import static caterpillow.util.Util.decodeLoc;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.getSRPIds;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.missingPaint;
-import static caterpillow.util.Util.project;
-import static caterpillow.util.Util.subtract;
+
+import static caterpillow.Game.*;
+import static caterpillow.Config.*;
+import static caterpillow.util.Util.*;
+import static caterpillow.world.GameStage.MID;
 
 public class SRPStrategy extends Strategy {
 
     public Soldier bot;
 
     // enemyLocs is more like "POI locs"
-    public List<MapLocation> enemyLocs;
+//    public List<MapLocation> enemyLocs;
     public MapLocation enemy;
     HandleRuinStrategy handleRuinStrategy;
     WeakRefillStrategy refillStrategy;
     int skipCooldown = 0;
     ArrayList<MapLocation> visitedRuins;
     LinkedList<Pair<MapLocation, Integer>> skippedRuins;
-    int towerstratcooldown;
+    int towerStratCooldown;
+    Random rng;
 
     public SRPStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
+        rng = new Random(seed);
 
         // cursed way to only keep the first elem but idc
-        this.enemyLocs = guessEnemyLocs(bot.home);
-        this.enemyLocs.removeLast();
-        this.enemyLocs.removeLast();
-        
-        this.enemy = enemyLocs.get(0);
+//        this.enemyLocs = guessEnemyLocs(bot.home);
+//        this.enemyLocs.removeLast();
+//        this.enemyLocs.removeLast();
+//
+//        this.enemy = enemyLocs.get(0);
+        enemy = genExplorationTarget(rng);
+
 
         visitedRuins = new ArrayList<>();
         skippedRuins = new LinkedList<>();
-        towerstratcooldown = 0;
+        towerStratCooldown = 0;
 
         skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
-        Direction[] dirs = Direction.values();
         
     }
 
@@ -69,158 +63,11 @@ public class SRPStrategy extends Strategy {
     }
 
     public void safeMove(MapLocation loc) throws GameActionException {
-        // conserve bytecode
-        Direction[] dirs = Direction.values();
-        Direction dir = rc.getLocation().directionTo(loc);
-        MapLocation current = rc.getLocation();
-        if (dir == Direction.NORTH) {
-            if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && !rc.senseMapInfo(current.add(Direction.NORTH)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTH);
-                return;
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && !rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHWEST);
-                return;
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && !rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHEAST);
-                return;
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && !rc.senseMapInfo(current.add(Direction.EAST)).getPaint().isEnemy()) {
-                rc.move(Direction.EAST);
-                return;
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && !rc.senseMapInfo(current.add(Direction.WEST)).getPaint().isEnemy()) {
-                rc.move(Direction.WEST);
-                return;
-            }
-        } else if (dir == Direction.SOUTH) {
-            if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && !rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTH);
-                return;
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && !rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHWEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && !rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHEAST);
-                return;
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && !rc.senseMapInfo(current.add(Direction.EAST)).getPaint().isEnemy()) {
-                rc.move(Direction.EAST);
-                return;
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && !rc.senseMapInfo(current.add(Direction.WEST)).getPaint().isEnemy()) {
-                rc.move(Direction.WEST);
-                return;
-            }
-        } else if (dir == Direction.EAST) {
-            if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && !rc.senseMapInfo(current.add(Direction.EAST)).getPaint().isEnemy()) {
-                rc.move(Direction.EAST);
-                return;
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && !rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHEAST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && !rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHEAST);
-                return;
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && !rc.senseMapInfo(current.add(Direction.NORTH)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTH);
-                return;
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && !rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTH);
-                return;
-            }
-        } else if (dir == Direction.WEST) {
-            if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && !rc.senseMapInfo(current.add(Direction.WEST)).getPaint().isEnemy()) {
-                rc.move(Direction.WEST);
-                return;
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && !rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHWEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && !rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHWEST);
-                return;
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && !rc.senseMapInfo(current.add(Direction.NORTH)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTH);
-                return;
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && !rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTH);
-                return;
-            }
-        } else if (dir == Direction.NORTHWEST) {
-            if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && !rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHWEST);
-                return;
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && !rc.senseMapInfo(current.add(Direction.NORTH)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTH);
-                return;
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && !rc.senseMapInfo(current.add(Direction.WEST)).getPaint().isEnemy()) {
-                rc.move(Direction.WEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && !rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHWEST);
-                return;
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && !rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHEAST);
-                return;
-            }
-        } else if (dir == Direction.NORTHEAST) {
-            if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && !rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHEAST);
-                return;
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && !rc.senseMapInfo(current.add(Direction.NORTH)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTH);
-                return;
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && !rc.senseMapInfo(current.add(Direction.EAST)).getPaint().isEnemy()) {
-                rc.move(Direction.EAST);
-                return;
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && !rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHWEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && !rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHEAST);
-                return;
-            }
-        } else if (dir == Direction.SOUTHWEST) {
-            if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && !rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHWEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && !rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTH);
-                return;
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && !rc.senseMapInfo(current.add(Direction.WEST)).getPaint().isEnemy()) {
-                rc.move(Direction.WEST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && !rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHEAST);
-                return;
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && !rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHWEST);
-                return;
-            }
-        } else if (dir == Direction.SOUTHEAST) {
-            if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && !rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHEAST);
-                return;
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && !rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTH);
-                return;
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && !rc.senseMapInfo(current.add(Direction.EAST)).getPaint().isEnemy()) {
-                rc.move(Direction.EAST);
-                return;
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && !rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint().isEnemy()) {
-                rc.move(Direction.SOUTHWEST);
-                return;
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && !rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint().isEnemy()) {
-                rc.move(Direction.NORTHEAST);
-                return;
-            }
-
-            for (Direction d : dirs) {
-                if (rc.canMove(d)) {
-                    rc.move(d);
-                    return;
-                }
-            }
-
+        if (rc.getLocation().isAdjacentTo(loc) && !rc.senseMapInfo(loc).getPaint().isAlly()) {
+            return;
         }
-
-
-        
+        // wait until andy's buffed pathfinder
+        bot.pathfinder.makeMove(loc);
     }
 
     void refresh() {
@@ -229,31 +76,29 @@ public class SRPStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("srp");
-        //refresh();
-        towerstratcooldown--;
+        indicate("SRP");
+        refresh();
+        towerStratCooldown--;
         // TODO: better scouting system!!!
 
-        //rc.setIndicatorLine(rc.getLocation(), enemy, 255, 255, 0);
-
-        
         if (rc.canSenseLocation(enemy)) {
             // if we can see the enemy, just go to the next enemy loc.
-            enemyLocs.removeFirst();
+//            enemyLocs.removeFirst();
+//            enemyLocs.add(Config.genExplorationTarget());
 
             // procedurally gen the next one
-            while (enemyLocs.size() < 1) {
-                Random rng = new Random();
-                int x = rng.nextInt(0, rc.getMapWidth() - 1);
-                int y = rng.nextInt(0, rc.getMapHeight() - 1);
-                if (new MapLocation(x, y).distanceSquaredTo(rc.getLocation()) >= 9) {
-                    MapLocation moveDir = subtract(new MapLocation(x, y), rc.getLocation());
-                    enemyLocs.addLast(project(rc.getLocation(), moveDir, (double) (rc.getMapWidth() + rc.getMapHeight()) / 2));
-                }
-            }
+//            while (enemyLocs.size() < 1) {
+//                Random rng = new Random();
+//                int x = rng.nextInt(0, rc.getMapWidth() - 1);
+//                int y = rng.nextInt(0, rc.getMapHeight() - 1);
+//                if (new MapLocation(x, y).distanceSquaredTo(rc.getLocation()) >= 9) {
+//                    MapLocation moveDir = subtract(new MapLocation(x, y), rc.getLocation());
+//                    enemyLocs.addLast(project(rc.getLocation(), moveDir));
+//                }
+//            }
             
-            enemy = enemyLocs.getFirst();
-            
+//            enemy = enemyLocs.getFirst();
+            enemy = Config.genExplorationTarget(rng);
             //indicate("NEW ENEMY LOC: " + enemy);
         }
 
@@ -265,13 +110,14 @@ public class SRPStrategy extends Strategy {
                     visitedRuins.add(handleRuinStrategy.target);
                 }
                 handleRuinStrategy = null;
-                towerstratcooldown = 40;
+                towerStratCooldown = 30;
                 runTick();
             } else {
                 handleRuinStrategy.runTick();
             }
             return;
         }
+
 
         if (refillStrategy != null) {
             if (refillStrategy.isComplete()) {
@@ -287,12 +133,24 @@ public class SRPStrategy extends Strategy {
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
+                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
                 runTick();
             }
         }
 
-        
+        if (maxedTowers()) {
+            for (int level = 2; level <= 3; level++) {
+                if (canUpgrade(level)) {
+                    int finalLevel = level;
+                    RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
+                    if (nearest != null) {
+                        bot.secondaryStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
+                        bot.runTick();
+                        return;
+                    }
+                }
+            }
+        }
 
         // first: it obviously needs to be the wrong colour, non-enemy paint, and passable
         // second: if it's outside a ruin OR a neutral colour, obviously paint it
@@ -310,36 +168,47 @@ public class SRPStrategy extends Strategy {
             }
         }
 
+        if (gameStage.equals(MID)) {
+            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            if (enemyTower != null) {
+                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                bot.runTick();
+                return;
+            }
+        }
+
         MapInfo target = null;
         for (MapInfo cell : rc.senseNearbyMapInfos()) {
             if (cell.getPaint() != checkerboardPaint(cell.getMapLocation()) && cell.isPassable() && !cell.getPaint().isEnemy()) {
                 // needs painting and is paintable
-                if (target == null || target.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
-                        target = cell;
+                boolean b = true;
+                for (MapLocation ruin : ruins) {
+                    if (isCellInTowerBounds(ruin, cell.getMapLocation())) {
+                        b = false;
+                        break;
+                    }
                 }
+                if (b) {
+                    // dont block ourselves from building tower
+                    if (target == null || target.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
+                        target = cell;
+                    }
+                }
+//                }
             }
         }
+
+
 
         //System.out.println("Left after target selection: " + Clock.getBytecodesLeft());
         
         if (target != null) {
             if (rc.canAttack(target.getMapLocation())) {
                 bot.checkerboardAttack(target.getMapLocation());
-                // try complete the SRP i just attacked
-                List<Integer> srpIDs = getSRPIds(target.getMapLocation());
-                for (int id : srpIDs) {
-                    MapLocation srpLoc = decodeLoc(id);
-                    if (rc.canCompleteResourcePattern(srpLoc)) {
-                        rc.completeResourcePattern(srpLoc);
-                    }
-                }
             } else {
-                indicate("moving to target " + target.getMapLocation());
                 safeMove(target.getMapLocation());
-                //indicate("moving to target " + target.getMapLocation());
             }
         } else {
-            indicate("moving to enemy " + enemy);
             safeMove(enemy);
             //indicate("moving to enemy");
         }
@@ -348,15 +217,15 @@ public class SRPStrategy extends Strategy {
         //     System.out.println("Ran out of bytecodes");
         // }
 
-        
-        if (towerstratcooldown > 0) {
+        //System.out.println("Left after atk: " + Clock.getBytecodesLeft());
+        if (towerStratCooldown > 0) {
             return;
         }
-        
+
         MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
         if (target1 != null) {
-            System.out.println("starting handle ruin strat");
-            handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), TowerTracker.getNextType());
+            println("starting handle ruin strat");
+            handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType());
             runTick();
             return;
         }

@@ -28,6 +28,7 @@ public class MopperDefenceStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
+        indicate("DEFENCE MOPPER");
         RobotInfo target = getNearestRobot(bot -> !isFriendly(bot));
         bot.pathfinder.makeMove(target.getLocation());
 

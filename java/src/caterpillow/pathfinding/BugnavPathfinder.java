@@ -2,6 +2,7 @@ package caterpillow.pathfinding;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
@@ -13,19 +14,13 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public Direction topDir;
     public int stackSize;
     public boolean leftTurn = false;
-    public GamePredicate<MapLocation> avoid;
+    public GamePredicate<MapInfo> avoid;
 
-    public BugnavPathfinder(GamePredicate<MapLocation> avoid) {
-        this.avoid = loc -> {
-            if(loc.distanceSquaredTo(rc.getLocation()) > 2) return true;
-            return !rc.canMove(rc.getLocation().directionTo(loc)) || avoid.test(loc);
-        };
+    public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
+        this.avoid = avoid;
     }
     public BugnavPathfinder() {
-        this.avoid = loc -> {
-            if(loc.distanceSquaredTo(rc.getLocation()) > 2) return true;
-            return !rc.canMove(rc.getLocation().directionTo(loc));
-        };
+        this.avoid = m -> false;
     }
 
     @Override
@@ -38,7 +33,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
             stackSize = 0;
             topDir = bottomDir = rc.getLocation().directionTo(target);
         }
-        // rc.setIndicatorString("BACKTURNING " + topDir + " " + bottomDir + " " + leftTurn + " " + stackSize);
         if (leftTurn) {
             if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
                 if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
@@ -56,12 +50,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if (stackSize >= 2 && !avoid.test(rc.getLocation().add(topDir.rotateRight().rotateRight()))) {
+            if (stackSize >= 2 && rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) {
                 stackSize -= 2;
                 topDir = topDir.rotateRight().rotateRight();
                 return topDir;
             }
-            if (stackSize >= 1 && !avoid.test(rc.getLocation().add(topDir.rotateRight()))) {
+            if (stackSize >= 1 && rc.canMove(topDir.rotateRight()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.rotateRight())))) {
                 stackSize--;
                 topDir = topDir.rotateRight();
             }
@@ -82,7 +76,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if (stackSize >= 2 && !avoid.test(rc.getLocation().add(topDir.rotateLeft().rotateLeft()))) {
+            if (stackSize >= 2 && rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) {
                 stackSize -= 2;
                 topDir = topDir.rotateLeft().rotateLeft();
                 return topDir;
@@ -122,7 +116,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
             }
         }
         int iters = 0;
-        while(avoid.test(rc.getLocation().add(topDir))) {
+        while(!rc.canMove(topDir) || avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir)))) {
             MapLocation nextLoc = rc.getLocation().add(topDir);
             // avoid following the edge of the map
             if(nextLoc.x < 0 || nextLoc.y < 0 || nextLoc.x >= rc.getMapWidth() || nextLoc.y >= rc.getMapHeight()) {
@@ -131,8 +125,8 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 continue;
             }
             if (stackSize == 0) {
-                if (!avoid.test(rc.getLocation().add(topDir.rotateRight().rotateRight()))) leftTurn = false;
-                else if (!avoid.test(rc.getLocation().add(topDir.rotateLeft().rotateLeft()))) leftTurn = true;
+                if (rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) leftTurn = false;
+                else if (rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) leftTurn = true;
                 else leftTurn = trng.nextInt(0, 1) == 1; // change later
             }
             if (leftTurn) topDir = topDir.rotateLeft();

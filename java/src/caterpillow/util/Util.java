@@ -7,6 +7,7 @@ import java.util.*;
 
 import static caterpillow.Game.*;
 import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 public class Util {
     public static final int VISION_RAD = 20;
@@ -242,10 +243,12 @@ public class Util {
         for (Direction dir : directions) {
             if (dir == Direction.CENTER) continue;
             MapLocation newLoc = rc.getLocation().add(dir);
-            MapInfo newInfo = rc.senseMapInfo(newLoc);
-            if (pred.test(newInfo)) {
-                if (best == null || rc.getLocation().add(best).distanceSquaredTo(dest) > newLoc.distanceSquaredTo(dest)) {
-                    best = dir;
+            if (rc.onTheMap(newLoc)) {
+                MapInfo newInfo = rc.senseMapInfo(newLoc);
+                if (pred.test(newInfo)) {
+                    if (best == null || rc.getLocation().add(best).distanceSquaredTo(dest) > newLoc.distanceSquaredTo(dest)) {
+                        best = dir;
+                    }
                 }
             }
         }
@@ -309,6 +312,10 @@ public class Util {
         }, c -> {
             return rc.canBuildRobot(type, c.getMapLocation());
         });
+    }
+
+    public static boolean maxedTowers() {
+        return rc.getNumberTowers() == 25;
     }
 
     public static MapInfo getSafeSpawnLoc(UnitType type) throws GameActionException {
@@ -474,8 +481,10 @@ public class Util {
 
 
     public static boolean isTowerBeingBuilt(MapLocation target) throws GameActionException {
-        MapInfo info = rc.senseMapInfo(target.add(Direction.NORTH));
-        return !info.getMark().equals(PaintType.EMPTY);
+        if (rc.canSenseLocation(target.add(Direction.NORTH))) {
+            MapInfo info = rc.senseMapInfo(target.add(Direction.NORTH));
+            return !info.getMark().equals(PaintType.EMPTY);
+        } else return false;
     }
 
     public static MapLocation getOpposite(MapLocation cur) {
@@ -536,5 +545,21 @@ public class Util {
 
     }
 
-    
+    public static MapInfo getNeighbourSpawnLoc(UnitType type) throws GameActionException {
+        return getBestCell((MapInfo c1, MapInfo c2) -> {
+            int p1 = paintPriority(c1.getPaint());
+            int p2 = paintPriority(c2.getPaint());
+            if (p1 != p2) {
+                if (p1 > p2) return c1;
+                else return c2;
+            }
+            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                return c1;
+            } else {
+                return c2;
+            }
+        }, c -> {
+            return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1;
+        });
+    }
 }

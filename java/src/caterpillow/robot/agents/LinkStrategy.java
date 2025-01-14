@@ -15,13 +15,14 @@ public class LinkStrategy extends Strategy {
     MapLocation target;
 
     public LinkStrategy(MapLocation target) {
+        assert target != null;
         bot = (Agent) Game.bot;
         this.target = target;
     }
 
     @Override
-    public boolean isComplete() {
-        return rc.canSendMessage(target);
+    public boolean isComplete() throws GameActionException {
+        return rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null && rc.canSendMessage(target);
     }
 
     @Override

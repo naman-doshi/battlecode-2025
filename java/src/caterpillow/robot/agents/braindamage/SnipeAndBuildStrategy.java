@@ -8,7 +8,6 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.soldier.AttackTowerStrategy;
-import caterpillow.robot.agents.HomeStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.soldier.BuildTowerStrategy;
 import caterpillow.util.Pair;

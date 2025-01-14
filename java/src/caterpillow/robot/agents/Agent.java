@@ -1,8 +1,8 @@
 package caterpillow.robot.agents;
 
 import battlecode.common.*;
+import caterpillow.Config;
 import caterpillow.packet.packets.InitPacket;
-import caterpillow.packet.packets.OriginPacket;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
@@ -61,7 +61,7 @@ public abstract class Agent extends Robot {
             // rip parent died
             // tiny edge case where your spawning tower dies at the same time you spawn
             MapInfo ruin = getNearestCell(c -> c.hasRuin());
-            UnitType type = TowerTracker.getNextType();
+            UnitType type = Config.getNextType();
             if (rc.canCompleteTowerPattern(type, ruin.getMapLocation())) {
                 rc.completeTowerPattern(type, ruin.getMapLocation());
                 setParent(rc.senseRobotAtLocation(ruin.getMapLocation()));
@@ -75,6 +75,17 @@ public abstract class Agent extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
+        if (ticksExisted >= 3) {
+            for (MapInfo cell : rc.senseNearbyMapInfos()) {
+                MapLocation loc = cell.getMapLocation();
+                if (isSRPCenter(loc)) {
+                    if (rc.canCompleteResourcePattern(loc)) {
+                        rc.completeResourcePattern(loc);
+                    }
+                }
+            }
+        }
+
         if (secondaryStrategy != null) {
             if (secondaryStrategy.isComplete()) {
                 secondaryStrategy = null;

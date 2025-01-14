@@ -1,9 +1,9 @@
-//package caterpillow.util;
+//package caterpillow_v1.util;
 //
 //import battlecode.common.UnitType;
 //
-//import static caterpillow.util.Util.*;
-//import static caterpillow.Game.*;
+//import static caterpillow_v1.util.Util.*;
+//import static caterpillow_v1.Game.*;
 //import static java.lang.Math.max;
 //
 //public class TowerTracker {

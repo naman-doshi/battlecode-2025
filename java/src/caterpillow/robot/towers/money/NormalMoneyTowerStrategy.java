@@ -5,19 +5,19 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
-import caterpillow.packet.packets.SeedPacket;
-import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
-import static caterpillow.util.Util.TOWER_COST;
-import static caterpillow.util.Util.getSafeSpawnLoc;
+import caterpillow.robot.towers.spawner.LoopedSpawner;
+import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.SRPSpawner;
+import caterpillow.robot.towers.spawner.ScoutSpawner;
+import caterpillow.robot.towers.spawner.SpawnerStrategy;
+import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
 import static caterpillow.util.Util.indicate;
 
 public class NormalMoneyTowerStrategy extends TowerStrategy {
@@ -40,6 +40,16 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
+        strats.add(new SpawnerStrategy(
+                new ScoutSpawner(),
+                new LoopedSpawner(
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner(),
+                        new SRPSpawner(),
+                        new PassiveMopperSpawner(),
+                        new SplasherSRPSpawner()
+                )
+        ));
         nxt = 0;
     }
 
@@ -49,79 +59,5 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
-
-
-        int numTowers = rc.getNumberTowers();
-
-        if (numTowers <= 2) {
-            // shit code
-            if (nxt <= 3) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(2));
-                    nxt = trng.nextInt(10);
-                }
-            } else {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                    nxt = trng.nextInt(10);
-                }
-            }
-        } else if (numTowers < 20) {
-            if (nxt <= 2) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(2));
-                    nxt = trng.nextInt(10);
-                }
-            } else if (nxt <= 5) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                    nxt = trng.nextInt(10);
-                }
-            } else if (nxt <= 6) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.MOPPER);
-                if (spawn != null && rc.getPaint() >= UnitType.MOPPER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.MOPPER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.MOPPER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                    nxt = trng.nextInt(10);
-                }
-            } else {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SPLASHER);
-                if (spawn != null && rc.getPaint() >= UnitType.SPLASHER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SPLASHER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SPLASHER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(0));
-                    nxt = trng.nextInt(10);
-                }
-            }
-        } else {
-            if (nxt <= 1) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(2));
-                    nxt = trng.nextInt(10);
-                }
-            } else if (nxt <= 5) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SOLDIER);
-                if (spawn != null && rc.getPaint() >= UnitType.SOLDIER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SOLDIER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SOLDIER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                    nxt = trng.nextInt(10);
-                }
-            } else if (nxt <= 6) {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.MOPPER);
-                if (spawn != null && rc.getPaint() >= UnitType.MOPPER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.MOPPER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.MOPPER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(1));
-                    nxt = trng.nextInt(10);
-                }
-            } else {
-                MapInfo spawn = getSafeSpawnLoc(UnitType.SPLASHER);
-                if (spawn != null && rc.getPaint() >= UnitType.SPLASHER.paintCost + UnitType.MOPPER.paintCost && rc.getChips() >= UnitType.SPLASHER.moneyCost + UnitType.MOPPER.moneyCost + TOWER_COST) {
-                    bot.build(UnitType.SPLASHER, spawn.getMapLocation(), new SeedPacket(rng.nextInt()), new StrategyPacket(0));
-                    nxt = trng.nextInt(10);
-                }
-            }
-        }
-
-        
     }
 }

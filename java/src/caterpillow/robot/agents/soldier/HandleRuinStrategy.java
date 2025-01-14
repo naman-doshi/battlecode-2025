@@ -11,7 +11,6 @@ import caterpillow.robot.troll.QueueStrategy;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isTowerBeingBuilt;
 
-import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
 
 public class HandleRuinStrategy extends QueueStrategy {
@@ -20,6 +19,9 @@ public class HandleRuinStrategy extends QueueStrategy {
     Agent bot;
 
     public boolean didSkip() throws GameActionException {
+        if (maxedTowers()) {
+            return true;
+        }
         if (isTowerBeingBuilt(target)) {
             return false;
         }

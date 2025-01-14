@@ -9,17 +9,15 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.*;
+
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.robot.agents.roaming.AggroRoamStrategy;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.isCellInTowerBounds;
-import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isInAttackRange;
-import static caterpillow.util.Util.project;
-import static caterpillow.util.Util.subtract;
 
 public class MopperOffenceStrategy extends Strategy {
 
@@ -29,18 +27,24 @@ public class MopperOffenceStrategy extends Strategy {
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
     public List<GameSupplier<MapInfo>> suppliers;
+    Random rng;
+    public MapLocation lastSeenRuin;
+    WeakRefillStrategy refillStrategy;
+    Strategy roamStrategy;
 
     public MopperOffenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
         this.enemyLocs = guessEnemyLocs(bot.home);
         this.enemy = enemyLocs.get(0);
         enemyLocs.addLast(bot.home);
+        rng = new Random();
+
 
         suppliers = new ArrayList<>();
         // mop and attack (in range)
-        suppliers.add(() -> getNearestCell(c -> isInAttackRange(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation())) && c.getPaint().isEnemy()));
+        suppliers.add(() -> getNearestCell(c -> isInAttackRange(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation())) && !c.getPaint().isAlly()));
 //         attack (anything visible)
-        suppliers.add(() -> getNearestCell(c -> rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation()))));
+        suppliers.add(() -> getNearestCell(c -> rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation())) && !c.getPaint().isAlly()));
         // mop cell near ruin
         suppliers.add(() -> {
             ArrayList<MapLocation> ruins = new ArrayList<>();
@@ -63,120 +67,50 @@ public class MopperOffenceStrategy extends Strategy {
         });
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
+        roamStrategy = new AggroRoamStrategy();
     }
 
-    public MapLocation safeMove(MapLocation loc) throws GameActionException {
-        // conserve bytecode
-        Direction dir = rc.getLocation().directionTo(loc);
-        MapLocation current = rc.getLocation();
-        Direction[] dirs = Direction.values();
-        if (dir == Direction.NORTH) {
-            if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && rc.senseMapInfo(current.add(Direction.NORTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTH);
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHWEST);
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHEAST);
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && rc.senseMapInfo(current.add(Direction.EAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.EAST);
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && rc.senseMapInfo(current.add(Direction.WEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.WEST);
-            }
-        } else if (dir == Direction.SOUTH) {
-            if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTH);
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHWEST);
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHEAST);
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && rc.senseMapInfo(current.add(Direction.EAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.EAST);
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && rc.senseMapInfo(current.add(Direction.WEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.WEST);
-            }
-        } else if (dir == Direction.EAST) {
-            if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && rc.senseMapInfo(current.add(Direction.EAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.EAST);
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHEAST);
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHEAST);
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && rc.senseMapInfo(current.add(Direction.NORTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTH);
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTH);
-            }
-        } else if (dir == Direction.WEST) {
-            if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && rc.senseMapInfo(current.add(Direction.WEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.WEST);
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHWEST);
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHWEST);
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && rc.senseMapInfo(current.add(Direction.NORTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTH);
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTH);
-            }
-        } else if (dir == Direction.NORTHWEST) {
-            if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHWEST);
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && rc.senseMapInfo(current.add(Direction.NORTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTH);
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && rc.senseMapInfo(current.add(Direction.WEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.WEST);
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHWEST);
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHEAST);
-            }
-        } else if (dir == Direction.NORTHEAST) {
-            if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHEAST);
-            } else if (rc.canMove(Direction.NORTH) && rc.canSenseLocation(current.add(Direction.NORTH)) && rc.senseMapInfo(current.add(Direction.NORTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTH);
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && rc.senseMapInfo(current.add(Direction.EAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.EAST);
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHWEST);
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHEAST);
-            }
-        } else if (dir == Direction.SOUTHWEST) {
-            if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHWEST);
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTH);
-            } else if (rc.canMove(Direction.WEST) && rc.canSenseLocation(current.add(Direction.WEST)) && rc.senseMapInfo(current.add(Direction.WEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.WEST);
-            } else if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHEAST);
-            } else if (rc.canMove(Direction.NORTHWEST) && rc.canSenseLocation(current.add(Direction.NORTHWEST)) && rc.senseMapInfo(current.add(Direction.NORTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHWEST);
-            }
-        } else if (dir == Direction.SOUTHEAST) {
-            if (rc.canMove(Direction.SOUTHEAST) && rc.canSenseLocation(current.add(Direction.SOUTHEAST)) && rc.senseMapInfo(current.add(Direction.SOUTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHEAST);
-            } else if (rc.canMove(Direction.SOUTH) && rc.canSenseLocation(current.add(Direction.SOUTH)) && rc.senseMapInfo(current.add(Direction.SOUTH)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTH);
-            } else if (rc.canMove(Direction.EAST) && rc.canSenseLocation(current.add(Direction.EAST)) && rc.senseMapInfo(current.add(Direction.EAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.EAST);
-            } else if (rc.canMove(Direction.SOUTHWEST) && rc.canSenseLocation(current.add(Direction.SOUTHWEST)) && rc.senseMapInfo(current.add(Direction.SOUTHWEST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.SOUTHWEST);
-            } else if (rc.canMove(Direction.NORTHEAST) && rc.canSenseLocation(current.add(Direction.NORTHEAST)) && rc.senseMapInfo(current.add(Direction.NORTHEAST)).getPaint() != PaintType.EMPTY) {
-                return current.add(Direction.NORTHEAST);
-            }
-        }
-
-        for (Direction d : dirs) {
-            if (rc.canMove(d)) {
-                return rc.getLocation().add(d);
-            }
-        }
-
-        return rc.getLocation();
-
-    }
+//    public void safeMove(MapLocation loc) throws GameActionException {
+//        Direction move = bot.pathfinder.getMove(loc);
+//        if (move == null) {
+//            return;
+//        }
+//        MapLocation newLoc = rc.getLocation().add(move);
+//        PaintType paint = rc.senseMapInfo(newLoc).getPaint();
+//
+//        if (!paint.isEnemy()) {
+//            bot.pathfinder.makeMove(loc);
+//            return;
+//        }
+//
+//        if (rc.canAttack(newLoc)) {
+//            rc.attack(newLoc);
+//            bot.pathfinder.makeMove(loc);
+//            return;
+//        }
+//
+//        // check if there's legit anywhere i can go thats better than rn
+//        if (!rc.senseMapInfo(rc.getLocation()).getPaint().isAlly()) {
+//            MapInfo[] surrounds = rc.senseNearbyMapInfos(2);
+//            for (MapInfo c : surrounds) {
+//                if (!c.getPaint().isEnemy()) {
+//                    bot.pathfinder.makeMove(c.getMapLocation());
+//                    return;
+//                }
+//            }
+//            // beeline towards nearest ally paint
+//            MapInfo ally = getNearestCell(c -> c.getPaint().isAlly());
+//            if (ally != null) {
+//                bot.pathfinder.makeMove(ally.getMapLocation());
+//                return;
+//            }
+//
+//            MapInfo neutral = getNearestCell(c -> c.getPaint()==PaintType.EMPTY);
+//            if (neutral != null) {
+//                bot.pathfinder.makeMove(neutral.getMapLocation());
+//            }
+//        }
+//    }
 
     @Override
     public boolean isComplete() throws GameActionException {
@@ -185,52 +119,47 @@ public class MopperOffenceStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
+        indicate("OFFENCE MOPPER");
 
         // just checking and updating enemy locs:
-
-        if (rc.canSenseLocation(enemy)) {
-            // if we can see the enemy, just go to the next enemy loc.
-            enemyLocs.removeFirst();
-
-            // procedurally gen the next one
-            while (enemyLocs.size() < 1) {
-                Random rng = new Random();
-                int x = rng.nextInt(0, rc.getMapWidth() - 1);
-                int y = rng.nextInt(0, rc.getMapHeight() - 1);
-                if (new MapLocation(x, y).distanceSquaredTo(rc.getLocation()) >= 9) {
-                    MapLocation moveDir = subtract(new MapLocation(x, y), rc.getLocation());
-                    enemyLocs.addLast(project(rc.getLocation(), moveDir, (double) (rc.getMapWidth() + rc.getMapHeight()) / 2));
-                }
-            }
-            
-            enemy = enemyLocs.getFirst();
-            //indicate("NEW ENEMY LOC: " + enemy);
+        MapInfo ruin = getNearestCell(c -> c.hasRuin());
+        if (ruin != null) {
+            lastSeenRuin = ruin.getMapLocation();
         }
 
+        if (rc.canSenseLocation(enemy)) {
+            // if we can see the enemy, just go to the next enemy loc. it's kinda cyclic for now
+            enemyLocs.removeFirst();
+            if (enemyLocs.isEmpty()) {
+                enemyLocs = guessEnemyLocs(lastSeenRuin);
+            }
+            enemy = enemyLocs.getFirst();
+        }
+
+        if (isPaintBelowHalf()) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+                bot.runTick();
+                return;
+            }
+        }
+
+        // move
         for (GameSupplier<MapInfo> pred : suppliers) {
             MapInfo res = pred.get();
             if (res != null) {
                 // go towards, and attack if possible
-                MapLocation next = safeMove(res.getMapLocation());
-                Direction dir = rc.getLocation().directionTo(next);
-                if (rc.canAttack(next) && rc.senseMapInfo(next).getPaint().isEnemy()) {
-                    rc.attack(next);
-                    if (rc.canMove(dir)) {
-                        rc.move(dir);
-                    }
-                } else if (rc.senseMapInfo(next).getPaint().isAlly()) {
-                    if (rc.canMove(dir)) {
-                        rc.move(dir);
-                    }
-                }
+                bot.pathfinder.makeMove(res.getMapLocation());
+//                safeMove(res.getMapLocation());
+                return;
             }
         }
 
         // run towards goal
-        if (rc.isMovementReady()) {
-            MapLocation next = safeMove(enemy);
-            Direction dir = rc.getLocation().directionTo(next);
-            rc.move(dir);
-        }
+//        if (rc.isMovementReady()) {
+//            safeMove(enemy);
+//        }
+        roamStrategy.runTick();
     }
 }

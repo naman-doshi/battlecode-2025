@@ -10,6 +10,7 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
+import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.getBestRobot;
@@ -79,24 +80,29 @@ public class Mopper extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(loc -> {return rc.senseMapInfo(loc).getPaint().isEnemy();});
-        primaryStrategy = new MopperOffenceStrategy();
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
+        primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
     }
+
+    public static final int DEFENCE_STRAT = 0, OFFENCE_STRAT = 1, RESPAWN_STRAT = 2, PASSIVE_STRAT = 3;
 
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-            case 0:
+            case DEFENCE_STRAT:
                 primaryStrategy = new MopperDefenceStrategy();
                 break;
-            case 1:
+            case OFFENCE_STRAT:
                 primaryStrategy = new MopperOffenceStrategy();
                 break;
-            case 2:
+            case RESPAWN_STRAT:
                 primaryStrategy = new MopperOffenceStrategy();
                 secondaryStrategy = new MopperRespawnStrategy();
+                break;
+            case PASSIVE_STRAT:
+                primaryStrategy = new MopperPassiveStrategy();
                 break;
         }
     }

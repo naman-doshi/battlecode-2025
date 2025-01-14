@@ -3,7 +3,6 @@ package caterpillow.packet.packets;
 import battlecode.common.MapLocation;
 import caterpillow.packet.Packet;
 
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class OriginPacket extends Packet {

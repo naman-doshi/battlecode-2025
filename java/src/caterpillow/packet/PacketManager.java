@@ -7,7 +7,6 @@ import battlecode.common.RobotInfo;
 import caterpillow.packet.packets.*;
 import caterpillow.util.Pair;
 import caterpillow.util.TowerTracker;
-import caterpillow.util.Util;
 
 import java.util.*;
 
@@ -35,7 +34,6 @@ public class PacketManager {
 //        int payload = (msg.getBytes() & (-1 >>> TYPE_SIZE));
         int payload = getBits(msg.getBytes(), 0, PAYLOAD_SIZE);
         int sender = msg.getSenderID();
-        println("reading msg " + type);
         switch (type) {
             case 0:
                 AdoptionPacket adoptionPacket = new AdoptionPacket();
@@ -59,7 +57,6 @@ public class PacketManager {
                 break;
             case 4:
                 int encLoc = getBits(payload, 0, ENC_LOC_SIZE);
-                println("updated tower counts");
                 TowerTracker.coinTowers = getBits(payload, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
                 TowerTracker.hasReceivedInitPacket = true;
 

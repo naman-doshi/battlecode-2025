@@ -2,7 +2,6 @@ package caterpillow.packet.packets;
 
 import caterpillow.packet.Packet;
 
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class SeedPacket extends Packet {

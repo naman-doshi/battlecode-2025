@@ -1,8 +1,5 @@
 package caterpillow.util;
 
-import battlecode.common.UnitType;
-
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 import static java.lang.Math.max;
 
@@ -11,24 +8,8 @@ public class TowerTracker {
 
     // if this is true, pretend its values are garbage
     public static boolean broken = false;
-
-    public static double targetRatio = 0.75; // fraction of towers that should be coin
-    public static UnitType getNextType() {
-        if (!broken) {
-            if ((double) coinTowers / (double) rc.getNumberTowers() > targetRatio) {
-                return UnitType.LEVEL_ONE_PAINT_TOWER;
-            } else {
-                return UnitType.LEVEL_ONE_MONEY_TOWER;
-            }
-        } else {
-            if (trng.nextDouble() > targetRatio) {
-                return UnitType.LEVEL_ONE_PAINT_TOWER;
-            } else {
-                return UnitType.LEVEL_ONE_MONEY_TOWER;
-            }
-        }
-    }
-
+    public static int prevTowers, curTowers;
+    public static int lastTowerChange = 0;
     public static int px = 0, x = 0; // last known coins
     public static int coinTowers = 0;
     public static int processedTicks = 0;
@@ -48,9 +29,12 @@ public class TowerTracker {
     }
 
     public static void runTick() {
-        if (time % 20 == 0) {
-            println("paint: " + (rc.getNumberTowers() - coinTowers) + ", coin: " + coinTowers + ", broken: " + broken);
+        prevTowers = curTowers;
+        curTowers = rc.getNumberTowers();
+        if (prevTowers != curTowers) {
+            lastTowerChange = time;
         }
+
 //        rc.setIndicatorString("paint: " + (totTowers - coinTowers) + " coin: " + coinTowers + " broken: " + broken);
         if (broken) {
             return;

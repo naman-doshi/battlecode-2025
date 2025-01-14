@@ -8,8 +8,8 @@ import caterpillow.robot.Strategy;
 import caterpillow.util.TowerTracker;
 
 import java.util.ArrayList;
+import java.util.List;
 
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public abstract class Tower extends Robot {
@@ -25,6 +25,23 @@ public abstract class Tower extends Robot {
 
     // USE THIS INSTEAD OF THE DEFAULT BUILD
     public int build(UnitType type, MapLocation loc, Packet... packets) throws GameActionException {
+        rc.buildRobot(type, loc);
+        RobotInfo newBot = rc.senseRobotAtLocation(loc);
+        kids.add(newBot.getID());
+
+        if (TowerTracker.broken) {
+            pm.send(newBot.getID(), new InitPacket(origin, 0));
+        } else {
+            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.coinTowers));
+        }
+
+        for (Packet packet : packets) {
+            pm.send(newBot.getID(), packet);
+        }
+        return newBot.getID();
+    }
+
+    public int build(UnitType type, MapLocation loc, List<Packet> packets) throws GameActionException {
         rc.buildRobot(type, loc);
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
