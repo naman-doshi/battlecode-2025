@@ -188,9 +188,6 @@ public class MopperOffenceStrategy extends Strategy {
         }
 
         // run towards goal
-//        if (rc.isMovementReady()) {
-//            safeMove(enemy);
-//        }
         roamStrategy.runTick();
     }
 }

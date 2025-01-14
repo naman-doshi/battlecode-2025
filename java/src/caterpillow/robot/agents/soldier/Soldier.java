@@ -15,10 +15,6 @@ import static caterpillow.util.Util.checkerboardPaint;
 
 public class Soldier extends Agent {
 
-    boolean getColour(MapLocation loc) {
-        return false;
-    }
-
     @Override
     public void init() throws GameActionException {
         super.init();
@@ -44,7 +40,6 @@ public class Soldier extends Agent {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
             case STARTER_STRAT:
-                // init to root
                 primaryStrategy = new StarterStrategy();
                 break;
             case SRP_STRAT:

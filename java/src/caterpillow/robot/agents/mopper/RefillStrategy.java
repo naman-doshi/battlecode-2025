@@ -16,21 +16,21 @@ import static java.lang.Math.min;
 public class RefillStrategy extends Strategy {
 
     public Mopper bot;
-    MapLocation target;
+    int target;
     AbstractPathfinder pathfinder; // custom pathfinder with different rules
 
-    public RefillStrategy(MapLocation target) throws GameActionException {
+    public RefillStrategy(RobotInfo target) throws GameActionException {
         bot = (Mopper) Game.bot;
-        this.target = target;
+        this.target = target.getID();
         pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if (!rc.canSenseLocation(target)) {
-            return false;
+        if (!rc.canSenseRobot(target)) {
+            return true;
         }
-        RobotInfo info = rc.senseRobotAtLocation(target);
+        RobotInfo info = rc.senseRobot(target);
         if (info == null) {
             return true;
         }
@@ -46,6 +46,8 @@ public class RefillStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("REFILL");
-        pathfinder.makeMove(target);
+        RobotInfo info = rc.senseRobot(target);
+        assert info != null;
+        pathfinder.makeMove(info.getLocation());
     }
 }

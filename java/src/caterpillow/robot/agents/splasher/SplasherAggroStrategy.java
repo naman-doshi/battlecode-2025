@@ -11,6 +11,8 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.guessEnemyLocs;
@@ -34,7 +36,7 @@ public class SplasherAggroStrategy extends Strategy {
 
     public SplasherAggroStrategy() throws GameActionException {
         bot = (Splasher) Game.bot;
-        roamStrategy = new SplasherAggroStrategy(); // test
+        roamStrategy = new StrongAggroRoamStrategy(); // test
     }
 
     @Override

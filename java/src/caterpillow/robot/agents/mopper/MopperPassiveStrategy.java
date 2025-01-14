@@ -78,13 +78,6 @@ public class MopperPassiveStrategy extends Strategy {
             }
         }
 
-
-        // fill bots we can see, if possible
-//        RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isRobotType() && isPaintBelowHalf(b) && rc.getLocation().distanceSquaredTo(b.getLocation()) <= 2 && b.getType() != UnitType.MOPPER);
-//        if (nearest != null && rc.canTransferPaint(nearest.getLocation(), 10)) {
-//            rc.transferPaint(nearest.getLocation(), 10);
-//        }
-
         RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
         if (nearest != null) {
             bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
@@ -94,7 +87,7 @@ public class MopperPassiveStrategy extends Strategy {
 
         nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
         if (nearest != null) {
-            bot.secondaryStrategy = new RefillStrategy(nearest.getLocation());
+            bot.secondaryStrategy = new RefillStrategy(nearest);
             bot.runTick();
             return;
         }

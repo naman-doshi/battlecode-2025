@@ -14,10 +14,7 @@ import caterpillow.robot.agents.Agent;
 public class Splasher extends Agent {
 
     Splasher bot;
-    List<MapLocation> enemyLocs;
     MapLocation spawnLoc;
-
-   
 
     @Override
     public void init() throws GameActionException {
@@ -60,7 +57,6 @@ public class Splasher extends Agent {
         if (bestLoc != null) {
             return bestLoc;
         }
-
         return null;
     }
 
