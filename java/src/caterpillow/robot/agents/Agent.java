@@ -46,6 +46,19 @@ public abstract class Agent extends Robot {
         return 0;
     }
 
+    public int donate(RobotInfo bot) throws GameActionException {
+        int missing = missingPaint(bot);
+        int available = rc.getPaint() - UnitType.MOPPER.paintCapacity / 2;
+        if (available < 0) {
+            return 0;
+        }
+        if (rc.canTransferPaint(bot.getLocation(), Math.min(available, missing))) {
+            rc.transferPaint(bot.getLocation(), Math.min(available, missing));
+            return Math.min(available, missing);
+        }
+        return 0;
+    }
+
     public void setParent(RobotInfo parent) {
         home = parent.getLocation();
         homeID = parent.getID();

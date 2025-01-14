@@ -173,6 +173,19 @@ public class BugnavPathfinder extends AbstractPathfinder {
             if (dir != null && rc.canMove(dir)) {
                 rc.move(dir);
                 expected = rc.getLocation();
+            } else {
+                // emergency!!!
+                if (avoid.test(rc.senseMapInfo(rc.getLocation()))) {
+                    // super jank workaround
+                    GamePredicate<MapInfo> opred = avoid;
+                    avoid = m -> false;
+                    dir = getMove(to);
+                    if (dir != null && rc.canMove(dir)) {
+                        rc.move(dir);
+                        expected = rc.getLocation();
+                    }
+                    avoid = opred;
+                }
             }
         }
     }

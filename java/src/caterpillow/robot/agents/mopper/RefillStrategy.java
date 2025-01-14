@@ -37,7 +37,7 @@ public class RefillStrategy extends Strategy {
         if (!Config.shouldRefill(info)) {
             return true;
         }
-        if (bot.refill(info) > 0) {
+        if (bot.donate(info) > 0) {
             return true;
         }
         return false;

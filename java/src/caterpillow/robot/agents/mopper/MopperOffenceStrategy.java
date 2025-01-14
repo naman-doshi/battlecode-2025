@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
@@ -44,7 +41,7 @@ public class MopperOffenceStrategy extends Strategy {
             if (!isInAttackRange(c.getMapLocation())) {
                 return false;
             }
-            if (c.getPaint().isAlly()) {
+            if (c.getPaint().isAlly() || c.getPaint().equals(PaintType.EMPTY)) {
                 return false;
             }
             RobotInfo bot = rc.senseRobotAtLocation(c.getMapLocation());
@@ -174,11 +171,17 @@ public class MopperOffenceStrategy extends Strategy {
         }
 
         // move
-        for (GameSupplier<MapInfo> pred : suppliers) {
+        for (int i = 0; i < suppliers.size(); i++) {
+            GameSupplier<MapInfo> pred = suppliers.get(i);
             MapInfo res = pred.get();
             if (res != null) {
                 // go towards, and attack if possible
+                indicate("OFFENCE MOPPER - FOUND PRED " + i);
+                rc.setIndicatorDot(res.getMapLocation(), 255, 0, 0);
                 bot.pathfinder.makeMove(res.getMapLocation());
+                if (rc.canAttack(res.getMapLocation())) {
+                    rc.attack(res.getMapLocation());
+                }
 //                safeMove(res.getMapLocation());
                 return;
             }

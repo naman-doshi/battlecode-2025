@@ -30,21 +30,11 @@ public class SplasherAggroStrategy extends Strategy {
     public List<GameSupplier<MapInfo>> suppliers;
     WeakRefillStrategy refillStrategy;
 
+    Strategy roamStrategy;
+
     public SplasherAggroStrategy() throws GameActionException {
         bot = (Splasher) Game.bot;
-        this.enemyLocs = guessEnemyLocs(bot.home);
-        this.enemy = enemyLocs.get(0);
-        enemyLocs.addLast(bot.home);
-
-        
-    }
-
-    public void safeMove(MapLocation loc) throws GameActionException {
-        if (rc.canSenseLocation(loc) && rc.senseMapInfo(loc).getPaint().isEnemy()) {
-            return;
-        }
-        // wait until andy's buffed pathfinder
-        bot.pathfinder.makeMove(loc);
+        roamStrategy = new SplasherAggroStrategy(); // test
     }
 
     @Override
@@ -54,42 +44,13 @@ public class SplasherAggroStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        
-
-        // just checking and updating enemy locs:
-
-        if (rc.canSenseLocation(enemy)) {
-            enemyLocs.removeFirst();
-
-            while (enemyLocs.size() < 1) {
-                Random rng = new Random();
-                int x = rng.nextInt(0, rc.getMapWidth() - 1);
-                int y = rng.nextInt(0, rc.getMapHeight() - 1);
-                if (new MapLocation(x, y).distanceSquaredTo(rc.getLocation()) >= 9) {
-                    MapLocation moveDir = subtract(new MapLocation(x, y), rc.getLocation());
-                    enemyLocs.addLast(project(rc.getLocation(), moveDir, (double) (rc.getMapWidth() + rc.getMapHeight()) / 2));
-                }
-            }
-
-            enemy = enemyLocs.get(0);
-        }
-
-        if (refillStrategy != null) {
-            if (refillStrategy.isComplete()) {
-                refillStrategy = null;
-                runTick();
-            } else {
-                refillStrategy.runTick();
-                //System.out.println("running refill strat");
-            }
-            return;
-        }
 
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.2);
-                runTick();
+                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.2);
+                bot.runTick();
+                return;
             }
         }
 
@@ -98,12 +59,9 @@ public class SplasherAggroStrategy extends Strategy {
             if (rc.canAttack(target)) {
                 rc.attack(target);
             }
-            safeMove(target);
+            bot.pathfinder.makeMove(target);
         } else {
-            safeMove(enemy);
-
+            roamStrategy.runTick();
         }
-
-        
     }
 }
