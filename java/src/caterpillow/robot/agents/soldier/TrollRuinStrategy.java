@@ -39,7 +39,7 @@ public class TrollRuinStrategy extends Strategy {
     }
 
     MapInfo getPlaceCell() throws GameActionException {
-        return getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && c.getPaint().equals(PaintType.EMPTY));
+        return getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && isPaintable(c));
     }
 
     public TrollRuinStrategy(MapLocation target) {
@@ -60,7 +60,6 @@ public class TrollRuinStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("TROLLING");
-        println("trolling ruin");
         if (!isInView()) {
             bot.pathfinder.makeMove(target);
         } else {

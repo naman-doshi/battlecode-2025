@@ -78,6 +78,19 @@ public class Config {
         }
     }
 
+    public static MapLocation genPassiveTarget(Random rng) {
+        while (true) {
+            int x = rng.nextInt(0, rc.getMapWidth() - 1);
+            int y = rng.nextInt(0, rc.getMapHeight() - 1);
+            MapLocation pivot = rc.getLocation();
+            if (new MapLocation(x, y).distanceSquaredTo(pivot) < 9) {
+                continue;
+            }
+            MapLocation moveDir = subtract(new MapLocation(x, y), pivot);
+            return project(pivot, moveDir, 0.5 * max(rc.getMapWidth(), rc.getMapHeight()));
+        }
+    }
+
     public static List<MapLocation> getAggroTargetList(Random rng) throws GameActionException {
         List<MapLocation> locs = guessEnemyLocs(origin);
         return locs;

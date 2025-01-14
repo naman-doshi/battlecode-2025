@@ -1,9 +1,7 @@
 package caterpillow.pathfinding;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
+import battlecode.common.*;
+
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
@@ -21,6 +19,26 @@ public class BugnavPathfinder extends AbstractPathfinder {
     }
     public BugnavPathfinder() {
         this.avoid = m -> false;
+    }
+
+    boolean canMove(Direction dir) throws GameActionException {
+        return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
+    }
+
+    boolean canMoveAndIsAlly(Direction dir) throws GameActionException {
+        if (!rc.canMove(dir)) {
+            return false;
+        }
+        MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
+        return info.getPaint().isAlly() && avoid.test(info);
+    }
+
+    boolean canMoveAndIsNeutral(Direction dir) throws GameActionException {
+        if (!rc.canMove(dir)) {
+            return false;
+        }
+        MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
+        return info.getPaint().equals(PaintType.EMPTY) && avoid.test(info);
     }
 
     @Override
@@ -50,12 +68,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if (stackSize >= 2 && rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) {
+            if (stackSize >= 2 && canMove(topDir.opposite())) {
                 stackSize -= 2;
                 topDir = topDir.rotateRight().rotateRight();
                 return topDir;
             }
-            if (stackSize >= 1 && rc.canMove(topDir.rotateRight()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.rotateRight())))) {
+            if (stackSize >= 1 && canMove(topDir.rotateRight())) {
                 stackSize--;
                 topDir = topDir.rotateRight();
             }
@@ -76,7 +94,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                 }
             }
-            if (stackSize >= 2 && rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) {
+            if (stackSize >= 2 && canMove(topDir.opposite())) {
                 stackSize -= 2;
                 topDir = topDir.rotateLeft().rotateLeft();
                 return topDir;
@@ -87,36 +105,36 @@ public class BugnavPathfinder extends AbstractPathfinder {
             }
         }
         if(stackSize == 0) {
-            if(rc.canMove(topDir) && rc.senseMapInfo(rc.getLocation().add(topDir)).getPaint().isAlly()) return topDir;
-            if(rc.canMove(topDir.rotateRight()) && rc.senseMapInfo(rc.getLocation().add(topDir.rotateRight())).getPaint().isAlly()) {
+            if(canMoveAndIsAlly(topDir)) return topDir;
+            if(canMoveAndIsAlly(topDir.rotateRight())) {
                 leftTurn = false;
                 return topDir.rotateRight();
             }
-            if(rc.canMove(topDir.rotateLeft()) && rc.senseMapInfo(rc.getLocation().add(topDir.rotateLeft())).getPaint().isAlly()) {
+            if(canMoveAndIsAlly(topDir.rotateLeft())) {
                 leftTurn = true;
                 return topDir.rotateLeft();
             }
-            if(rc.canMove(topDir) && !rc.senseMapInfo(rc.getLocation().add(topDir)).getPaint().isEnemy()) return topDir;
-            if(rc.canMove(topDir.rotateRight()) && !rc.senseMapInfo(rc.getLocation().add(topDir.rotateRight())).getPaint().isEnemy()) {
+            if(canMoveAndIsNeutral(topDir)) return topDir;
+            if(canMoveAndIsNeutral(topDir.rotateRight())) {
                 leftTurn = false;
                 return topDir.rotateRight();
             }
-            if(rc.canMove(topDir.rotateLeft()) && !rc.senseMapInfo(rc.getLocation().add(topDir.rotateLeft())).getPaint().isEnemy()) {
+            if(canMoveAndIsNeutral(topDir.rotateLeft())) {
                 leftTurn = true;
                 return topDir.rotateLeft();
             }
-            if(rc.canMove(topDir)) return topDir;
-            if(rc.canMove(topDir.rotateRight())) {
+            if(canMove(topDir)) return topDir;
+            if(canMove(topDir.rotateRight())) {
                 leftTurn = false;
                 return topDir.rotateRight();
             }
-            if(rc.canMove(topDir.rotateLeft())) {
+            if(canMove(topDir.rotateLeft())) {
                 leftTurn = true;
                 return topDir.rotateLeft();
             }
         }
         int iters = 0;
-        while(!rc.canMove(topDir) || avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir)))) {
+        while (!canMove(topDir))  {
             MapLocation nextLoc = rc.getLocation().add(topDir);
             // avoid following the edge of the map
             if(nextLoc.x < 0 || nextLoc.y < 0 || nextLoc.x >= rc.getMapWidth() || nextLoc.y >= rc.getMapHeight()) {
@@ -125,8 +143,8 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 continue;
             }
             if (stackSize == 0) {
-                if (rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) leftTurn = false;
-                else if (rc.canMove(topDir.opposite()) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(topDir.opposite())))) leftTurn = true;
+                if (canMove(topDir.opposite())) leftTurn = false;
+                else if (canMove(topDir.opposite())) leftTurn = true;
                 else leftTurn = trng.nextInt(0, 1) == 1; // change later
             }
             if (leftTurn) topDir = topDir.rotateLeft();
@@ -137,7 +155,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 return null;
             }
         }
-        assert rc.canMove(topDir);
+        assert canMove(topDir);
         // rc.setIndicatorLine(rc.getLocation(), rc.getLocation().add(topDir), 0, 0, 255);
         // rc.setIndicatorString(topDir + " " + bottomDir + " " + leftTurn + " " + stackSize);
         return topDir;

@@ -34,9 +34,7 @@ public class Soldier extends Agent {
     }
 
     public void checkerboardAttack(MapLocation loc) throws GameActionException {
-        if (rc.canAttack(loc)) {
-            rc.attack(loc, checkerboardPaint(loc)==PaintType.ALLY_SECONDARY);
-        }
+        rc.attack(loc, checkerboardPaint(loc) == PaintType.ALLY_SECONDARY);
     }
 
     public static final int STARTER_STRAT = 0, SRP_STRAT = 1, SCOUT_STRAT = 2;

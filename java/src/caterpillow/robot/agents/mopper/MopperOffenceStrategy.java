@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
-import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
@@ -16,7 +14,7 @@ import static caterpillow.util.Util.*;
 
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
 
 public class MopperOffenceStrategy extends Strategy {
@@ -39,12 +37,33 @@ public class MopperOffenceStrategy extends Strategy {
         enemyLocs.addLast(bot.home);
         rng = new Random();
 
-
         suppliers = new ArrayList<>();
         // mop and attack (in range)
-        suppliers.add(() -> getNearestCell(c -> isInAttackRange(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation())) && !c.getPaint().isAlly()));
+        suppliers.add(() -> getNearestCell(c -> {
+            if (!isInAttackRange(c.getMapLocation())) {
+                return false;
+            }
+            if (c.getPaint().isAlly()) {
+                return false;
+            }
+            RobotInfo bot = rc.senseRobotAtLocation(c.getMapLocation());
+            if (bot == null) {
+                return false;
+            }
+            if (isEnemyAgent(bot) && bot.getPaintAmount() > 0 && countNearbyMoppers(bot.getLocation()) <= 3) {
+                return true;
+            }
+            return false;
+        }));
 //         attack (anything visible)
-        suppliers.add(() -> getNearestCell(c -> rc.senseRobotAtLocation(c.getMapLocation()) != null && isEnemyAgent(rc.senseRobotAtLocation(c.getMapLocation())) && !c.getPaint().isAlly()));
+        suppliers.add(() -> {
+            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3);
+            if (info == null) {
+                return null;
+            } else {
+                return rc.senseMapInfo(info.getLocation());
+            }
+        });
         // mop cell near ruin
         suppliers.add(() -> {
             ArrayList<MapLocation> ruins = new ArrayList<>();
@@ -54,7 +73,7 @@ public class MopperOffenceStrategy extends Strategy {
                 }
             }
             return getNearestCell(c -> {
-                if (!c.getPaint().isEnemy()) {
+                if (!c.getPaint().isEnemy() || isInAttackRange(c.getMapLocation())) {
                     return false;
                 }
                 for (MapLocation ruin : ruins) {
@@ -67,7 +86,7 @@ public class MopperOffenceStrategy extends Strategy {
         });
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
-        roamStrategy = new AggroRoamStrategy();
+        roamStrategy = new StrongAggroRoamStrategy();
     }
 
 //    public void safeMove(MapLocation loc) throws GameActionException {

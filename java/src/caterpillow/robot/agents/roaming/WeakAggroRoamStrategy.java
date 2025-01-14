@@ -13,8 +13,8 @@ import java.util.Random;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 
-// pathfinding testing
-public class AggroRoamStrategy extends Strategy {
+// when u wanna push in the general direction of the enemy
+public class WeakAggroRoamStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
@@ -22,11 +22,10 @@ public class AggroRoamStrategy extends Strategy {
 
     List<MapLocation> targets;
 
-    public AggroRoamStrategy() throws GameActionException {
+    public WeakAggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         rng = new Random(seed);
-        targets = Config.getAggroTargetList(rng);
-        target = targets.getFirst();
+        target = Config.genAggroTarget(rng);
     }
 
     @Override
@@ -37,11 +36,7 @@ public class AggroRoamStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         while (rc.canSenseLocation(target)) {
-            targets.removeFirst();
-            if (targets.isEmpty()) {
-                targets.add(Config.genAggroTarget(rng));
-            }
-            target = targets.getFirst();
+            target = Config.genAggroTarget(rng);
         }
         bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);

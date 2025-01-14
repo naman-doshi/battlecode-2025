@@ -10,34 +10,26 @@ import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.*;
+
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.robot.agents.roaming.PassiveRoamStrategy;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.isCellInTowerBounds;
-import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInAttackRange;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.missingPaint;
 
 public class MopperPassiveStrategy extends Strategy {
 
     public Mopper bot;
 
-    // enemyLocs is more like "POI locs"
-    public List<MapLocation> enemyLocs;
-    public MapLocation enemy;
     public List<GameSupplier<MapInfo>> suppliers;
     WeakRefillStrategy refillStrategy;
+    Strategy roamStrategy;
 
     public MopperPassiveStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
-        this.enemyLocs = guessEnemyLocs(bot.home);
-        this.enemy = enemyLocs.get(0);
-        enemyLocs.addLast(bot.home);
+        bot.pathfinder = new BugnavPathfinder(c -> !c.getPaint().isAlly());
+        roamStrategy = new PassiveRoamStrategy();
 
         suppliers = new ArrayList<>();
         // mop and attack (in range)
@@ -66,14 +58,6 @@ public class MopperPassiveStrategy extends Strategy {
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
     }
 
-    public void safeMove(MapLocation loc) throws GameActionException {
-        if (rc.getLocation().isAdjacentTo(loc) && rc.senseMapInfo(loc).getPaint().isEnemy()) {
-            return;
-        }
-        // wait until andy's buffed pathfinder
-        bot.pathfinder.makeMove(loc);
-    }
-
     @Override
     public boolean isComplete() throws GameActionException {
         return false;
@@ -81,33 +65,15 @@ public class MopperPassiveStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-
+        indicate("PASSIVE MOPPER");
         // just checking and updating enemy locs:
-        if (rc.canSenseLocation(enemy)) {
-            // if we can see the enemy, just go to the next enemy loc. it's kinda cyclic for now
-            enemyLocs.addLast(enemy);
-            enemyLocs.removeFirst();
-            enemy = enemyLocs.get(0);
-
-        }
-
-        // try refill ourselves
-        if (refillStrategy != null) {
-            if (refillStrategy.isComplete()) {
-                refillStrategy = null;
-                runTick();
-            } else {
-                refillStrategy.runTick();
-                //System.out.println("running refill strat");
-            }
-            return;
-        }
 
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                runTick();
+                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+                bot.runTick();
+                return;
             }
         }
 
@@ -121,7 +87,7 @@ public class MopperPassiveStrategy extends Strategy {
             MapInfo res = pred.get();
             if (res != null) {
                 // go towards, and attack if possible
-                safeMove(res.getMapLocation());
+                bot.pathfinder.makeMove(res.getMapLocation());
                 if (rc.canAttack(res.getMapLocation())) {
                     rc.attack(res.getMapLocation());
                 }
@@ -129,9 +95,6 @@ public class MopperPassiveStrategy extends Strategy {
             }
         }
 
-        // run towards goal
-        if (rc.isMovementReady()) {
-            safeMove(enemy);
-        }
+        roamStrategy.runTick();
     }
 }

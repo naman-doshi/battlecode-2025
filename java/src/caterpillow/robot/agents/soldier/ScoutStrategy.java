@@ -5,9 +5,9 @@ import caterpillow.Config;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
-import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.util.Pair;
 
 import java.util.*;
@@ -22,20 +22,20 @@ public class ScoutStrategy extends Strategy {
     ArrayList<MapLocation> visitedRuins;
     LinkedList<Pair<MapLocation, Integer>> skippedRuins;
 
-    Agent bot;
+    Soldier bot;
 
     Random rng;
     HandleRuinStrategy handleRuinStrategy;
     WeakRefillStrategy refillStrategy;
 
-    AggroRoamStrategy roamStrategy;
+    Strategy roamStrategy;
 
     public ScoutStrategy() throws GameActionException {
-        bot = (Agent) Game.bot;
+        bot = (Soldier) Game.bot;
         visitedRuins = new ArrayList<>();
         skippedRuins = new LinkedList<>();
         rng = new Random(seed);
-        roamStrategy = new AggroRoamStrategy();
+        roamStrategy = new WeakAggroRoamStrategy();
         skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
     }
 
@@ -92,6 +92,10 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
+        MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
+        if (nearest != null) {
+            bot.checkerboardAttack(nearest.getMapLocation());
+        }
         roamStrategy.runTick();
     }
 }

@@ -193,6 +193,30 @@ public class Util {
         return best;
     }
 
+    public static int countNearbyMoppers(MapLocation loc) throws GameActionException {
+        int cnt = 0;
+        for (Direction dir : directions) {
+            MapLocation nloc = loc.add(dir);
+            if (rc.canSenseLocation(nloc)) {
+                RobotInfo botInfo = rc.senseRobotAtLocation(nloc);
+                if (botInfo != null) {
+                    if (isFriendly(botInfo) && botInfo.getType().equals(UnitType.MOPPER)) {
+                        cnt++;
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+
+    public static boolean isPaintable(MapInfo info) {
+        return info.getPaint().equals(PaintType.EMPTY) && info.isPassable();
+    }
+
+    public static boolean isBlockingPattern(MapInfo info) {
+        return info.getPaint().isEnemy() || !info.isPassable();
+    }
+
     public static MapInfo getNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
         MapInfo best = null;
         for (MapInfo cell : rc.senseNearbyMapInfos()) {
@@ -431,6 +455,10 @@ public class Util {
 
     public static boolean isPaintBelowHalf() {
         return rc.getPaint() <= rc.getType().paintCapacity / 2;
+    }
+
+    public static double paintLevel() {
+        return (double) rc.getPaint() / (double) rc.getType().paintCapacity;
     }
 
     public static MapLocation project(MapLocation cur, MapLocation moveVec, double maxDist) {

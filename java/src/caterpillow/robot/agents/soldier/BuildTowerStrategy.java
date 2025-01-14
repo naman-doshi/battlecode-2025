@@ -55,16 +55,21 @@ public class BuildTowerStrategy extends QueueStrategy {
         return true;
     }
 
-    public static boolean isBuildable(MapLocation target) throws GameActionException {
+    boolean shouldGiveUp() throws GameActionException {
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 || dy == 0) {
+                    continue;
+                }
                 MapLocation loc = target.translate(dx, dy);
-                if (rc.senseMapInfo(loc).getPaint().isEnemy() || rc.senseMapInfo(loc).isWall()) {
-                    return false;
+                if (rc.canSenseLocation(loc)) {
+                    if (isBlockingPattern(rc.senseMapInfo(loc))) {
+                        return true;
+                    }
                 }
             }
         }
-        return true;
+        return false;
     }
 
     MapLocation getMarkLocation() throws GameActionException {
@@ -145,6 +150,9 @@ public class BuildTowerStrategy extends QueueStrategy {
         if (maxedTowers()) {
             return true;
         }
+        if (shouldGiveUp()) {
+            return true;
+        }
         if (!rc.canSenseLocation(target)) {
             return false;
         }
@@ -158,9 +166,6 @@ public class BuildTowerStrategy extends QueueStrategy {
             return false;
         }
         if (isTowerBeingBuilt(target)) {
-            return true;
-        }
-        if (!isBuildable(target)) {
             return true;
         }
         if (getShownPattern() != null) {

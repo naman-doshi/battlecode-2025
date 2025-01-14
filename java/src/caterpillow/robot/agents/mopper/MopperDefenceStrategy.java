@@ -3,6 +3,7 @@ package caterpillow.robot.agents.mopper;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 
 import static caterpillow.util.Util.*;
@@ -15,6 +16,7 @@ public class MopperDefenceStrategy extends Strategy {
 
     public MopperDefenceStrategy() {
         bot = (Mopper) Game.bot;
+        bot.pathfinder = new BugnavPathfinder(c -> !c.getPaint().isAlly());
     }
 
     private boolean isInDanger() throws GameActionException {
