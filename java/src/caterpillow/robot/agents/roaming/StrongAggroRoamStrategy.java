@@ -1,17 +1,16 @@
 package caterpillow.robot.agents.roaming;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import caterpillow.Game;
-import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Agent;
-import caterpillow.Config;
-
 import java.util.List;
 import java.util.Random;
 
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import caterpillow.Config;
+import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
+import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.Agent;
 
 // for when u want to run straight into enemy territory
 public class StrongAggroRoamStrategy extends Strategy {
@@ -24,6 +23,7 @@ public class StrongAggroRoamStrategy extends Strategy {
 
     public StrongAggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
+        //assert (Game.origin != null) : "origin is null";
         rng = new Random(seed);
         targets = Config.getEnemySpawnList(rng);
         target = targets.getFirst();

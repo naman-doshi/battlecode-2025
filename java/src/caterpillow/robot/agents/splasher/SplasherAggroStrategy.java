@@ -1,7 +1,6 @@
 package caterpillow.robot.agents.splasher;
 
 import java.util.List;
-import java.util.Random;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -12,15 +11,11 @@ import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
-import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isPaintBelowHalf;
 import static caterpillow.util.Util.missingPaint;
-import static caterpillow.util.Util.project;
-import static caterpillow.util.Util.subtract;
 
 public class SplasherAggroStrategy extends Strategy {
 
@@ -36,6 +31,7 @@ public class SplasherAggroStrategy extends Strategy {
 
     public SplasherAggroStrategy() throws GameActionException {
         bot = (Splasher) Game.bot;
+        //assert (Game.origin != null) : "origin is null";
         roamStrategy = new StrongAggroRoamStrategy(); // test
     }
 
@@ -50,7 +46,7 @@ public class SplasherAggroStrategy extends Strategy {
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.2);
+                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.4);
                 bot.runTick();
                 return;
             }
@@ -58,10 +54,17 @@ public class SplasherAggroStrategy extends Strategy {
 
         MapLocation target = bot.bestAttackLocation();
         if (target != null) {
+            
             if (rc.canAttack(target)) {
                 rc.attack(target);
             }
-            bot.pathfinder.makeMove(target);
+
+            // target would only be a ruin if it's an enemy tower
+            // BUT we dont want to approach it otherwise it'll attack us
+            if (rc.canSenseLocation(target) && !rc.senseMapInfo(target).hasRuin())  {
+                bot.pathfinder.makeMove(target);
+            }
+            
         } else {
             roamStrategy.runTick();
         }

@@ -39,13 +39,13 @@ public class Game {
         isStarter = (time <= 10);
         if (isStarter) {
             if (rc.getType().isTowerType()) {
-                origin = rc.getLocation();
+                Game.origin = rc.getLocation();
                 TowerTracker.coinTowers = 1;
                 TowerTracker.hasReceivedInitPacket = true;
             } else {
                 RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
                 assert nearest != null;
-                origin = nearest.getLocation();
+                Game.origin = nearest.getLocation();
             }
         }
         centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
