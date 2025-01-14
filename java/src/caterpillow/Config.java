@@ -1,10 +1,6 @@
 package caterpillow;
 
-import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.*;
-import static caterpillow.util.Util.*;
 import static java.lang.Math.max;
-
 import java.util.List;
 import java.util.Random;
 
@@ -12,7 +8,17 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
+import static battlecode.common.UnitType.MOPPER;
+import static caterpillow.Game.centre;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
 import caterpillow.util.TowerTracker;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.maxedTowers;
+import static caterpillow.util.Util.project;
+import static caterpillow.util.Util.subtract;
 
 public class Config {
 
@@ -23,7 +29,7 @@ public class Config {
             if (maxedTowers()) {
                 return rc.getChips() >= 3000;
             } else {
-                return rc.getChips() >= 400;
+                return rc.getChips() >= 4000;
             }
         } else if (level == 3) {
             if (maxedTowers()) {
