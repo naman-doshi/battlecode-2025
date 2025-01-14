@@ -8,6 +8,7 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
+import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.util.Util.*;
@@ -77,10 +78,25 @@ public class MopperPassiveStrategy extends Strategy {
             }
         }
 
+
         // fill bots we can see, if possible
-        RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isRobotType() && isPaintBelowHalf(b) && rc.getLocation().distanceSquaredTo(b.getLocation()) <= 2 && b.getType() != UnitType.MOPPER);
-        if (nearest != null && rc.canTransferPaint(nearest.getLocation(), 10)) {
-            rc.transferPaint(nearest.getLocation(), 10);
+//        RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isRobotType() && isPaintBelowHalf(b) && rc.getLocation().distanceSquaredTo(b.getLocation()) <= 2 && b.getType() != UnitType.MOPPER);
+//        if (nearest != null && rc.canTransferPaint(nearest.getLocation(), 10)) {
+//            rc.transferPaint(nearest.getLocation(), 10);
+//        }
+
+        RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
+        if (nearest != null) {
+            bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
+            bot.runTick();
+            return;
+        }
+
+        nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
+        if (nearest != null) {
+            bot.secondaryStrategy = new RefillStrategy(nearest.getLocation());
+            bot.runTick();
+            return;
         }
 
         for (GameSupplier<MapInfo> pred : suppliers) {

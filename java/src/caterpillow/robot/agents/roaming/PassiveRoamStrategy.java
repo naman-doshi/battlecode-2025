@@ -20,8 +20,6 @@ public class PassiveRoamStrategy extends Strategy {
     MapLocation target;
     Random rng;
 
-    List<MapLocation> targets;
-
     public PassiveRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         rng = new Random(seed);

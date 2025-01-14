@@ -25,7 +25,7 @@ public class StrongAggroRoamStrategy extends Strategy {
     public StrongAggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         rng = new Random(seed);
-        targets = Config.getAggroTargetList(rng);
+        targets = Config.getEnemySpawnList(rng);
         target = targets.getFirst();
     }
 

@@ -7,6 +7,9 @@ import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
 
 public class BugnavPathfinder extends AbstractPathfinder {
+    // temporary patch to make sure nothing breaks
+    private MapLocation expected;
+
     public MapLocation target;
     public Direction bottomDir;
     public Direction topDir;
@@ -16,9 +19,11 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
         this.avoid = avoid;
+        this.expected = rc.getLocation();
     }
     public BugnavPathfinder() {
         this.avoid = m -> false;
+        this.expected = rc.getLocation();
     }
 
     boolean canMove(Direction dir) throws GameActionException {
@@ -46,7 +51,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if (rc.getLocation().equals(to)) {
             return null;
         }
-        if (target == null || !target.equals(to)) {
+        if (target == null || !target.equals(to) || expected != rc.getLocation()) {
             target = to;
             stackSize = 0;
             topDir = bottomDir = rc.getLocation().directionTo(target);
@@ -167,6 +172,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
             Direction dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
                 rc.move(dir);
+                expected = rc.getLocation();
             }
         }
     }

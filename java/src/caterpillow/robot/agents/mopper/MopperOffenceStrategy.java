@@ -8,6 +8,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.util.Util.*;
@@ -65,25 +66,26 @@ public class MopperOffenceStrategy extends Strategy {
             }
         });
         // mop cell near ruin
-        suppliers.add(() -> {
-            ArrayList<MapLocation> ruins = new ArrayList<>();
-            for (MapInfo c : rc.senseNearbyMapInfos()) {
-                if (c.hasRuin()) {
-                    ruins.add(c.getMapLocation());
-                }
-            }
-            return getNearestCell(c -> {
-                if (!c.getPaint().isEnemy() || isInAttackRange(c.getMapLocation())) {
-                    return false;
-                }
-                for (MapLocation ruin : ruins) {
-                    if (isCellInTowerBounds(ruin, c.getMapLocation())) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-        });
+        // TODO: FIX BYTECODE FOR THIS
+//        suppliers.add(() -> {
+//            ArrayList<MapLocation> ruins = new ArrayList<>();
+//            for (MapInfo c : rc.senseNearbyMapInfos()) {
+//                if (c.hasRuin()) {
+//                    ruins.add(c.getMapLocation());
+//                }
+//            }
+//            return getNearestCell(c -> {
+//                if (!c.getPaint().isEnemy() || isInAttackRange(c.getMapLocation())) {
+//                    return false;
+//                }
+//                for (MapLocation ruin : ruins) {
+//                    if (isCellInTowerBounds(ruin, c.getMapLocation())) {
+//                        return true;
+//                    }
+//                }
+//                return false;
+//            });
+//        });
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
         roamStrategy = new StrongAggroRoamStrategy();
@@ -162,6 +164,13 @@ public class MopperOffenceStrategy extends Strategy {
                 bot.runTick();
                 return;
             }
+        }
+
+        RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
+        if (nearest != null) {
+            bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
+            bot.runTick();
+            return;
         }
 
         // move

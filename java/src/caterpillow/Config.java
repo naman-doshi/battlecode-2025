@@ -1,5 +1,7 @@
 package caterpillow;
 
+import static battlecode.common.UnitType.MOPPER;
+import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
 import static java.lang.Math.max;
 
@@ -8,10 +10,8 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
-import static caterpillow.Game.origin;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
 import caterpillow.util.TowerTracker;
 
 public class Config {
@@ -33,6 +33,36 @@ public class Config {
             }
         }
         assert false : "wtf";
+        return false;
+    }
+
+    public static boolean shouldRescue(RobotInfo b) {
+        assert rc.getType().equals(MOPPER);
+        if (b.getPaintAmount() > 5) {
+            return false;
+        }
+        if (rc.getPaint() <= 50) {
+            return false;
+        }
+        int available = rc.getPaint() - 50;
+        if (available >= 20) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean shouldRefill(RobotInfo b) {
+        assert rc.getType().equals(MOPPER);
+        if (getPaintLevel(b) > 0.5) {
+            return false;
+        }
+        if (rc.getPaint() <= 50) {
+            return false;
+        }
+        int available = rc.getPaint() - 50;
+        if (available >= 20) {
+            return true;
+        }
         return false;
     }
 
@@ -69,11 +99,12 @@ public class Config {
         while (true) {
             int x = rng.nextInt(0, rc.getMapWidth() - 1);
             int y = rng.nextInt(0, rc.getMapHeight() - 1);
+            MapLocation loc = new MapLocation(x, y);
             MapLocation pivot = origin;
-            if (new MapLocation(x, y).distanceSquaredTo(pivot) < 9) {
+            if (loc.distanceSquaredTo(pivot) < 9 || pivot.distanceSquaredTo(loc) < pivot.distanceSquaredTo(centre)) {
                 continue;
             }
-            MapLocation moveDir = subtract(new MapLocation(x, y), pivot);
+            MapLocation moveDir = subtract(loc, pivot);
             return project(pivot, moveDir, 0.8 * max(rc.getMapWidth(), rc.getMapHeight()));
         }
     }
@@ -91,7 +122,7 @@ public class Config {
         }
     }
 
-    public static List<MapLocation> getAggroTargetList(Random rng) throws GameActionException {
+    public static List<MapLocation> getEnemySpawnList(Random rng) throws GameActionException {
         List<MapLocation> locs = guessEnemyLocs(origin);
         return locs;
     }
