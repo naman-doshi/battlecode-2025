@@ -150,6 +150,15 @@ public class SRPStrategy extends Strategy {
         }
 
         if (gameStage.equals(MID)) {
+            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            if (enemyTower != null) {
+                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                bot.runTick();
+                return;
+            }
+        }
+
+        if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
@@ -167,24 +176,12 @@ public class SRPStrategy extends Strategy {
         // second: if it's outside a ruin OR a neutral colour, obviously paint it
         // but if it's inside and painted w ally, only paint it if there's more than one SRP on it (since one of them will be the ruin's SRP)
         List<MapLocation> ruins = new ArrayList<>();
-        List<MapLocation> towers = new ArrayList<>();
         for (MapInfo ruin : rc.senseNearbyMapInfos()) {
             if (ruin.hasRuin()) {
                 RobotInfo info = rc.senseRobotAtLocation(rc.getLocation());
                 if (info == null/* || !isFriendly(info)*/) {
                     ruins.add(ruin.getMapLocation());
-                } else if (isFriendly(info)) {
-                    towers.add(ruin.getMapLocation());
                 }
-            }
-        }
-
-        if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
-            if (enemyTower != null) {
-                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-                bot.runTick();
-                return;
             }
         }
 
@@ -208,8 +205,6 @@ public class SRPStrategy extends Strategy {
 //                }
             }
         }
-
-
 
         //System.out.println("Left after target selection: " + Clock.getBytecodesLeft());
         

@@ -1,19 +1,33 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Random;
+
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
+import static caterpillow.Game.gameStage;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.util.Pair;
-
-import java.util.*;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isPaintBelowHalf;
+import static caterpillow.util.Util.maxedTowers;
+import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.paintLevel;
+import static caterpillow.util.Util.println;
 import static caterpillow.world.GameStage.MID;
 
 public class ScoutStrategy extends Strategy {

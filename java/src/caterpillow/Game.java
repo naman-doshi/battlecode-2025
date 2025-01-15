@@ -1,5 +1,6 @@
 package caterpillow;
 
+import static java.lang.Math.min;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -25,6 +26,7 @@ public class Game {
     public static boolean isStarter;
     public static GameStage gameStage;
     public static int seed;
+    public static int spawnCoinPenalty;
     // this is for when we actually actually want random
     public static Random trng;
 
@@ -59,8 +61,14 @@ public class Game {
 
     // can change
     public static void upd() {
-        if (time - TowerTracker.lastTowerChange > 50) {
+
+        // update our spawn "penalty" too
+        int coinTowers = TowerTracker.probablyMinCoinTowers();
+        // if early/early mid: all level 1, if mid all l2, if late all l3
+        if (time - TowerTracker.lastTowerChange > 55 || time > 500 || rc.getNumberTowers() > 9) {
             gameStage = GameStage.MID;
+            spawnCoinPenalty = min(0, 1000 - coinTowers * 30 * 3);
         }
+
     }
 }

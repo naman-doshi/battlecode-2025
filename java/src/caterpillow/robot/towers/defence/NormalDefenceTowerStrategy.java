@@ -12,13 +12,9 @@ import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
-import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.PassiveMopperSpawner;
-import caterpillow.robot.towers.spawner.SRPSpawner;
-import caterpillow.robot.towers.spawner.ScoutSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
+import caterpillow.robot.towers.spawner.SplasherSpawner;
 import static caterpillow.util.Util.indicate;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {
@@ -42,14 +38,8 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new ScoutSpawner(),
-                new LoopedSpawner(
-                        new SplasherSRPSpawner(),
-                        new OffenceMopperSpawner(),
-                        new SRPSpawner(),
-                        new PassiveMopperSpawner(),
-                        new SplasherSRPSpawner()
-                )
+                new SplasherSpawner(),
+                new OffenceMopperSpawner()
         ));
         nxt = 0;
     }
@@ -67,7 +57,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
             }
         }
 
-        if (!enemySurround) rc.disintegrate();
+        if (!enemySurround && rc.getChips() > 4000) rc.disintegrate();
 
 
         for (TowerStrategy strat : strats) {
