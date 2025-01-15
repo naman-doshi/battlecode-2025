@@ -27,7 +27,7 @@ public class Config {
     // idea : dynamically update this based on coin amt
     // right now, we have too much paint in the endgame (when most towers are maxed)
     public static double targetRatio() {
-        return 0.75;
+        return 0.6;
     }
 
     public static boolean canUpgrade(int level) {
@@ -37,6 +37,10 @@ public class Config {
             return rc.getChips() >= 6000;
         }
         return false;
+    }
+
+    public static boolean shouldSRPBuildTower() {
+        return rc.getChips() >= 1200;
     }
 
     public static boolean shouldRescue(RobotInfo b) {
@@ -71,31 +75,33 @@ public class Config {
 
     public static UnitType getNextType() {
 
-        boolean enemyVisible = false;
-        for (MapInfo m : rc.senseNearbyMapInfos()) {
-            if (m.getPaint().isEnemy()) {
-                enemyVisible = true;
-                break;
-            }
-        }
-
-        for (RobotInfo r : rc.senseNearbyRobots()) {
-            if (!isFriendly(r)) {
-                enemyVisible = true;
-                break;
-            }
-        }
-
-        if (enemyVisible && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio() - 0.05) return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+//        boolean enemyVisible = false;
+//        for (MapInfo m : rc.senseNearbyMapInfos()) {
+//            if (m.getPaint().isEnemy()) {
+//                enemyVisible = true;
+//                break;
+//            }
+//        }
+//
+//        for (RobotInfo r : rc.senseNearbyRobots()) {
+//            if (!isFriendly(r)) {
+//                enemyVisible = true;
+//                break;
+//            }
+//        }
+//
+//        if (enemyVisible) {
+//            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+//        }
 
         if (!TowerTracker.broken) {
-            if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio()) {
+            if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
-            if (trng.nextDouble() > targetRatio()) {
+            if (trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;

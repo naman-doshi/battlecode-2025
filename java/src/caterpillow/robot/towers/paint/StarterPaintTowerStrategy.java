@@ -32,16 +32,15 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                    new ScoutSpawner(),
-                    new ScoutSpawner(),
-                    new LoopedSpawner(
-                            new SRPSpawner(),
-                            new SplasherSRPSpawner(),
-                            new OffenceMopperSpawner()
-                    )
+                new ScoutSpawner(),
+                new ScoutSpawner(),
+                new LoopedSpawner(
+                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner()
+                )
         ));
     }
 

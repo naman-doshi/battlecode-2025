@@ -36,10 +36,10 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         rng = new Random(seed);
 
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new ScoutSpawner(),
+//                new ScoutSpawner(),
+                new SRPSpawner(),
                 new LoopedSpawner(
                         new SplasherSRPSpawner(),
                         new OffenceMopperSpawner(),

@@ -28,16 +28,22 @@ public class RobotPlayer {
                 bot = new Splasher();
                 break;
             case LEVEL_ONE_DEFENSE_TOWER:
+            case LEVEL_TWO_DEFENSE_TOWER:
+            case LEVEL_THREE_DEFENSE_TOWER:
                 bot = new DefenceTower();
                 break;
             case LEVEL_ONE_MONEY_TOWER:
+            case LEVEL_TWO_MONEY_TOWER:
+            case LEVEL_THREE_MONEY_TOWER:
                 bot = new MoneyTower();
                 break;
             case LEVEL_ONE_PAINT_TOWER:
+            case LEVEL_TWO_PAINT_TOWER:
+            case LEVEL_THREE_PAINT_TOWER:
                 bot = new PaintTower();
                 break;
             default:
-                assert false : "illegal unit type";
+                assert false : "illegal unit type " + rc.getType().name();
         }
 
         bot.init();

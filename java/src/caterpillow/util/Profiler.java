@@ -2,12 +2,16 @@ package caterpillow.util;
 
 import battlecode.common.Clock;
 
+import static caterpillow.Game.rc;
+
 public class Profiler {
-    private static int cnt = 0;
+    private static int cnt = 0, turnNum = 0;
     public static void begin() {
         cnt = Clock.getBytecodesLeft();
+        turnNum = rc.getRoundNum();
     }
     public static void end() {
-        System.out.println("Bytecodes used: " + (cnt - Clock.getBytecodesLeft()));
+        int res = cnt - Clock.getBytecodesLeft() + (rc.getRoundNum() - turnNum) * 15000;
+        System.out.println("Bytecodes used: " + res);
     }
 }

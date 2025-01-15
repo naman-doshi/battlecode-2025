@@ -1,9 +1,6 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.agents.Agent;
@@ -20,6 +17,9 @@ public class HandleRuinStrategy extends QueueStrategy {
 
     public boolean didSkip() throws GameActionException {
         if (maxedTowers()) {
+            return true;
+        }
+        if (!rc.canSenseLocation(target.add(Direction.NORTH))) {
             return true;
         }
         if (isTowerBeingBuilt(target)) {

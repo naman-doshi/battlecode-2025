@@ -4,7 +4,10 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
+import caterpillow.packet.packets.InitPacket;
+import caterpillow.packet.packets.OriginPacket;
 import caterpillow.robot.Strategy;
+import caterpillow.util.TowerTracker;
 
 import static caterpillow.util.Util.isFriendly;
 
@@ -49,6 +52,7 @@ public class UpgradeTowerStrategy extends Strategy {
         RobotInfo info = rc.senseRobotAtLocation(target);
         if (rc.canUpgradeTower(info.getLocation())) {
             rc.upgradeTower(info.getLocation());
+            pm.send(info.getLocation(), new InitPacket(origin, TowerTracker.coinTowers));
         }
     }
 }

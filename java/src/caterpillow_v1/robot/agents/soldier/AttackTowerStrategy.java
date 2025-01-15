@@ -35,6 +35,13 @@ public class AttackTowerStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER");
+
+        // temporary sol
+        bot.pathfinder.makeMove(target);
+        if (rc.canAttack(target)) {
+            rc.attack(target);
+        }
+
         // TODO: running from enemy (hitting those circle strafes)
         // bot.pathfinder.makeMove(target);
         // if (rc.isActionReady()) {
@@ -47,24 +54,25 @@ public class AttackTowerStrategy extends Strategy {
         // if numattacks even, move towards, then attack
         // if numattacks odd, attack, then move away
 
+        // TODO: USE CONSTANTS PLS NOT RANDOM NUMNBERS WTF DOES THIS MEAN
         // obv move until in range
-        int distanceSquared = rc.getLocation().distanceSquaredTo(target);
-        if (distanceSquared > 16 && numAttacks == 0) {
-            bot.pathfinder.makeMove(target);
-            return;
-        }
+//        int distanceSquared = rc.getLocation().distanceSquaredTo(target);
+//        if (distanceSquared > 16 && numAttacks == 0) {
+//            bot.pathfinder.makeMove(target);
+//            return;
+//        }
+//
+//        if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
+//            Direction plannedMove = bot.pathfinder.getMove(target);
+//            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
+//                bot.pathfinder.makeMove(target);
+//            }
+//            if (rc.canAttack(target)) {
+//                rc.attack(target);
+//                bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
+//            }
+//        }
 
-        if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
-            Direction plannedMove = bot.pathfinder.getMove(target);
-            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
-                bot.pathfinder.makeMove(target);
-                rc.attack(target);
-            } else if (rc.canAttack(target)) {
-                rc.attack(target);
-                bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
-            }
-        }
-
-        numAttacks++;
+//        numAttacks++;
     }
 }

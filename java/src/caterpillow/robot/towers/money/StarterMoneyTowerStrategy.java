@@ -35,7 +35,6 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new ScoutSpawner(),

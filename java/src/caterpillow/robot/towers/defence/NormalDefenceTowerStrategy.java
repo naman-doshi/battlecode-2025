@@ -12,6 +12,7 @@ import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.SplasherSpawner;
@@ -35,11 +36,12 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
         rng = new Random(seed);
 
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new SplasherSpawner(),
-                new OffenceMopperSpawner()
+                new LoopedSpawner(
+                    new SplasherSpawner(),
+                    new OffenceMopperSpawner()
+                )
         ));
         nxt = 0;
     }

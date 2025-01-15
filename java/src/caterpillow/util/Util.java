@@ -94,9 +94,7 @@ public class Util {
     }
 
     public static boolean isCellInTowerBounds(MapLocation tower, MapLocation loc) {
-        int d1 = abs(tower.x - loc.x);
-        int d2 = abs(tower.y - loc.y);
-        return d1 <= 2 && d2 <= 2;
+        return abs(tower.x - loc.x) <= 2 && abs(tower.y - loc.y) <= 2;
     }
 
     public static Pair<Double, Double> relativeDistsToCentre(MapLocation loc) {
@@ -169,7 +167,9 @@ public class Util {
 
     public static MapInfo getBestCell(GameBinaryOperator<MapInfo> comp, GamePredicate<MapInfo> pred) throws GameActionException {
         MapInfo best = null;
-        for (MapInfo cell : rc.senseNearbyMapInfos()) {
+        MapInfo[] infos = rc.senseNearbyMapInfos();
+        for (int i = infos.length - 1; i >= 0; i--) {
+            MapInfo cell = infos[i];
             if (pred.test(cell)) {
                 if (best == null) {
                     best = cell;
@@ -183,7 +183,9 @@ public class Util {
 
     public static RobotInfo getNearestRobot(GamePredicate<RobotInfo> pred) throws GameActionException {
         RobotInfo best = null;
-        for (RobotInfo bot : rc.senseNearbyRobots()) {
+        RobotInfo[] bots = rc.senseNearbyRobots();
+        for (int i = bots.length - 1; i >= 0; i--) {
+            RobotInfo bot = bots[i];
             if (pred.test(bot)) {
                 if (best == null || best.getLocation().distanceSquaredTo(rc.getLocation()) > bot.location.distanceSquaredTo(rc.getLocation())) {
                     best = bot;
@@ -219,7 +221,23 @@ public class Util {
 
     public static MapInfo getNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
         MapInfo best = null;
-        for (MapInfo cell : rc.senseNearbyMapInfos()) {
+        MapInfo[] cells = rc.senseNearbyMapInfos();
+        for (int i = cells.length - 1; i >= 0; i--) {
+            MapInfo cell = cells[i];
+            if (pred.test(cell)) {
+                if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
+                    best = cell;
+                }
+            }
+        }
+        return best;
+    }
+
+    public static MapInfo getNearestCell(GamePredicate<MapInfo> pred, int rad) throws GameActionException {
+        MapInfo best = null;
+        MapInfo[] cells = rc.senseNearbyMapInfos(rad);
+        for (int i = cells.length - 1; i >= 0; i--) {
+            MapInfo cell = cells[i];
             if (pred.test(cell)) {
                 if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
                     best = cell;
@@ -304,7 +322,7 @@ public class Util {
     }
 
     public static boolean isInAttackRange(MapLocation loc) {
-        return loc.distanceSquaredTo(rc.getLocation()) < rc.getType().actionRadiusSquared;
+        return loc.distanceSquaredTo(rc.getLocation()) <= rc.getType().actionRadiusSquared;
     }
 
     public static boolean isEnemyAgent(RobotInfo info) {

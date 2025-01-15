@@ -99,7 +99,6 @@ public class ScoutStrategy extends Strategy {
         if (!maxedTowers()) {
             MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
             if (target != null) {
-                println("starting handle ruin strat");
                 handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation(), Config.getNextType());
                 runTick();
                 return;
