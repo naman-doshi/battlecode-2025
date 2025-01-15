@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
@@ -16,27 +17,22 @@ import static caterpillow.Game.trng;
 import caterpillow.util.TowerTracker;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.maxedTowers;
+import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.project;
 import static caterpillow.util.Util.subtract;
 
 public class Config {
 
-    public static double targetRatio = 0.8; // fraction of towers that should be coin
+
+    // idea : dynamically update this based on coin amt
+    // right now, we have too much paint in the endgame (when most towers are maxed)
+    public static double targetRatio = 0.75; // fraction of towers that should be coin
 
     public static boolean canUpgrade(int level) {
         if (level == 2) {
-            if (maxedTowers()) {
-                return rc.getChips() >= 3000;
-            } else {
-                return rc.getChips() >= 4000;
-            }
+            return rc.getChips() >= 3000;
         } else if (level == 3) {
-            if (maxedTowers()) {
-                return rc.getChips() >= 6000;
-            } else {
-                return rc.getChips() >= 7000;
-            }
+            return rc.getChips() >= 6000;
         }
         assert false : "wtf";
         return false;
@@ -73,6 +69,24 @@ public class Config {
     }
 
     public static UnitType getNextType() {
+
+        boolean enemyVisible = false;
+        for (MapInfo m : rc.senseNearbyMapInfos()) {
+            if (m.getPaint().isEnemy()) {
+                enemyVisible = true;
+                break;
+            }
+        }
+
+        for (RobotInfo r : rc.senseNearbyRobots()) {
+            if (!isFriendly(r)) {
+                enemyVisible = true;
+                break;
+            }
+        }
+
+        if (enemyVisible && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio - 0.05) return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+
         if (!TowerTracker.broken) {
             if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;

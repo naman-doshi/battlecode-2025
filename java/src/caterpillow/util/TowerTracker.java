@@ -1,7 +1,9 @@
 package caterpillow.util;
 
-import static caterpillow.Game.*;
 import static java.lang.Math.max;
+
+import static caterpillow.Game.rc;
+import static caterpillow.Game.time;
 
 public class TowerTracker {
     public static final int MAX_TOWER_BITS = 4;

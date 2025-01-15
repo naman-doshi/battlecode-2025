@@ -10,15 +10,26 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Config;
+import static caterpillow.Config.canUpgrade;
+import static caterpillow.Config.genExplorationTarget;
 import caterpillow.Game;
+import static caterpillow.Game.gameStage;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.util.Pair;
-
-import static caterpillow.Game.*;
-import static caterpillow.Config.*;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.checkerboardPaint;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isPaintBelowHalf;
+import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.println;
 import static caterpillow.world.GameStage.MID;
 
 public class SRPStrategy extends Strategy {
@@ -138,7 +149,7 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        if (maxedTowers()) {
+        if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
