@@ -1,16 +1,23 @@
 package caterpillow.robot.towers.paint;
 
-import battlecode.common.*;
-import caterpillow.Game;
-import caterpillow.robot.towers.*;
-import caterpillow.robot.towers.spawner.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import battlecode.common.GameActionException;
+import caterpillow.Game;
+import static caterpillow.Game.seed;
+import caterpillow.robot.towers.RespawnStrategy;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.spawner.LoopedSpawner;
+import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.SRPSpawner;
+import caterpillow.robot.towers.spawner.ScoutSpawner;
+import caterpillow.robot.towers.spawner.SpawnerStrategy;
+import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
+import static caterpillow.util.Util.indicate;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -32,6 +39,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                     new ScoutSpawner(),
                     new LoopedSpawner(
                             new SRPSpawner(),
+                            new SplasherSRPSpawner(),
                             new OffenceMopperSpawner()
                     )
         ));

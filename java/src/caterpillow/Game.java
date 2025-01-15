@@ -57,6 +57,7 @@ public class Game {
     public static void postInit() throws GameActionException {
     }
 
+    // can change
     public static void upd() {
         if (time - TowerTracker.lastTowerChange > 50) {
             gameStage = GameStage.MID;
