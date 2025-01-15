@@ -65,7 +65,7 @@ public class Game {
         // update our spawn "penalty" too
         int coinTowers = TowerTracker.probablyMinCoinTowers();
         // if early/early mid: all level 1, if mid all l2, if late all l3
-        if (time - TowerTracker.lastTowerChange > 55 || time > 500 || rc.getNumberTowers() > 9) {
+        if (time - TowerTracker.lastTowerChange > 50) {
             gameStage = GameStage.MID;
             spawnCoinPenalty = min(0, 1000 - coinTowers * 30 * 3);
         }

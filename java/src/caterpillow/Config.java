@@ -20,10 +20,6 @@ import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.project;
 import static caterpillow.util.Util.subtract;
-import static caterpillow.world.GameStage.EARLY;
-import static caterpillow.world.GameStage.EARLY_MID;
-import static caterpillow.world.GameStage.LATE;
-import static caterpillow.world.GameStage.MID;
 
 public class Config {
 
@@ -31,24 +27,13 @@ public class Config {
     // idea : dynamically update this based on coin amt
     // right now, we have too much paint in the endgame (when most towers are maxed)
     public static double targetRatio() {
-        switch (Game.gameStage) {
-            case EARLY:
-                return 0.75;
-            case EARLY_MID:
-                return 0.7;
-            case MID:
-                return 0.7;
-            case LATE:
-                return 0.63;
-            default:
-                return 0.63;
-        }
+        return 0.75;
     }
 
     public static boolean canUpgrade(int level) {
-        if (level == 2 && (Game.gameStage.equals(MID) || Game.gameStage.equals(LATE))) {
+        if (level == 2) {
             return rc.getChips() >= 3000;
-        } else if (level == 3 && Game.gameStage.equals(LATE)) {
+        } else if (level == 3) {
             return rc.getChips() >= 6000;
         }
         return false;
