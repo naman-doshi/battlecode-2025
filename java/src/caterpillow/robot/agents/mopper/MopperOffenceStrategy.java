@@ -167,20 +167,20 @@ public class MopperOffenceStrategy extends Strategy {
             enemy = enemyLocs.getFirst();
         }
 
-        if (isPaintBelowHalf()) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                bot.runTick();
-                return;
-            }
-        }
-
         RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
         if (nearest != null) {
             bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
             bot.runTick();
             return;
+        }
+
+        if (isPaintBelowHalf()) {
+            nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+                bot.runTick();
+                return;
+            }
         }
 
         // move

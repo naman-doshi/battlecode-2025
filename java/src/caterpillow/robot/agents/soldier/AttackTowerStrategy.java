@@ -16,6 +16,8 @@ public class AttackTowerStrategy extends Strategy {
     Agent bot;
     MapLocation target;
     int numAttacks;
+    boolean shouldAbort = false;
+    int numBlocked = 0;
 
     public AttackTowerStrategy(MapLocation target) {
         bot = (Agent) Game.bot;
@@ -26,7 +28,7 @@ public class AttackTowerStrategy extends Strategy {
     public boolean isComplete() throws GameActionException {
         if (rc.canSenseLocation(target)) {
             RobotInfo bot = rc.senseRobotAtLocation(target);
-            return (bot == null || !bot.getType().isTowerType());
+            return (bot == null || !bot.getType().isTowerType() || bot.getTeam() == rc.getTeam());
         }
         return false;
     }
@@ -34,7 +36,7 @@ public class AttackTowerStrategy extends Strategy {
     // TODO: combat micro
     @Override
     public void runTick() throws GameActionException {
-        indicate("ATTACKING TOWER");
+        indicate("ATTACKING TOWER AT " + target);
 
         // kiting
 
@@ -47,10 +49,26 @@ public class AttackTowerStrategy extends Strategy {
            return;
        }
 
+       numAttacks++;
+
        // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
        if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
            Direction plannedMove = bot.pathfinder.getMove(target);
-           if (plannedMove == null) return;
+           if (plannedMove == null) {
+                indicate("ATTACKING: NO MOVE");
+                return;
+           }
+
+           // if our move can't get us closer to the target, smth is very wrong. just move and dont do anything else
+           // waiting for andy's pathfinder buff
+           if (rc.getLocation().add(plannedMove).distanceSquaredTo(target) >= distanceSquared) {
+               bot.pathfinder.makeMove(target);
+               indicate("ATTACKING: BLOCKED");
+               numBlocked++;
+               return;
+           }
+
+           numBlocked = 0;
 
            // if we're out of range: move, then attack
            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
@@ -65,6 +83,6 @@ public class AttackTowerStrategy extends Strategy {
            }
        }
 
-       numAttacks++;
+       
     }
 }

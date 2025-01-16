@@ -11,7 +11,6 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.gameStage;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
@@ -27,7 +26,6 @@ import static caterpillow.util.Util.isPaintBelowHalf;
 import static caterpillow.util.Util.maxedTowers;
 import static caterpillow.util.Util.missingPaint;
 import static caterpillow.util.Util.paintLevel;
-import static caterpillow.world.GameStage.MID;
 
 public class ScoutStrategy extends Strategy {
 
@@ -77,6 +75,14 @@ public class ScoutStrategy extends Strategy {
             return;
         }
 
+
+        RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+        if (enemyTower != null) {
+            bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+            bot.runTick();
+            return;
+        }
+
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
@@ -86,14 +92,6 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
-        if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
-            if (enemyTower != null) {
-                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-                bot.runTick();
-                return;
-            }
-        }
 
         if (!maxedTowers()) {
             MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
