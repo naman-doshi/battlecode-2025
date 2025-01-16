@@ -78,7 +78,7 @@ public class SplasherAggroStrategy extends Strategy {
             
         } else {
             roamStrategy.runTick();
-            indicate("roaming");
+            // indicate("roaming");
         }
     }
 }

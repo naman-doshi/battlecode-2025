@@ -30,7 +30,7 @@ public class AttackTowerStrategy extends Strategy {
             RobotInfo bot = rc.senseRobotAtLocation(target);
             return (bot == null || !bot.getType().isTowerType() || bot.getTeam() == rc.getTeam());
         }
-        return false;
+        return true;
     }
 
     // TODO: combat micro
@@ -43,46 +43,47 @@ public class AttackTowerStrategy extends Strategy {
         // :(( there r barely any constants
 
         // move towards the tower until it's just out of reach (i.e. as soon as distance^2 <= 16)
-       int distanceSquared = rc.getLocation().distanceSquaredTo(target);
-       if (distanceSquared > 16 && numAttacks == 0) {
-           bot.pathfinder.makeMove(target);
-           return;
-       }
+        int distanceSquared = rc.getLocation().distanceSquaredTo(target);
+        if (distanceSquared > 16 && numAttacks == 0) {
+            bot.pathfinder.makeMove(target);
+            return;
+        }
 
-       numAttacks++;
+        numAttacks++;
 
-       // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
-       if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
-           Direction plannedMove = bot.pathfinder.getMove(target);
-           if (plannedMove == null) {
+        // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
+        if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
+            Direction plannedMove = bot.pathfinder.getMove(target);
+            if (plannedMove == null) {
                 indicate("ATTACKING: NO MOVE");
                 return;
-           }
+            }
 
-           // if our move can't get us closer to the target, smth is very wrong. just move and dont do anything else
-           // waiting for andy's pathfinder buff
-           if (rc.getLocation().add(plannedMove).distanceSquaredTo(target) >= distanceSquared) {
-               bot.pathfinder.makeMove(target);
-               indicate("ATTACKING: BLOCKED");
-               numBlocked++;
-               return;
-           }
+            // if our move can't get us closer to the target, smth is very wrong. just move and dont do anything else
+            // waiting for andy's pathfinder buff
+            if (rc.getLocation().add(plannedMove).distanceSquaredTo(target) >= distanceSquared) {
+                bot.pathfinder.makeMove(plannedMove);
+                indicate("ATTACKING: BLOCKED");
+                numBlocked++;
+                return;
+            }
 
-           numBlocked = 0;
+            numBlocked = 0;
+            indicate(plannedMove.toString());
 
-           // if we're out of range: move, then attack
-           if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
-               bot.pathfinder.makeMove(target);
-               if (rc.canAttack(target)) rc.attack(target);
-           }
+            // if we're out of range: move, then attack
+            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
+                bot.pathfinder.makeMove(plannedMove);
+                if (rc.canAttack(target)) rc.attack(target);
+            }
 
-           // if in range: attack, then move away
-           if (rc.canAttack(target)) {
-               rc.attack(target);
-               bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
-           }
-       }
+            // if in range: attack, then move away
+            if (rc.canAttack(target)) {
+                rc.attack(target);
+                bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
+            }
+        }
 
-       
+
     }
 }

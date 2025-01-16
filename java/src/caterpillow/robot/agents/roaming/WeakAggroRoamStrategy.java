@@ -42,11 +42,12 @@ public class WeakAggroRoamStrategy extends Strategy {
             target = Config.genAggroTarget(rng);
         }
 
+        Direction dir = bot.pathfinder.getMove(target);
+
         // make sure we're painting ahead of us, if we're a soldier
         // soldier uses weakaggro
         if (bot.getClass()==Soldier.class) {
             Soldier bot1 = (Soldier) bot;
-            Direction dir = bot.pathfinder.getMove(target);
             if (dir != null && rc.onTheMap(rc.getLocation().add(dir))) {
                 MapLocation next = rc.getLocation().add(dir);
                 MapInfo info = rc.senseMapInfo(next);
@@ -55,8 +56,8 @@ public class WeakAggroRoamStrategy extends Strategy {
                 }
             }
         }
-        
-        bot.pathfinder.makeMove(target);
+
+        bot.pathfinder.makeMove(dir);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);
     }
 }

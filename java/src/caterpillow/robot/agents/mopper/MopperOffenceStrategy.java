@@ -102,7 +102,7 @@ public class MopperOffenceStrategy extends Strategy {
     }
 
 //    public void safeMove(MapLocation loc) throws GameActionException {
-//        Direction move = bot.pathfinder.getMove(loc);
+//        Direction move = bot.pathfinder.getMove(loc); // if you uncomment this line please use makeMove(Direction) instead of makeMove(MapLocation)
 //        if (move == null) {
 //            return;
 //        }

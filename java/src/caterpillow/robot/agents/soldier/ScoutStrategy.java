@@ -102,7 +102,7 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
-        
+
 
         MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
         if (nearest != null && rc.canAttack(nearest.getMapLocation())) {
@@ -110,6 +110,6 @@ public class ScoutStrategy extends Strategy {
         }
 
         roamStrategy.runTick();
-        
+
     }
 }

@@ -9,4 +9,5 @@ public abstract class AbstractPathfinder {
     // if we want more complex behaviour just do later
     public abstract Direction getMove(MapLocation to) throws GameActionException;
     public abstract void makeMove(MapLocation to) throws GameActionException;
+    public abstract void makeMove(Direction dir) throws GameActionException;
 }
