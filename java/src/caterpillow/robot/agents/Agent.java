@@ -10,6 +10,8 @@ import static caterpillow.Game.origin;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
+import static caterpillow.util.Util.*;
+
 import caterpillow.packet.packets.InitPacket;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.EmptyStrategy;
@@ -17,12 +19,6 @@ import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.mopper.MopperOffenceStrategy;
 import caterpillow.util.TowerTracker;
-import static caterpillow.util.Util.dead;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isSRPCenter;
-import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
@@ -105,7 +101,7 @@ public abstract class Agent extends Robot {
             for (MapInfo cell : rc.senseNearbyMapInfos()) {
                 MapLocation loc = cell.getMapLocation();
                 if (isSRPCenter(loc)) {
-                    if (rc.canCompleteResourcePattern(loc)) {
+                    if (rc.getChips() >= 1200 && rc.canCompleteResourcePattern(loc)) {
                         rc.completeResourcePattern(loc);
                     }
                 }
