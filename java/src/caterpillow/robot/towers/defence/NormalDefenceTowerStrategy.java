@@ -15,7 +15,6 @@ import caterpillow.robot.towers.TowerStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import caterpillow.robot.towers.spawner.SplasherSpawner;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 
@@ -42,7 +41,6 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
         strats.add(atkstrat);
         strats.add(new SpawnerStrategy(
                 new LoopedSpawner(
-                    new SplasherSpawner(),
                     new OffenceMopperSpawner()
                 )
         ));
@@ -69,7 +67,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
             }
         }
 
-        if (!enemySurround && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 50) rc.disintegrate();
+        if (!enemySurround && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 100) rc.disintegrate();
 
 
         for (TowerStrategy strat : strats) {

@@ -55,7 +55,7 @@ public class AttackTowerStrategy extends Strategy {
            // if we're out of range: move, then attack
            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
                bot.pathfinder.makeMove(target);
-               rc.attack(target);
+               if (rc.canAttack(target)) rc.attack(target);
            }
 
            // if in range: attack, then move away

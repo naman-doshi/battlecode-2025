@@ -3,14 +3,18 @@ package caterpillow.robot.agents.roaming;
 import java.util.List;
 import java.util.Random;
 
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
 import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.soldier.Soldier;
 
 // when u wanna push in the general direction of the enemy
 public class WeakAggroRoamStrategy extends Strategy {
@@ -37,15 +41,18 @@ public class WeakAggroRoamStrategy extends Strategy {
         while (rc.canSenseLocation(target)) {
             target = Config.genAggroTarget(rng);
         }
-        // if (bot.getClass()==Soldier.class) {
-        //     Soldier bot1 = (Soldier) bot;
-        //     Direction dir = bot.pathfinder.getMove(target);
-        //     MapLocation next = rc.getLocation().add(dir);
-        //     MapInfo info = rc.senseMapInfo(next);
-        //     if (rc.canAttack(next) && info.getPaint().equals(PaintType.EMPTY)) {
-        //         bot1.checkerboardAttack(next);
-        //     }
-        // }
+
+        if (bot.getClass()==Soldier.class) {
+            Soldier bot1 = (Soldier) bot;
+            Direction dir = bot.pathfinder.getMove(target);
+            if (dir != null && rc.onTheMap(rc.getLocation().add(dir))) {
+                MapLocation next = rc.getLocation().add(dir);
+                MapInfo info = rc.senseMapInfo(next);
+                if (rc.canAttack(next) && info.getPaint().equals(PaintType.EMPTY)) {
+                    bot1.checkerboardAttack(next);
+                }
+            }
+        }
         
         bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);

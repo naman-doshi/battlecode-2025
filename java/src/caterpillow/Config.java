@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
@@ -26,8 +25,12 @@ public class Config {
 
     // idea : dynamically update this based on coin amt
     // right now, we have too much paint in the endgame (when most towers are maxed)
+    // we also need more chips on larger maps
     public static double targetRatio() {
-        return 0.6;
+        if (rc.getMapHeight() * rc.getMapWidth() < 1500) return 0.6;
+        else {
+            return 0.7;
+        }
     }
 
     public static boolean canUpgrade(int level) {
@@ -76,12 +79,6 @@ public class Config {
     public static UnitType getNextType() {
 
        boolean enemyVisible = false;
-       for (MapInfo m : rc.senseNearbyMapInfos()) {
-           if (m.getPaint().isEnemy()) {
-               enemyVisible = true;
-               break;
-           }
-       }
 
        for (RobotInfo r : rc.senseNearbyRobots()) {
            if (!isFriendly(r)) {

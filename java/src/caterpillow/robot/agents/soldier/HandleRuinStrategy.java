@@ -1,14 +1,18 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.troll.QueueStrategy;
+import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isTowerBeingBuilt;
-
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.maxedTowers;
 
 public class HandleRuinStrategy extends QueueStrategy {
 
@@ -24,7 +28,8 @@ public class HandleRuinStrategy extends QueueStrategy {
         }
         if (isTowerBeingBuilt(target)) {
             return false;
-        }
+        } 
+        if (!rc.canSenseLocation(target)) return false;
         RobotInfo info = rc.senseRobotAtLocation(target);
         return info == null || !isFriendly(info);
     }

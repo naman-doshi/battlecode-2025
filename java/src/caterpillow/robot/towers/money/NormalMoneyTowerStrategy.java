@@ -42,12 +42,12 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-//                new ScoutSpawner(),
+                //new ScoutSpawner(),
                 new SRPSpawner(),
                 new LoopedSpawner(
                         new SplasherSRPSpawner(),
                         new OffenceMopperSpawner(),
-                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
                         new PassiveMopperSpawner(),
                         new SplasherSRPSpawner()
                 )
