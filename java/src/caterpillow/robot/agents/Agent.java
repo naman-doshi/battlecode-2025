@@ -1,16 +1,28 @@
 package caterpillow.robot.agents;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Config;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.pm;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.ticksExisted;
 import caterpillow.packet.packets.InitPacket;
 import caterpillow.pathfinding.AbstractPathfinder;
+import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.mopper.MopperOffenceStrategy;
 import caterpillow.util.TowerTracker;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
-import static java.lang.Math.max;
+import static caterpillow.util.Util.dead;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isSRPCenter;
+import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
@@ -88,7 +100,8 @@ public abstract class Agent extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
-        if (ticksExisted >= 3) {
+        
+        if (ticksExisted >= 2) {
             for (MapInfo cell : rc.senseNearbyMapInfos()) {
                 MapLocation loc = cell.getMapLocation();
                 if (isSRPCenter(loc)) {
@@ -96,6 +109,10 @@ public abstract class Agent extends Robot {
                         rc.completeResourcePattern(loc);
                     }
                 }
+            }
+
+            if (primaryStrategy.getClass().equals(EmptyStrategy.class) && rc.getType().equals(UnitType.MOPPER)) {
+                primaryStrategy = new MopperOffenceStrategy();
             }
         }
 

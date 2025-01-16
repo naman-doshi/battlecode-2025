@@ -4,16 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.util.Util.*;
-
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
+import static caterpillow.util.Util.countNearbyMoppers;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isAllyAgent;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInAttackRange;
+import static caterpillow.util.Util.isPaintBelowHalf;
+import static caterpillow.util.Util.missingPaint;
 
 public class MopperOffenceStrategy extends Strategy {
 
@@ -175,13 +188,10 @@ public class MopperOffenceStrategy extends Strategy {
             GameSupplier<MapInfo> pred = suppliers.get(i);
             MapInfo res = pred.get();
             if (res != null) {
-                // go towards, and attack if possible
                 indicate("OFFENCE MOPPER - FOUND PRED " + i);
                 rc.setIndicatorDot(res.getMapLocation(), 255, 0, 0);
+                bot.doBestAttack(res.getMapLocation());
                 bot.pathfinder.makeMove(res.getMapLocation());
-                if (rc.canAttack(res.getMapLocation())) {
-                    rc.attack(res.getMapLocation());
-                }
 //                safeMove(res.getMapLocation());
                 return;
             }

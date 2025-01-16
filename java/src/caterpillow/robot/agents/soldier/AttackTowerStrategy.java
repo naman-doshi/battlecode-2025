@@ -36,43 +36,35 @@ public class AttackTowerStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER");
 
-        // temporary sol
-        bot.pathfinder.makeMove(target);
-        if (rc.canAttack(target)) {
-            rc.attack(target);
-        }
+        // kiting
 
-        // TODO: running from enemy (hitting those circle strafes)
-        // bot.pathfinder.makeMove(target);
-        // if (rc.isActionReady()) {
-        //     if (rc.canAttack(target)) {
-        //         rc.attack(target);
-        //     }
-        // }
+        // :(( there r barely any constants
 
-        // attempt to kite??
-        // if numattacks even, move towards, then attack
-        // if numattacks odd, attack, then move away
+        // move towards the tower until it's just out of reach (i.e. as soon as distance^2 <= 16)
+       int distanceSquared = rc.getLocation().distanceSquaredTo(target);
+       if (distanceSquared > 16 && numAttacks == 0) {
+           bot.pathfinder.makeMove(target);
+           return;
+       }
 
-        // TODO: USE CONSTANTS PLS NOT RANDOM NUMNBERS WTF DOES THIS MEAN
-        // obv move until in range
-//        int distanceSquared = rc.getLocation().distanceSquaredTo(target);
-//        if (distanceSquared > 16 && numAttacks == 0) {
-//            bot.pathfinder.makeMove(target);
-//            return;
-//        }
-//
-//        if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
-//            Direction plannedMove = bot.pathfinder.getMove(target);
-//            if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
-//                bot.pathfinder.makeMove(target);
-//            }
-//            if (rc.canAttack(target)) {
-//                rc.attack(target);
-//                bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
-//            }
-//        }
+       // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
+       if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
+           Direction plannedMove = bot.pathfinder.getMove(target);
+           if (plannedMove == null) return;
 
-//        numAttacks++;
+           // if we're out of range: move, then attack
+           if (!rc.canAttack(target) && rc.getLocation().add(plannedMove).distanceSquaredTo(target) <= 9) {
+               bot.pathfinder.makeMove(target);
+               rc.attack(target);
+           }
+
+           // if in range: attack, then move away
+           if (rc.canAttack(target)) {
+               rc.attack(target);
+               bot.pathfinder.makeMove(rc.getLocation().add(rc.getLocation().directionTo(target).opposite()));
+           }
+       }
+
+       numAttacks++;
     }
 }

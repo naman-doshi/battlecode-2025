@@ -7,17 +7,24 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
 import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.util.Util.*;
-
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.PassiveRoamStrategy;
 import caterpillow.util.GameSupplier;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isAllyAgent;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInAttackRange;
+import static caterpillow.util.Util.isPaintBelowHalf;
+import static caterpillow.util.Util.missingPaint;
 
 public class MopperPassiveStrategy extends Strategy {
 
@@ -96,10 +103,8 @@ public class MopperPassiveStrategy extends Strategy {
             MapInfo res = pred.get();
             if (res != null) {
                 // go towards, and attack if possible
+                bot.doBestAttack(res.getMapLocation());
                 bot.pathfinder.makeMove(res.getMapLocation());
-                if (rc.canAttack(res.getMapLocation())) {
-                    rc.attack(res.getMapLocation());
-                }
                 return;
             }
         }

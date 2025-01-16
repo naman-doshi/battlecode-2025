@@ -1,11 +1,14 @@
 package caterpillow.util;
 
+import java.awt.image.DirectColorModel;
+
 import battlecode.common.*;
 import caterpillow.Game;
 
 import java.util.*;
 
 import static caterpillow.Game.*;
+
 import static java.lang.Math.abs;
 import static java.lang.Math.max;
 
@@ -29,6 +32,20 @@ public class Util {
             Direction.SOUTH,
             Direction.WEST
     };
+
+    public static Direction[] relatedDirections(Direction dir) {
+        if (dir == Direction.NORTH) {
+            return new Direction[]{dir, Direction.NORTHEAST, Direction.NORTHWEST};
+        } else if (dir == Direction.SOUTH) {
+            return new Direction[]{dir, Direction.SOUTHEAST, Direction.SOUTHWEST};
+        } else if (dir == Direction.EAST) {
+            return new Direction[]{dir, Direction.NORTHEAST, Direction.SOUTHEAST};
+        } else if (dir == Direction.WEST) {
+            return new Direction[]{dir, Direction.NORTHWEST, Direction.SOUTHWEST};
+        } else {
+            return new Direction[]{dir};
+        }
+    }
 
     // inclusive exclusive
     public static int getBits(int bits, int l, int len) {
@@ -549,7 +566,7 @@ public class Util {
     }
 
     public static boolean isSRPCenter(MapLocation loc) {
-        return (loc.x - 3 * loc.y + 3) % 10 == 0;
+        return (loc.x%4==2 && loc.y%4==2);
     }
     
     public static boolean isWithinRuin(MapLocation loc, MapLocation ruin) {
@@ -560,13 +577,16 @@ public class Util {
         // cancer wtf
         List<MapLocation> res = new ArrayList<>();
 
-        // ok so x - 3y = 10n - 3
-        int n = (loc.x - 3*loc.y + 3) / 10;
+        // x = 4n + 2
+        // y = 4m + 2
+        int n = (loc.x - 2) / 4;
         for (int possibleN = n-1; possibleN <= n+1; possibleN++) {
-            for (int possibleY = loc.y-2; possibleY <= loc.y+2; possibleY++) {
-                int possibleX = 10*possibleN + 3*possibleY - 3;
-                if (isSRPCenter(new MapLocation(possibleX, possibleY))) {
-                    res.add(new MapLocation(possibleX, possibleY));
+            int m = (loc.y - 2) / 4;
+            for (int possibleM = m-1; possibleM <= m+2; possibleM++) {
+                int x = 4*n + 2;
+                int y = 4*m + 2;
+                if (isSRPCenter(new MapLocation(x, y))) {
+                    res.add(new MapLocation(x, y));
                 }
             }
         }
@@ -579,10 +599,18 @@ public class Util {
 
     public static PaintType checkerboardPaint(MapLocation loc) {
         
-        return ((loc.x + loc.y) % 2 == 0 || isSRPCenter(loc)) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-        // 13+2, 16+3, 19+4, ...
-        // 3+2, 6+3, 9+4, ...
-        // -7+2, -4+3, -1+4, ...
+        switch ((loc.x) % 4) {
+            case (0):
+                return (loc.y%4==2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+            case (1):
+                return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+            case (2):
+                return (loc.y%4!=2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+            case (3):
+                return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+            default:
+                return PaintType.ALLY_PRIMARY;
+        }
     }
 
     public static List<Integer> getSRPIds(MapLocation loc) {

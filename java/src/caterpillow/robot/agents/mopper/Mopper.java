@@ -14,8 +14,10 @@ import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.getBestRobot;
+import static caterpillow.util.Util.isEnemyAgent;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.orthDirections;
+import static caterpillow.util.Util.relatedDirections;
 
 public class Mopper extends Agent {
 
@@ -43,36 +45,46 @@ public class Mopper extends Agent {
         return getBestTarget(e -> true);
     }
 
-    public void doBestAttack() throws GameActionException {
+    public void doBestAttack(MapLocation target) throws GameActionException {
         if (!rc.isActionReady()) {
             return;
         }
+
         // try mop sweep
         for (Direction dir : orthDirections) {
             if (!rc.canMopSwing(dir)) {
                 continue;
             }
             // stupid code
-            MapLocation mainLoc = rc.getLocation().add(dir);
             int cnt = 0;
-            for (Direction dir2 : directions) {
-                MapLocation loc = rc.getLocation().add(dir2);
-                if (mainLoc.distanceSquaredTo(loc) <= 1) {
-                    cnt++;
-                }
+            for (Direction related : relatedDirections(dir)) {
+                
+                // first layer
+                MapLocation possibleAttackLoc = rc.getLocation().add(related);
+                if (!rc.canSenseLocation(possibleAttackLoc)) continue;
+                RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
+                if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
+                
+                // second layer
+                possibleAttackLoc = possibleAttackLoc.add(dir);
+                if (!rc.canSenseLocation(possibleAttackLoc)) continue;
+                robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
+                if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
             }
-            if (cnt == 3) {
-                // just do the mop sweep
-                // if there are >= 5 enemies around us its a lost cause anyways
+
+            if (cnt >= 3) {
                 rc.mopSwing(dir);
+                //System.out.println("SWINGGG hitting " + cnt);
                 return;
             }
         }
-
-        // normal attack
-        RobotInfo target = getBestTarget(e -> rc.canAttack(e.getLocation()));
-        if (target != null) {
-            rc.attack(target.getLocation());
+        
+    
+        if (target != null && rc.canAttack(target)) {
+            rc.attack(target);
+        } else {
+            RobotInfo target1 = getBestTarget(e -> rc.canAttack(e.getLocation()));
+            if (target1 != null && rc.canAttack(target1.getLocation())) rc.attack(target1.getLocation());
         }
     }
 

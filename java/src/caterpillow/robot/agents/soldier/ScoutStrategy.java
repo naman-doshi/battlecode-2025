@@ -27,7 +27,6 @@ import static caterpillow.util.Util.isPaintBelowHalf;
 import static caterpillow.util.Util.maxedTowers;
 import static caterpillow.util.Util.missingPaint;
 import static caterpillow.util.Util.paintLevel;
-import static caterpillow.util.Util.println;
 import static caterpillow.world.GameStage.MID;
 
 public class ScoutStrategy extends Strategy {

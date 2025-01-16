@@ -9,7 +9,7 @@ public class SplasherSRPSpawner extends Spawner {
     public boolean spawn() throws GameActionException {
         double splasherProbability;
         if (Game.gameStage.equals(GameStage.MID)) {
-            splasherProbability = 0.8;
+            splasherProbability = 0.9;
         } else {
             splasherProbability = 0.2;
         }

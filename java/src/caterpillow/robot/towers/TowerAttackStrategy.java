@@ -1,14 +1,16 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotInfo;
 import caterpillow.Game;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.util.Util.getBestRobot;
+import static caterpillow.util.Util.isFriendly;
 
 public class TowerAttackStrategy extends TowerStrategy {
 
     Tower bot;
+    public int lastAttack = 0;
 
     int countEnemies() throws GameActionException {
         int count = 0;
@@ -26,6 +28,7 @@ public class TowerAttackStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
+        if (rc.canAttack(null)) rc.attack(null);
         int enemies = countEnemies();
         if (enemies > 0) {
             // single target
@@ -44,6 +47,7 @@ public class TowerAttackStrategy extends TowerStrategy {
             }, e -> !isFriendly(e) && e.getType().isRobotType() && rc.canAttack(e.getLocation()));
             if (info != null) {
                 rc.attack(info.getLocation());
+                lastAttack = Game.time;
             }
         }
     }

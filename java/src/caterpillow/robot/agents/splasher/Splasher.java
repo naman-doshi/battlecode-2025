@@ -30,8 +30,6 @@ public class Splasher extends Agent {
     }
 
     public MapLocation bestAttackLocation() throws GameActionException {
-        
-        
 
         MapInfo[] attackable = rc.senseNearbyMapInfos(4);
 

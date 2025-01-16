@@ -1,14 +1,16 @@
 package caterpillow.robot.agents.mopper;
 
+import static java.lang.Math.min;
+
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
+import static caterpillow.Game.rc;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
-import static java.lang.Math.min;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
 
 public class MopperDefenceStrategy extends Strategy {
 
@@ -47,10 +49,8 @@ public class MopperDefenceStrategy extends Strategy {
             }
         }
 
-        if (rc.isActionReady()) {
-            if (rc.canAttack(target.getLocation())) {
-                rc.attack(target.getLocation());
-            }
-        }
+        bot.doBestAttack(null);
+
+        
     }
 }
