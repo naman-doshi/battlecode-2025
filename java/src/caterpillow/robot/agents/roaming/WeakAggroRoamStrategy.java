@@ -42,6 +42,8 @@ public class WeakAggroRoamStrategy extends Strategy {
             target = Config.genAggroTarget(rng);
         }
 
+        // make sure we're painting ahead of us, if we're a soldier
+        // soldier uses weakaggro
         if (bot.getClass()==Soldier.class) {
             Soldier bot1 = (Soldier) bot;
             Direction dir = bot.pathfinder.getMove(target);
