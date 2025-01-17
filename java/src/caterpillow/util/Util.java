@@ -4,6 +4,7 @@ import java.awt.image.DirectColorModel;
 
 import battlecode.common.*;
 import caterpillow.Game;
+import static caterpillow.Config.genExplorationTarget;
 
 import java.util.*;
 
@@ -136,6 +137,15 @@ public class Util {
 
     public static List<MapLocation> guessEnemyLocs(MapLocation src) throws GameActionException {
         List<MapLocation> enemyLocs = new LinkedList<>();
+
+        if (src == null) {
+            // give 3 random locations
+            for (int i = 0; i < 3; i++) {
+                enemyLocs.addLast(genExplorationTarget(trng));
+            }
+            return enemyLocs;
+        }
+
         int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
         int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
         if (dist_hormiddle > dist_vertmiddle) {

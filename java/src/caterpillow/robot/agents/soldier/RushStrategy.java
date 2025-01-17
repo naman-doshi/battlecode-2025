@@ -1,7 +1,9 @@
 package caterpillow.robot.agents.soldier;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -22,6 +24,7 @@ public class RushStrategy extends Strategy {
     Agent bot;
     MapLocation target;
     ArrayList<MapLocation> todo;
+    Set<MapLocation> ruinsTrolled = new HashSet<>();
 
     Strategy primary;
     Strategy secondary;
@@ -65,8 +68,9 @@ public class RushStrategy extends Strategy {
             MapInfo[] neighbours = Game.rc.senseNearbyMapInfos();
             for (MapInfo info : neighbours) {
                 RobotInfo botThere = Game.rc.senseRobotAtLocation(info.getMapLocation());
-                if (info.hasRuin() && botThere == null) {
+                if (info.hasRuin() && botThere == null && !ruinsTrolled.contains(info.getMapLocation())) {
                     secondary = new TrollRuinStrategy(info.getMapLocation());
+                    ruinsTrolled.add(info.getMapLocation());
                     break;
                 }
             }
