@@ -45,9 +45,10 @@ public class Game {
                 TowerTracker.coinTowers = 1;
                 TowerTracker.hasReceivedInitPacket = true;
             } else {
-                RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
-                assert nearest != null;
-                Game.origin = nearest.getLocation();
+                // we shouldnt need this
+//                RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());
+//                assert nearest != null;
+//                Game.origin = nearest.getLocation();
             }
         }
         centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);

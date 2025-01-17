@@ -2,10 +2,7 @@ package caterpillow.robot.agents.mopper;
 
 import java.util.List;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
@@ -78,8 +75,7 @@ public class Mopper extends Agent {
                 return;
             }
         }
-        
-    
+
         if (target != null && rc.canAttack(target)) {
             rc.attack(target);
         } else {
@@ -91,10 +87,24 @@ public class Mopper extends Agent {
     @Override
     public void init() throws GameActionException {
         super.init();
-
         pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
+    }
+
+    @Override
+    public void runTick() throws GameActionException {
+        super.runTick();
+        // if spawn is surrounded by enemy paint (i.e. no messaging) spawn some moppers to clean it up
+        // TODO: make this a proper fix
+        if (primaryStrategy instanceof EmptyStrategy) {
+            if (home != null) {
+                Game.origin = home;
+            } else {
+                Game.origin = rc.getLocation();
+            }
+            primaryStrategy = new MopperOffenceStrategy();
+        }
     }
 
     public static final int DEFENCE_STRAT = 0, OFFENCE_STRAT = 1, RESPAWN_STRAT = 2, PASSIVE_STRAT = 3;

@@ -74,6 +74,7 @@ public abstract class Agent extends Robot {
     }
 
     public void setParent(RobotInfo parent) {
+        assert parent != null;
         home = parent.getLocation();
         homeID = parent.getID();
     }
@@ -88,9 +89,11 @@ public abstract class Agent extends Robot {
             // rip parent died
             // tiny edge case where your spawning tower dies at the same time you spawn
             MapInfo ruin = getNearestCell(c -> c.hasRuin());
+            assert ruin != null;
             UnitType type = Config.getNextType();
             if (rc.canCompleteTowerPattern(type, ruin.getMapLocation())) {
                 rc.completeTowerPattern(type, ruin.getMapLocation());
+                assert rc.senseRobotAtLocation(ruin.getMapLocation()) != null;
                 setParent(rc.senseRobotAtLocation(ruin.getMapLocation()));
             } else {
                 // there is this stupid edge case where you get spawned, and then the tower dies before it can send over a message
@@ -111,13 +114,6 @@ public abstract class Agent extends Robot {
                         rc.completeResourcePattern(loc);
                     }
                 }
-            }
-
-            // if spawn is surrounded by enemy paint (i.e. no messaging) spawn some moppers to clean it up
-            if (primaryStrategy.getClass().equals(EmptyStrategy.class) && rc.getType().equals(UnitType.MOPPER)) {
-                primaryStrategy = new MopperOffenceStrategy();
-                // janky fix bc this is an edge case anyway
-                Game.origin = rc.getLocation();
             }
         }
 
