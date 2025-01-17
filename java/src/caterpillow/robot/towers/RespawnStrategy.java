@@ -1,11 +1,22 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
+import static caterpillow.Game.pm;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.time;
 import caterpillow.packet.packets.StrategyPacket;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
+import static caterpillow.util.Util.add;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.getSafeSpawnLoc;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isPatternComplete;
+import static caterpillow.util.Util.println;
 
 /*
 
@@ -13,6 +24,8 @@ currently, its kinda beatable since itll only spawn a mopper
 todo: spawn moppers that clean bad cells (if applicable), and spawn soldiers that can refill cells
 
 */
+
+// this is more of an offence strategy than respawn, it chases the enemy
 
 public class RespawnStrategy extends TowerStrategy {
 
@@ -53,14 +66,15 @@ public class RespawnStrategy extends TowerStrategy {
         println("spawning defensive mopper");
         lastSpawnTime = time;
         bot.build(UnitType.MOPPER, loc);
-        pm.send(loc, new StrategyPacket(2));
+        pm.send(loc, new StrategyPacket(1));
     }
 
     @Override
     public void runTick() throws GameActionException {
         // if people are rushing with both mopper and soldier then its actually wraps
         if (isInDanger()) {
-            if (shouldSpawnNewMopper() && isTowerRespawnReady()) {
+            indicate("DANGER");
+            if (shouldSpawnNewMopper()) {
                 MapInfo spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
                 if (spawnLoc != null) {
                     spawnMopper(spawnLoc.getMapLocation());

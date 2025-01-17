@@ -9,15 +9,18 @@ import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
+import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.RushSpawner;
 import caterpillow.robot.towers.spawner.SRPSpawner;
 import caterpillow.robot.towers.spawner.ScoutSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
+import static caterpillow.util.Util.expectedRushDistance;
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
 
@@ -33,13 +36,29 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
     // ill just hardcode for now to make sure it works
     List<TowerStrategy> strats;
 
-    public StarterMoneyTowerStrategy() {
+    public StarterMoneyTowerStrategy() throws GameActionException {
         todo = 2;
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
-        strats.add(new SpawnerStrategy(
+
+        // only rush if map is small, or short dist to enemy
+        // we're rushing from money tower to cripple their finances (as the corresponding enemy tower is a money tower)
+        // also why not spawn a mopper since we don't have enough paint for anything else anyway
+        if (Game.rc.getMapWidth() * Game.rc.getMapHeight() < 800 || expectedRushDistance(Game.rc.getLocation()) < 15) {
+            strats.add(new SpawnerStrategy(
+                new RushSpawner(),
+                new RushSpawner(),
+                new LoopedSpawner(
+                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner()
+                )
+            ));
+        } else {
+            strats.add(new SpawnerStrategy(
                 new ScoutSpawner(),
                 new ScoutSpawner(),
                 new LoopedSpawner(
@@ -47,7 +66,9 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                         new SplasherSRPSpawner(),
                         new OffenceMopperSpawner()
                 )
-        ));
+            ));
+        }
+
     }
 
     @Override

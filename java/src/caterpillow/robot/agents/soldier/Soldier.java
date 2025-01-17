@@ -3,14 +3,12 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
-
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
-
 import static caterpillow.util.Util.checkerboardPaint;
 
 public class Soldier extends Agent {
@@ -33,7 +31,7 @@ public class Soldier extends Agent {
         rc.attack(loc, checkerboardPaint(loc) == PaintType.ALLY_SECONDARY);
     }
 
-    public static final int STARTER_STRAT = 0, SRP_STRAT = 1, SCOUT_STRAT = 2;
+    public static final int STARTER_STRAT = 0, SRP_STRAT = 1, SCOUT_STRAT = 2, RUSH_STRAT = 3;
 
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
@@ -47,6 +45,9 @@ public class Soldier extends Agent {
                 break;
             case SCOUT_STRAT:
                 primaryStrategy = new ScoutStrategy();
+                break;
+            case RUSH_STRAT:
+                primaryStrategy = new RushStrategy();
                 break;
             default:
                 assert false : "INVALID STRATEGY";

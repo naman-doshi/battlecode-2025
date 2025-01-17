@@ -192,7 +192,6 @@ public class MopperOffenceStrategy extends Strategy {
                 rc.setIndicatorDot(res.getMapLocation(), 255, 0, 0);
                 bot.doBestAttack(res.getMapLocation());
                 bot.pathfinder.makeMove(res.getMapLocation());
-//                safeMove(res.getMapLocation());
                 return;
             }
         }

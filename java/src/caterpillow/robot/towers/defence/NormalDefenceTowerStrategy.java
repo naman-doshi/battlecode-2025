@@ -9,6 +9,7 @@ import battlecode.common.MapInfo;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
+import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -38,6 +39,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
         atkstrat = new TowerAttackStrategy();
 
         strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
         strats.add(atkstrat);
         strats.add(new SpawnerStrategy(
                 new LoopedSpawner(

@@ -139,27 +139,29 @@ public class Util {
         int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
         int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
         if (dist_hormiddle > dist_vertmiddle) {
+            // first is vert ref
             enemyLocs.addLast(flipVer(src));
-            // second is the rotation one.
             enemyLocs.addLast(rot180(src));
-            // third is the vert ref one
             enemyLocs.addLast(flipVer(src));
         } else if (dist_hormiddle < dist_vertmiddle) {
             // first is vert ref
             enemyLocs.addLast(flipVer(src));
-            // second is the rotation one.
             enemyLocs.addLast(rot180(src));
-            // third is the hor ref one
             enemyLocs.addLast(flipVer(src));
         } else {
-            // first is hor ref
-            enemyLocs.addLast(flipVer(src));
-            // second is vert ref
-            enemyLocs.addLast(flipVer(src));
-            // third is the rotation one
+            // first is rot 180
             enemyLocs.addLast(rot180(src));
+            enemyLocs.addLast(flipVer(src));
+            enemyLocs.addLast(flipVer(src));
+            
         }
         return enemyLocs;
+    }
+
+    public static int expectedRushDistance(MapLocation src) throws GameActionException {
+        List<MapLocation> enemyLocs = guessEnemyLocs(src);
+        MapLocation target = enemyLocs.get(0);
+        return (int)Math.sqrt((double)src.distanceSquaredTo(target));
     }
 
     public static List<MapLocation> guessSpawnLocs() throws GameActionException {

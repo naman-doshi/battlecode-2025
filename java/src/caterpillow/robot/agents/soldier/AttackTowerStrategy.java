@@ -15,9 +15,7 @@ public class AttackTowerStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    int numAttacks;
-    boolean shouldAbort = false;
-    int numBlocked = 0;
+    boolean startedAttacking = false;
 
     public AttackTowerStrategy(MapLocation target) {
         bot = (Agent) Game.bot;
@@ -44,13 +42,13 @@ public class AttackTowerStrategy extends Strategy {
 
         // move towards the tower until it's just out of reach (i.e. as soon as distance^2 <= 16)
         int distanceSquared = rc.getLocation().distanceSquaredTo(target);
-        if (distanceSquared > 16 && numAttacks == 0) {
+        if (distanceSquared > 16 && !startedAttacking) {
             bot.pathfinder.makeMove(target);
             return;
         }
 
-        numAttacks++;
-
+        startedAttacking = true;
+        
         // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
         if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
             Direction plannedMove = bot.pathfinder.getMove(target);
@@ -64,11 +62,9 @@ public class AttackTowerStrategy extends Strategy {
             if (rc.getLocation().add(plannedMove).distanceSquaredTo(target) >= distanceSquared) {
                 bot.pathfinder.makeMove(plannedMove);
                 indicate("ATTACKING: BLOCKED");
-                numBlocked++;
                 return;
             }
 
-            numBlocked = 0;
             indicate(plannedMove.toString());
 
             // if we're out of range: move, then attack

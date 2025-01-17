@@ -121,14 +121,14 @@ public abstract class Agent extends Robot {
             }
         }
 
-        //kms so i dont bleed paint from other bots
+        // kms so i dont bleed paint from other bots
         if (rc.getPaint() < 5) {
             ticksRanOutOfPaint++;
         } else {
             ticksRanOutOfPaint = 0;
         }
 
-        if (ticksRanOutOfPaint >= 9) {
+        if (ticksRanOutOfPaint >= 20) {
             dead("ran out of paint");
             System.out.println("kms");
             return;
