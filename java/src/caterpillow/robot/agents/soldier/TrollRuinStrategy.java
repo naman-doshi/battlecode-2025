@@ -14,6 +14,7 @@ public class TrollRuinStrategy extends Strategy {
 
     Soldier bot;
     MapLocation target;
+    boolean done = false;
 
     boolean isInView() {
         for (int dx = -2; dx <= 2; dx++) {
@@ -49,6 +50,7 @@ public class TrollRuinStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
+        if (done == true) return true;
         if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null) return true;
         if (hasBeenTrolled()) return true;
         if (!isInView()) return false;
@@ -57,18 +59,18 @@ public class TrollRuinStrategy extends Strategy {
         return false;
     }
 
+
+    // cbb check if the ruin has already been trolled, might as well troll it twice to make it harder for the enemy
+    // it makes bots much slower to scout bc they have to get up really close to check if it's alr been trolled
     @Override
     public void runTick() throws GameActionException {
-        indicate("TROLLING");
-        if (!isInView()) {
-            bot.pathfinder.makeMove(target);
-        } else {
-            MapInfo cell = getPlaceCell();
-            assert cell != null : "how does this happen";
-            bot.pathfinder.makeMove(cell.getMapLocation());
-            if (rc.canAttack(cell.getMapLocation())) {
-                bot.checkerboardAttack(cell.getMapLocation());
-            }
+        indicate("TROLLING RUIN AT " + target);
+        MapInfo cell = getPlaceCell();
+        assert cell != null : "how does this happen";
+        bot.pathfinder.makeMove(cell.getMapLocation());
+        if (rc.canAttack(cell.getMapLocation())) {
+            bot.checkerboardAttack(cell.getMapLocation());
+            done = true;
         }
     }
 }

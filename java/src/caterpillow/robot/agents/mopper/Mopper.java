@@ -69,7 +69,7 @@ public class Mopper extends Agent {
                 if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
             }
 
-            if (cnt >= 3) {
+            if (cnt >= 2) {
                 rc.mopSwing(dir);
                 //System.out.println("SWINGGG hitting " + cnt);
                 return;

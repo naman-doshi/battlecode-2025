@@ -7,6 +7,7 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 
 import static caterpillow.Game.*;
+import static caterpillow.util.Util.indicate;
 
 // *just* in case we optimise this in the future
 public class TraverseStrategy extends Strategy {
@@ -28,6 +29,7 @@ public class TraverseStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
+        indicate("TRAVELLING TO " + target);
         if (!rc.isMovementReady()) return;
         bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);

@@ -32,8 +32,6 @@ public class RusherSpawnStrategy extends TowerStrategy {
     @Override
     public void runTick() throws GameActionException {
         switch (gameStage) {
-            // TODO: implement strategies for all game times
-            // currently just spam soldiers
             case LATE:
             case MID:
             case EARLY:

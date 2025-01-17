@@ -23,7 +23,7 @@ public class RushStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    ArrayList<MapLocation> todo;
+    List<MapLocation> todo;
     Set<MapLocation> ruinsTrolled = new HashSet<>();
 
     Strategy primary;
@@ -31,7 +31,7 @@ public class RushStrategy extends Strategy {
 
     public RushStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
-        List<MapLocation> todo = guessEnemyLocs(bot.home);
+        todo = guessEnemyLocs(bot.home);
         target = todo.get(0);
         todo.remove(0);
 
@@ -46,10 +46,10 @@ public class RushStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("RUSHING");
+        indicate("RUSHING TO " + todo);
         
         // become a scout once done
-        if (target == null && todo==null) {
+        if (target == null || todo.isEmpty()) {
             if (!(primary instanceof ScoutStrategy)) {
                 primary = new ScoutStrategy();
             }
@@ -58,9 +58,11 @@ public class RushStrategy extends Strategy {
         }
 
         if (secondary == null) {
-            RobotInfo nearest = getNearestRobot(b -> !isFriendly(b) && b.getType().isTowerType());
-            if (nearest != null) {
-                secondary = new AttackTowerStrategy(nearest.getLocation());
+            if (Game.rc.canSenseLocation(target)) {
+                RobotInfo botThere = Game.rc.senseRobotAtLocation(target);
+                if (botThere != null && botThere.getType().isTowerType() && !isFriendly(botThere)) {
+                    secondary = new AttackTowerStrategy(target);
+                }
             }
         }
 
@@ -78,6 +80,13 @@ public class RushStrategy extends Strategy {
 
         if (secondary != null) {
             if (secondary.isComplete()) {
+                indicate("SECONDARY STRATEGY COMPLETE");
+                if (secondary instanceof AttackTowerStrategy) {
+                    target = null;
+                    if (!(primary instanceof ScoutStrategy)) {
+                        primary = new ScoutStrategy();
+                    }
+                }
                 secondary = null;
             } else {
                 secondary.runTick();
@@ -86,7 +95,7 @@ public class RushStrategy extends Strategy {
         }
 
         if (primary.isComplete()) {
-            if (todo==null) {
+            if (todo.isEmpty()) {
                 // become a scout
                 target = null;
                 runTick();

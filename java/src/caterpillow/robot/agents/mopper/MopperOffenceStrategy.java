@@ -198,5 +198,6 @@ public class MopperOffenceStrategy extends Strategy {
 
         // run towards goal
         roamStrategy.runTick();
+        bot.doBestAttack(null);
     }
 }

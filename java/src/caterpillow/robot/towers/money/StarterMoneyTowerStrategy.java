@@ -47,7 +47,7 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         // only rush if map is small, or short dist to enemy
         // we're rushing from money tower to cripple their finances (as the corresponding enemy tower is a money tower)
         // also why not spawn a mopper since we don't have enough paint for anything else anyway
-        if (Game.rc.getMapWidth() * Game.rc.getMapHeight() < 800 || expectedRushDistance(Game.rc.getLocation()) < 15) {
+        if (Game.rc.getMapWidth() * Game.rc.getMapHeight() < 1000 || expectedRushDistance(Game.rc.getLocation()) < 20) {
             strats.add(new SpawnerStrategy(
                 new RushSpawner(),
                 new RushSpawner(),

@@ -170,19 +170,19 @@ public class Util {
         int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
         int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
         if (dist_hormiddle > dist_vertmiddle) {
-            // first is vert ref
-            enemyLocs.addLast(flipVer(src));
+            // first is hor
+            enemyLocs.addLast(flipHor(src));
             enemyLocs.addLast(rot180(src));
             enemyLocs.addLast(flipVer(src));
         } else if (dist_hormiddle < dist_vertmiddle) {
             // first is vert ref
             enemyLocs.addLast(flipVer(src));
             enemyLocs.addLast(rot180(src));
-            enemyLocs.addLast(flipVer(src));
+            enemyLocs.addLast(flipHor(src));
         } else {
             // first is rot 180
             enemyLocs.addLast(rot180(src));
-            enemyLocs.addLast(flipVer(src));
+            enemyLocs.addLast(flipHor(src));
             enemyLocs.addLast(flipVer(src));
             
         }

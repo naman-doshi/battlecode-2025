@@ -31,7 +31,6 @@ public class AttackTowerStrategy extends Strategy {
         return true;
     }
 
-    // TODO: combat micro
     @Override
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER AT " + target);
@@ -42,9 +41,8 @@ public class AttackTowerStrategy extends Strategy {
 
         // move towards the tower until it's just out of reach (i.e. as soon as distance^2 <= 16)
         int distanceSquared = rc.getLocation().distanceSquaredTo(target);
-        if (distanceSquared > 16 && !startedAttacking) {
+        if (distanceSquared > 16) {
             bot.pathfinder.makeMove(target);
-            return;
         }
 
         startedAttacking = true;
