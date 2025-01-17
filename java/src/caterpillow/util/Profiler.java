@@ -11,7 +11,7 @@ public class Profiler {
         turnNum = rc.getRoundNum();
     }
     public static void end() {
-        int res = cnt - Clock.getBytecodesLeft() + (rc.getRoundNum() - turnNum) * 15000;
+        int res = cnt - Clock.getBytecodesLeft() + (rc.getRoundNum() - turnNum) * 17500;
         System.out.println("Bytecodes used: " + res);
     }
 }

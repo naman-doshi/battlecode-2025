@@ -33,7 +33,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         this.expected = rc.getLocation();
     }
 
-    boolean canMove(Direction dir) throws GameActionException {
+    public boolean canMove(Direction dir) throws GameActionException {
         return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
     }
 
@@ -42,7 +42,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
             return false;
         }
         MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
-        return info.getPaint().isAlly() && avoid.test(info);
+        return info.getPaint().isAlly() && !avoid.test(info);
     }
 
     boolean canMoveAndIsNeutral(Direction dir) throws GameActionException {
@@ -50,13 +50,16 @@ public class BugnavPathfinder extends AbstractPathfinder {
             return false;
         }
         MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
-        return info.getPaint().equals(PaintType.EMPTY) && avoid.test(info);
+        return info.getPaint().equals(PaintType.EMPTY) && !avoid.test(info);
     }
 
     @Override
     public Direction getMove(MapLocation to) throws GameActionException {
         if (rc.getLocation().equals(to)) {
             return null;
+        }
+        if(rc.getLocation().isAdjacentTo(to) && rc.canMove(rc.getLocation().directionTo(to))) {
+            return rc.getLocation().directionTo(to);
         }
         if (target == null || expected != rc.getLocation()) {
             stackSize = 0;
@@ -75,24 +78,28 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateRight();
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
-                    stackSize += 2;
-                    bottomDir = bottomDir.rotateRight().rotateRight();
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
+                }
+                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
+                //     stackSize += 2;
+                //     bottomDir = bottomDir.rotateRight().rotateRight();
+                // }
+                else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateLeft();
                     if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
-                    stackSize -= 2;
-                    bottomDir = bottomDir.rotateLeft().rotateLeft();
-                    if (stackSize < 0) {
-                        stackSize = 0;
-                        topDir = bottomDir;
-                    }
-                } else {
+                }
+                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
+                //     stackSize -= 2;
+                //     bottomDir = bottomDir.rotateLeft().rotateLeft();
+                //     if (stackSize < 0) {
+                //         stackSize = 0;
+                //         topDir = bottomDir;
+                //     }
+                // }
+                else {
                     stackSize = 0;
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                     leftTurnHist.clear();
@@ -112,24 +119,28 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateLeft();
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
-                    stackSize += 2;
-                    bottomDir = bottomDir.rotateLeft().rotateLeft();
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
+                }
+                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
+                //     stackSize += 2;
+                //     bottomDir = bottomDir.rotateLeft().rotateLeft();
+                // }
+                else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateRight();
                     if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
-                } else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
-                    stackSize -= 2;
-                    bottomDir = bottomDir.rotateRight().rotateRight();
-                    if (stackSize < 0) {
-                        stackSize = 0;
-                        topDir = bottomDir;
-                    }
-                } else {
+                }
+                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
+                //     stackSize -= 2;
+                //     bottomDir = bottomDir.rotateRight().rotateRight();
+                //     if (stackSize < 0) {
+                //         stackSize = 0;
+                //         topDir = bottomDir;
+                //     }
+                // }
+                else {
                     stackSize = 0;
                     topDir = bottomDir = rc.getLocation().directionTo(target);
                     leftTurnHist.clear();
@@ -230,9 +241,9 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     @Override
     public void makeMove(Direction dir) throws GameActionException {
-        rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
+        // rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
         if(stackSize > 0) leftTurnHist.put(rc.getLocation(), leftTurn);
-        if (dir != null) rc.move(dir);
+        if (dir != null && rc.canMove(dir)) rc.move(dir);
         expected = rc.getLocation();
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();

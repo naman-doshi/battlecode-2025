@@ -16,7 +16,7 @@ import static caterpillow.Game.seed;
 // try to increase chances of finding new area
 public class ExplorationRoamStrategy extends Strategy {
     Agent bot;
-    MapLocation target;
+    public MapLocation target;
     Random rng;
 
     List<MapLocation> targets;

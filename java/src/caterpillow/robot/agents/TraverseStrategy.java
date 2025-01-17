@@ -3,6 +3,7 @@ package caterpillow.robot.agents;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import caterpillow.Game;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 
 import static caterpillow.Game.*;
@@ -11,7 +12,7 @@ import static caterpillow.Game.*;
 public class TraverseStrategy extends Strategy {
 
     Agent bot;
-    MapLocation target;
+    public MapLocation target;
     int distSquared;
 
     public TraverseStrategy(MapLocation target, int distSquared) {
@@ -21,7 +22,7 @@ public class TraverseStrategy extends Strategy {
     }
 
     @Override
-    public boolean isComplete() {
+    public boolean isComplete() throws GameActionException {
         return rc.getLocation().distanceSquaredTo(target) <= distSquared;
     }
 

@@ -28,7 +28,7 @@ public class HandleRuinStrategy extends QueueStrategy {
         }
         if (isTowerBeingBuilt(target)) {
             return false;
-        } 
+        }
         if (!rc.canSenseLocation(target)) return false;
         RobotInfo info = rc.senseRobotAtLocation(target);
         return info == null || !isFriendly(info);
