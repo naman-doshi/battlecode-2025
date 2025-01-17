@@ -23,7 +23,7 @@ ceebs removing marks, its the tower's job to do that now
 
 public class BuildTowerStrategy extends QueueStrategy {
 
-    Agent bot;
+    Soldier bot;
     MapLocation target;
     UnitType typePref;
     UnitType readType;
@@ -70,6 +70,10 @@ public class BuildTowerStrategy extends QueueStrategy {
             }
         }
         return false;
+    }
+
+    boolean isInDanger() {
+        return rc.getPaint() <= 10;
     }
 
     MapLocation getMarkLocation() throws GameActionException {
@@ -125,6 +129,26 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
     }
 
+    Pair<MapLocation, Boolean> getNextTile(UnitType type) throws GameActionException {
+        MapInfo best = null;
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 && dy == 0) continue;
+                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
+                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
+                    if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > info.getMapLocation().distanceSquaredTo(rc.getLocation())) {
+                        best = info;
+                    }
+                }
+            }
+        }
+        if (best == null) {
+            return null;
+        } else {
+            return new Pair<>(best.getMapLocation(), getCellColour(target, best.getMapLocation(), type));
+        }
+    }
+
 
 //    public boolean isAlreadyBuilt() throws GameActionException {
 //        for (UnitType type : poss) {
@@ -137,7 +161,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
     public BuildTowerStrategy(MapLocation target, UnitType typePref) {
         super();
-        bot = (Agent) Game.bot;
+        bot = (Soldier) Game.bot;
         this.target = target;
         this.typePref = typePref;
         readType = null;
@@ -160,6 +184,9 @@ public class BuildTowerStrategy extends QueueStrategy {
             return true;
         }
         if (patternToFinish != null) {
+            if (shouldGiveUp()) {
+                return true;
+            }
             return false;
         }
         if (!isInView()) {
@@ -173,6 +200,10 @@ public class BuildTowerStrategy extends QueueStrategy {
             Pair<MapLocation, Boolean> next = getNextTile();
             if (next == null) {
                 // already completed
+                if (isInDanger()) {
+                    System.out.println("ABANDONED\n");
+                    return true;
+                }
                 // try to claim completion privileges
                 MapLocation markLoc = target.add(Direction.NORTH);
                 if (rc.canMark(markLoc)) {
@@ -212,6 +243,19 @@ public class BuildTowerStrategy extends QueueStrategy {
 
         // im putting this up here idc anymore
         if (patternToFinish != null) {
+            if (isInDanger()) {
+                bot.pathfinder.makeMove(target.add(Direction.NORTH));
+                if (rc.canRemoveMark(target.add(Direction.NORTH))) {
+                    rc.removeMark(target.add(Direction.NORTH));
+                }
+                return;
+            }
+            Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
+            if (res != null) {
+                if (rc.canAttack(res.first)) {
+                    rc.attack(res.first, res.second);
+                }
+            }
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
                 bot.build(patternToFinish, target);
                 push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
@@ -222,11 +266,19 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
 
         if (!isInView()) {
+            MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
+            if (nearest != null) {
+                bot.checkerboardAttack(nearest.getMapLocation());
+            }
             return;
         }
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
+            MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
+            if (nearest != null) {
+                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), typePref));
+            }
             return;
         }
 

@@ -29,11 +29,7 @@ public abstract class Tower extends Robot {
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
 
-        if (TowerTracker.broken) {
-            pm.send(newBot.getID(), new InitPacket(origin, 0));
-        } else {
-            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.coinTowers));
-        }
+        TowerTracker.sendInitPacket(newBot);
 
         for (Packet packet : packets) {
             pm.send(newBot.getID(), packet);
@@ -46,11 +42,7 @@ public abstract class Tower extends Robot {
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
 
-        if (TowerTracker.broken) {
-            pm.send(newBot.getID(), new InitPacket(origin, 0));
-        } else {
-            pm.send(newBot.getID(), new InitPacket(origin, TowerTracker.coinTowers));
-        }
+        TowerTracker.sendInitPacket(newBot);
 
         for (Packet packet : packets) {
             pm.send(newBot.getID(), packet);

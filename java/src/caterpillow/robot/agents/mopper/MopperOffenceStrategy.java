@@ -68,7 +68,7 @@ public class MopperOffenceStrategy extends Strategy {
         }));
 //         attack (anything visible)
         suppliers.add(() -> {
-            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3);
+            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (!rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
             if (info == null) {
                 return null;
             } else {

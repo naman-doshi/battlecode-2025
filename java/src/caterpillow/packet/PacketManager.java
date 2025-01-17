@@ -12,6 +12,7 @@ import java.util.*;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.TowerTracker.coinTowers;
+import static caterpillow.util.TowerTracker.srps;
 import static caterpillow.util.Util.*;
 
 public class PacketManager {
@@ -48,22 +49,20 @@ public class PacketManager {
                 bot.handleSeedPacket(seedPacket, sender);
                 break;
             case 3:
-//                int id = payload >>> StrategyPacket.STRATEGY_DATA_SIZE;
                 int id = getBits(payload, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
-//                int data = payload & (-1 >>> (StrategyPacket.STRATEGY_ID_SIZE + TYPE_SIZE));
                 int data = getBits(payload, 0, StrategyPacket.STRATEGY_DATA_SIZE);
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
-                int encLoc = getBits(payload, 0, ENC_LOC_SIZE);
-                TowerTracker.coinTowers = getBits(payload, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
+                int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
+                srps = res[1];
+                coinTowers = res[2];
                 TowerTracker.hasReceivedInitPacket = true;
-
                 if (coinTowers == 0) {
                     TowerTracker.broken = true;
                 }
-                bot.handleOriginPacket(new OriginPacket(decodeLoc(encLoc)), sender);
+                bot.handleOriginPacket(new OriginPacket(decodeLoc(res[0])), sender);
                 break;
             default:
                 assert false;
@@ -92,6 +91,7 @@ public class PacketManager {
     }
 
     private void processPacket(MapLocation loc, Packet packet) throws GameActionException {
+        assert loc != null;
         int payload;
         int type;
         switch (packet) {
@@ -117,8 +117,7 @@ public class PacketManager {
             case InitPacket initPacket -> {
                 type = 4;
                 payload = 0;
-                payload = writeBits(payload, encodeLoc(initPacket.loc), 0, ENC_LOC_SIZE);
-                payload = writeBits(payload, initPacket.coinTowers, ENC_LOC_SIZE + TowerTracker.MAX_TOWER_BITS, TowerTracker.MAX_TOWER_BITS);
+                payload = writeBits(payload, 0, new int[]{encodeLoc(initPacket.loc), initPacket.srps, initPacket.coinTowers}, new int[]{ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
             }
             case null, default -> {
                 System.out.println("wtf is this packet");
@@ -127,6 +126,9 @@ public class PacketManager {
         }
         assert payload >= 0: "payload is negative";
         assert payload < MAX_PAYLOAD : "payload too large";
+        assert loc != null;
+        assert rc.senseRobotAtLocation(loc) != null;
+        // how is this possibly RE'ing
         rc.sendMessage(loc, payload + (type << PAYLOAD_SIZE));
     }
 

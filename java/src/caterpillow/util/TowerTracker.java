@@ -1,12 +1,19 @@
 package caterpillow.util;
 
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import caterpillow.packet.packets.InitPacket;
+
+import static caterpillow.Game.*;
+import static caterpillow.util.Util.println;
 import static java.lang.Math.max;
 
-import static caterpillow.Game.rc;
-import static caterpillow.Game.time;
+import static java.lang.Math.min;
 
 public class TowerTracker {
-    public static final int MAX_TOWER_BITS = 4;
+    public static final int MAX_TOWER_BITS = 5;
+    public static final int MAX_SRP_BITS = 8;
 
     // if this is true, pretend its values are garbage
     public static boolean broken = false;
@@ -17,6 +24,19 @@ public class TowerTracker {
     public static int processedTicks = 0;
     public static int blindTicks = 0;
     public static boolean hasReceivedInitPacket = false;
+    public static int srps = 0;
+
+    public static void sendInitPacket(MapLocation loc) throws GameActionException {
+        if (broken) {
+            pm.send(loc, new InitPacket(origin, 0, 0));
+        } else {
+            pm.send(loc, new InitPacket(origin, srps, coinTowers));
+        }
+    }
+
+    public static void sendInitPacket(RobotInfo info) throws GameActionException {
+        sendInitPacket(info.getLocation());
+    }
 
     public static int minGain() {
         return coinTowers * 20;
@@ -25,19 +45,29 @@ public class TowerTracker {
     public static int probablyMinCoinTowers() {
         return max(0, coinTowers - (blindTicks + 2) / 3);
     }
-
+    public static int probablyMaxCoinTowers() {
+        return min(rc.getNumberTowers(), coinTowers + 1 + (blindTicks + 2) / 3);
+    }
+    public static int probablyMinSRP() { return max(0, srps - blindTicks); }
+    public static int probablyMaxSRP() {
+        return srps + 1 + blindTicks;
+    }
     public static int probablyMinGain() {
-        return probablyMinCoinTowers() * 20;
+        return probablyMinCoinTowers() * 20 + probablyMinSRP() * 3;
     }
 
     public static void runTick() {
         prevTowers = curTowers;
         curTowers = rc.getNumberTowers();
+        coinTowers = min(coinTowers, curTowers);
         if (prevTowers != curTowers) {
             lastTowerChange = time;
         }
 
-//        rc.setIndicatorString("paint: " + (totTowers - coinTowers) + " coin: " + coinTowers + " broken: " + broken);
+//        rc.setIndicatorString("paint: " +   (rc.getNumberTowers() - coinTowers) + ", coin: " + coinTowers + ", srps: " + srps + ", broken: " + broken);
+        if (blindTicks >= 10) {
+            broken = true;
+        }
         if (broken) {
             return;
         }
@@ -56,23 +86,17 @@ public class TowerTracker {
         }
 
         if (x - px >= probablyMinGain()) {
-            boolean foundSolution = false;
-            for (int salary = 20; salary < 50; salary += 3) {
-                if (foundSolution) {
-                    break;
-                }
-                for (int pot = probablyMinCoinTowers(); pot <= rc.getNumberTowers(); pot++) {
+            for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
+                int salary = 20 + 3 * potSRP;
+                for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
                     if (pot * salary == x - px) {
-                        foundSolution = true;
                         coinTowers = pot;
-                        break;
+                        srps = potSRP;
+                        blindTicks = 0;
+                        return;
                     }
                 }
             }
-            if (!foundSolution) {
-                broken = true;
-            }
-            blindTicks = 0;
         }
     }
 }

@@ -11,7 +11,6 @@ import static caterpillow.Game.origin;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
-import caterpillow.packet.packets.InitPacket;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.Robot;
@@ -37,17 +36,7 @@ public abstract class Agent extends Robot {
 
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);
-
-        int coin = TowerTracker.coinTowers;
-        if (type.equals(UnitType.LEVEL_ONE_MONEY_TOWER)) {
-            coin++;
-        }
-
-        if (TowerTracker.broken) {
-            pm.send(loc, new InitPacket(origin, 0));
-        } else {
-            pm.send(loc, new InitPacket(origin, coin));
-        }
+        TowerTracker.sendInitPacket(loc);
     }
 
     public int refill(RobotInfo bot) throws GameActionException {

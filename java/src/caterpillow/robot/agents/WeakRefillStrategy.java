@@ -46,6 +46,7 @@ public class WeakRefillStrategy extends Strategy {
                 // give up
                 return true;
             }
+            assert bot != null;
             if (bot.getPaintAmount() < minRefill() && !downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
                 return true;
             }
@@ -57,7 +58,7 @@ public class WeakRefillStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("REFILLING");
         bot.pathfinder.makeMove(target);
-        if (rc.canSenseLocation(target)) {
+        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null) {
             bot.refill(rc.senseRobotAtLocation(target));
             hasRefilled = true;
         }

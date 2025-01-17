@@ -148,7 +148,7 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        if(paintSRPStrategy != null) {
+        if (paintSRPStrategy != null) {
             if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] + ignoreCooldownReset >= time) {
                 paintSRPStrategy = null;
             } else {

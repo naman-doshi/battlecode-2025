@@ -48,6 +48,27 @@ public class Util {
         }
     }
 
+    public static int writeBits(int bits, int start, int[] data, int[] lens) {
+        int off = start;
+        assert data.length == lens.length;
+        for (int i = 0; i < data.length; i++) {
+            bits = writeBits(bits, data[i], off, lens[i]);
+            off += lens[i];
+        }
+        return bits;
+    }
+
+    public static int[] getBits(int bits, int[] segs) {
+        assert segs.length > 1;
+        int[] ret = new int[segs.length - 1];
+        int off = segs[0];
+        for (int i = 0; i < segs.length - 1; i++) {
+            ret[i] = getBits(bits, off, segs[i + 1]);
+            off += segs[i + 1];
+        }
+        return ret;
+    }
+
     // inclusive exclusive
     public static int getBits(int bits, int l, int len) {
         int ret = 0;
@@ -97,12 +118,12 @@ public class Util {
 
     final static int SIZE = 100;
     public static MapLocation decodeLoc(int code) {
-        //assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
+        // assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
         return new MapLocation(code / SIZE, code % SIZE);
     }
 
     public static int encodeLoc(MapLocation loc) {
-        //assert 0 <= loc.x && loc.x < SIZE && 0 <= loc.y && loc.y < SIZE;
+        // assert 0 <= loc.x && loc.x < SIZE && 0 <= loc.y && loc.y < SIZE;
         return loc.x * SIZE + loc.y;
     }
 
