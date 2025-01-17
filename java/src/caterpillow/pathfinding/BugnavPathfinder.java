@@ -1,12 +1,14 @@
 package caterpillow.pathfinding;
 
-import battlecode.common.*;
+import java.util.HashMap;
 
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
-
-import java.util.*;
-
 import caterpillow.util.GamePredicate;
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -230,7 +232,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public void makeMove(Direction dir) throws GameActionException {
         rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
         if(stackSize > 0) leftTurnHist.put(rc.getLocation(), leftTurn);
-        rc.move(dir);
+        if (dir != null) rc.move(dir);
         expected = rc.getLocation();
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();

@@ -6,12 +6,11 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
+import caterpillow.Game;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
-import static caterpillow.util.Util.*;
-
 import caterpillow.packet.packets.InitPacket;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.EmptyStrategy;
@@ -19,12 +18,19 @@ import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.mopper.MopperOffenceStrategy;
 import caterpillow.util.TowerTracker;
+import static caterpillow.util.Util.dead;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isSRPCenter;
+import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
 
     public MapLocation home;
     public int homeID;
+    public int ticksRanOutOfPaint = 0;
 
     public Strategy primaryStrategy;
     public Strategy secondaryStrategy;
@@ -107,9 +113,25 @@ public abstract class Agent extends Robot {
                 }
             }
 
+            // if spawn is surrounded by enemy paint (i.e. no messaging) spawn some moppers to clean it up
             if (primaryStrategy.getClass().equals(EmptyStrategy.class) && rc.getType().equals(UnitType.MOPPER)) {
                 primaryStrategy = new MopperOffenceStrategy();
+                // janky fix bc this is an edge case anyway
+                Game.origin = rc.getLocation();
             }
+        }
+
+        //kms so i dont bleed paint from other bots
+        if (rc.getPaint() < 5) {
+            ticksRanOutOfPaint++;
+        } else {
+            ticksRanOutOfPaint = 0;
+        }
+
+        if (ticksRanOutOfPaint >= 9) {
+            dead("ran out of paint");
+            System.out.println("kms");
+            return;
         }
 
         if (secondaryStrategy != null) {
