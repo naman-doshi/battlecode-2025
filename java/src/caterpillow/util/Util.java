@@ -468,7 +468,7 @@ public class Util {
     }
 
     public static void println(Object obj) {
-        if (time > 200) return;
+        if (time > 100) return;
         System.out.println(obj);
     }
 

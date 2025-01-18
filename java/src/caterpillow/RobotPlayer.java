@@ -1,6 +1,8 @@
 package caterpillow;
 
 import static caterpillow.Game.*;
+import static caterpillow.util.Util.println;
+
 import battlecode.common.*;
 import caterpillow.robot.agents.mopper.Mopper;
 import caterpillow.robot.agents.soldier.Soldier;
@@ -56,6 +58,7 @@ public class RobotPlayer {
             time = rc.getRoundNum();
             pm.read();
             TowerTracker.runTick();
+            println("pre bot tick " + Clock.getBytecodeNum());
             bot.runTick();
             pm.flush();
             ticksExisted++;

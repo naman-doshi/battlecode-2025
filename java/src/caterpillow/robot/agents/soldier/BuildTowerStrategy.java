@@ -250,6 +250,10 @@ public class BuildTowerStrategy extends QueueStrategy {
                 }
                 return;
             }
+            if (!isInView()) {
+                bot.pathfinder.makeMove(target);
+                return;
+            }
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
             if (res != null) {
                 if (rc.canAttack(res.first)) {
