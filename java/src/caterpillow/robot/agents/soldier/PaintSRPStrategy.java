@@ -44,7 +44,15 @@ public class PaintSRPStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        bot.pathfinder.makeMove(centre);
+        if(rc.isMovementReady()) {
+            Direction dir;
+            if(rc.getLocation().equals(centre)) {
+                dir = Direction.NORTH;
+            } else {
+                dir = rc.getLocation().directionTo(centre).rotateRight();
+            }
+            if(rc.canMove(dir)) rc.move(dir);
+        }
         rc.setIndicatorLine(rc.getLocation(), centre, 255, 255, 0);
         if(rc.canCompleteResourcePattern(centre)) {
             rc.completeResourcePattern(centre);
