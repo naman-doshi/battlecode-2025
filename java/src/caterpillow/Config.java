@@ -78,18 +78,18 @@ public class Config {
 
     public static UnitType getNextType() {
 
-       boolean enemyVisible = false;
+        boolean enemyVisible = false;
 
-       for (RobotInfo r : rc.senseNearbyRobots()) {
-           if (!isFriendly(r)) {
-               enemyVisible = true;
-               break;
-           }
-       }
+        for (RobotInfo r : rc.senseNearbyRobots()) {
+            if (!isFriendly(r)) {
+                enemyVisible = true;
+                break;
+            }
+        }
 
-       if (enemyVisible) {
-           return UnitType.LEVEL_ONE_DEFENSE_TOWER;
-       }
+        if (enemyVisible) {
+            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+        }
 
         if (!TowerTracker.broken) {
             if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio() || rc.getChips() >= 3000) {

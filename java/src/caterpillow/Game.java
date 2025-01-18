@@ -29,6 +29,7 @@ public class Game {
     public static int spawnCoinPenalty;
     // this is for when we actually actually want random
     public static Random trng;
+    public static int MAX_MAP_SIZE = 60;
 
     public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
     public static Map<Integer, Integer> lastPainted;

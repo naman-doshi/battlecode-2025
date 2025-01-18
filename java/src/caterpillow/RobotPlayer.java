@@ -8,6 +8,7 @@ import caterpillow.robot.agents.splasher.Splasher;
 import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.defence.DefenceTower;
 import caterpillow.robot.towers.paint.PaintTower;
+import caterpillow.util.Initialiser;
 import caterpillow.util.TowerTracker;
 
 public class RobotPlayer {
@@ -50,6 +51,7 @@ public class RobotPlayer {
         Game.postInit();
 
         while (true) {
+            Initialiser.upd();
             Game.upd();
             time = rc.getRoundNum();
             pm.read();

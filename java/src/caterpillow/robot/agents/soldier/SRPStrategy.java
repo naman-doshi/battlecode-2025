@@ -20,6 +20,7 @@ import caterpillow.util.*;
 import caterpillow.robot.agents.TraverseStrategy;
 
 import static caterpillow.util.Util.*;
+import static caterpillow.Game.*;
 import static caterpillow.world.GameStage.MID;
 import static java.lang.Math.*;
 
@@ -47,19 +48,19 @@ public class SRPStrategy extends Strategy {
     public SRPStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
         rng = new Random(seed);
+        int w = rc.getMapWidth();
+        int h = rc.getMapHeight();
         visitedRuins = new ArrayList<>();
         skippedRuins = new LinkedList<>();
         towerStratCooldown = 0;
-        skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
+        skipCooldown = (w + h) / 2;
         roamStrategy = new ExplorationRoamStrategy();
-        ignoreCooldown = new int[rc.getMapWidth()][rc.getMapHeight()];
-        wallProcessed = new boolean[rc.getMapWidth()][rc.getMapHeight()];
-        for (int i = 0; i < rc.getMapWidth(); i++) {
-            for (int j = 0; j < rc.getMapHeight(); j++) {
-                ignoreCooldown[i][j] = -10000000;
-                wallProcessed[i][j] = false;
-            }
-        }
+        Profiler.begin();
+        ignoreCooldown = Initialiser.getIgnoreCooldown();
+        Profiler.end("init ignoreCooldown");
+        Profiler.begin();
+        wallProcessed = new boolean[MAX_MAP_SIZE][MAX_MAP_SIZE];
+        Profiler.end("init wallProcessed");
     }
 
     public void updateStates() throws GameActionException {
