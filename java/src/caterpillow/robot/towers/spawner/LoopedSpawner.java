@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 public class LoopedSpawner extends Spawner {
 
+    int loops;
     LinkedList<GameSupplier<Spawner>> todo;
     Spawner cur;
 
@@ -16,6 +17,15 @@ public class LoopedSpawner extends Spawner {
         todo = new LinkedList<>();
         todo.addAll(Arrays.asList(stuff));
         cur = todo.peek().get();
+        loops = 69696969;
+    }
+
+    public LoopedSpawner(int loops, GameSupplier<Spawner>... stuff) throws GameActionException {
+        super();
+        todo = new LinkedList<>();
+        todo.addAll(Arrays.asList(stuff));
+        cur = todo.peek().get();
+        loops = this.loops;
     }
 
     @Override

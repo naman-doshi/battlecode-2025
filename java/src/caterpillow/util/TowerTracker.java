@@ -17,7 +17,8 @@ public class TowerTracker {
 
     // if this is true, pretend its values are garbage
     public static boolean broken = false;
-    public static int prevTowers, curTowers;
+    public static int curTowers;
+    public static int peakTowers = 0;
     public static int lastTowerChange = 0;
     public static int px = 0, x = 0; // last known coins
     public static int coinTowers = 0;
@@ -57,11 +58,12 @@ public class TowerTracker {
     }
 
     public static void runTick() {
-        prevTowers = curTowers;
         curTowers = rc.getNumberTowers();
         coinTowers = min(coinTowers, curTowers);
-        if (prevTowers != curTowers) {
-            lastTowerChange = time;
+
+        if (curTowers > peakTowers) {
+            lastTowerChange = rc.getRoundNum();
+            peakTowers = curTowers;
         }
 
 //        rc.setIndicatorString("paint: " +   (rc.getNumberTowers() - coinTowers) + ", coin: " + coinTowers + ", srps: " + srps + ", broken: " + broken);

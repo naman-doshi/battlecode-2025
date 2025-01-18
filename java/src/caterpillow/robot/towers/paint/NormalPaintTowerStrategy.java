@@ -11,12 +11,15 @@ import caterpillow.Game;
 import static caterpillow.Game.seed;
 
 import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.PassiveMopperSpawner;
-import caterpillow.robot.towers.spawner.SRPSpawner;
+import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
+import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import caterpillow.world.GameStage;
+
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
 
@@ -43,11 +46,18 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                 //new ScoutSpawner(),
                 new SRPSpawner(),
                 new LoopedSpawner(
-                        SplasherSRPSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new SRPSpawner(),
+                                new SplasherSpawner()
+                        ),
                         OffenceMopperSpawner::new,
-                        SplasherSRPSpawner::new,
-                        PassiveMopperSpawner::new,
-                        SplasherSRPSpawner::new
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new SRPSpawner(),
+                                new SplasherSpawner()
+                        ),
+                        PassiveMopperSpawner::new
                 )
         ));
         nxt = 0;

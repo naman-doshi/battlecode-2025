@@ -5,7 +5,7 @@ import caterpillow.Game;
 import caterpillow.robot.towers.Tower;
 
 public abstract class Spawner {
-    Tower bot;
+    public Tower bot;
     public Spawner() {
         bot = (Tower) Game.bot;
     }

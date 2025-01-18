@@ -5,19 +5,22 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.UnitType;
 import caterpillow.Game;
+
+import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 
 import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.RushSpawner;
-import caterpillow.robot.towers.spawner.SRPSpawner;
-import caterpillow.robot.towers.spawner.ScoutSpawner;
+import caterpillow.robot.towers.spawner.WaitUntilSpawner;
+import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.*;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
+import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import caterpillow.world.GameStage;
+
 import static caterpillow.util.Util.expectedRushDistance;
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
@@ -40,33 +43,20 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
-
-        // only rush if map is small (but not too small, as this means that ruins are dense), or short dist to enemy
-        // we're rushing from money tower to cripple their finances (as the corresponding enemy tower is a money tower)
-        int size = Game.rc.getMapWidth() * Game.rc.getMapHeight();
-        int expectedDistance = expectedRushDistance(Game.rc.getLocation());
-        if (size < 900 || expectedDistance < 15) {
-            strats.add(new SpawnerStrategy(
-                new RushSpawner(),
-                new RushSpawner(),
+        strats.add(new SpawnerStrategy(
+                new ScoutPairSpawner(),
+                new WaitUntilSpawner(() -> rc.getNumberTowers() >= 4),
                 new LoopedSpawner(
-                        SRPSpawner::new,
-                        SplasherSRPSpawner::new,
-                        OffenceMopperSpawner::new
+                        OffenceMopperSpawner::new,
+                        () -> new LoopedSpawner(2,
+                                () -> new ConditionalSpawner(
+                                        () -> Game.gameStage == GameStage.EARLY,
+                                        new SRPSpawner(),
+                                        new SplasherSpawner()
+                                )
+                        )
                 )
-            ));
-        } else {
-            strats.add(new SpawnerStrategy(
-                new ScoutSpawner(),
-                new ScoutSpawner(),
-                new LoopedSpawner(
-                        SRPSpawner::new,
-                        SplasherSRPSpawner::new,
-                        OffenceMopperSpawner::new
-                )
-            ));
-        }
-
+        ));
     }
 
     @Override

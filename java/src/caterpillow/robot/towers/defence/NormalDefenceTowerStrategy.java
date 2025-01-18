@@ -5,15 +5,13 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.util.Util.*;
 
 import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {

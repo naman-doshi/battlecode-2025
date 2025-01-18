@@ -7,18 +7,17 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerAttackStrategy;
-import caterpillow.robot.towers.TowerStrategy;
-import caterpillow.robot.towers.UnstuckStrategy;
-import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.SRPSpawner;
-import caterpillow.robot.towers.spawner.ScoutSpawner;
-import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
-import static caterpillow.util.Util.expectedRushDistance;
+
+import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.spawner.*;
+import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.*;
+import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import caterpillow.world.GameStage;
+
+import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.expectedRushDistance;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -35,16 +34,20 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats = new ArrayList<>();
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
-        int size = Game.rc.getMapWidth() * Game.rc.getMapHeight();
-        int expectedDistance = expectedRushDistance(Game.rc.getLocation());
         strats.add(new SpawnerStrategy(
-            new ScoutSpawner(),
-            new ScoutSpawner(),
-            new LoopedSpawner(
-                    SRPSpawner::new,
-                    SplasherSRPSpawner::new,
-                    OffenceMopperSpawner::new
-            )
+                new ScoutPairSpawner(),
+                new InstantScoutSpawner(),
+//                new EarlyScoutSpawner(),
+                new LoopedSpawner(
+                        () -> new LoopedSpawner(2,
+                                () -> new ConditionalSpawner(
+                                        () -> Game.gameStage == GameStage.EARLY,
+                                        new SRPSpawner(),
+                                        new SplasherSpawner()
+                                )
+                        ),
+                        OffenceMopperSpawner::new
+                )
         ));
     }
 

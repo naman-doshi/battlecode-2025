@@ -1,10 +1,11 @@
-package caterpillow.robot.towers.spawner;
+package caterpillow.robot.towers.spawner.splasher;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.splasher.Splasher;
+import caterpillow.robot.towers.spawner.Spawner;
 
 import static battlecode.common.UnitType.SPLASHER;
 import static caterpillow.util.Util.*;
