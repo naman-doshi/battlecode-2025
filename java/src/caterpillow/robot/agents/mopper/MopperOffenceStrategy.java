@@ -32,20 +32,15 @@ public class MopperOffenceStrategy extends Strategy {
 
     public Mopper bot;
 
-    // enemyLocs is more like "POI locs"
-    public List<MapLocation> enemyLocs;
-    public MapLocation enemy;
     public List<GameSupplier<MapInfo>> suppliers;
     Random rng;
     public MapLocation lastSeenRuin;
     WeakRefillStrategy refillStrategy;
     Strategy roamStrategy;
 
+
     public MopperOffenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
-        this.enemyLocs = guessEnemyLocs(bot.home);
-        this.enemy = enemyLocs.get(0);
-        enemyLocs.addLast(bot.home);
         rng = new Random();
 
         suppliers = new ArrayList<>();
@@ -101,47 +96,6 @@ public class MopperOffenceStrategy extends Strategy {
         roamStrategy = new StrongAggroRoamStrategy();
     }
 
-//    public void safeMove(MapLocation loc) throws GameActionException {
-//        Direction move = bot.pathfinder.getMove(loc); // if you uncomment this line please use makeMove(Direction) instead of makeMove(MapLocation)
-//        if (move == null) {
-//            return;
-//        }
-//        MapLocation newLoc = rc.getLocation().add(move);
-//        PaintType paint = rc.senseMapInfo(newLoc).getPaint();
-//
-//        if (!paint.isEnemy()) {
-//            bot.pathfinder.makeMove(loc);
-//            return;
-//        }
-//
-//        if (rc.canAttack(newLoc)) {
-//            rc.attack(newLoc);
-//            bot.pathfinder.makeMove(loc);
-//            return;
-//        }
-//
-//        // check if there's legit anywhere i can go thats better than rn
-//        if (!rc.senseMapInfo(rc.getLocation()).getPaint().isAlly()) {
-//            MapInfo[] surrounds = rc.senseNearbyMapInfos(2);
-//            for (MapInfo c : surrounds) {
-//                if (!c.getPaint().isEnemy()) {
-//                    bot.pathfinder.makeMove(c.getMapLocation());
-//                    return;
-//                }
-//            }
-//            // beeline towards nearest ally paint
-//            MapInfo ally = getNearestCell(c -> c.getPaint().isAlly());
-//            if (ally != null) {
-//                bot.pathfinder.makeMove(ally.getMapLocation());
-//                return;
-//            }
-//
-//            MapInfo neutral = getNearestCell(c -> c.getPaint()==PaintType.EMPTY);
-//            if (neutral != null) {
-//                bot.pathfinder.makeMove(neutral.getMapLocation());
-//            }
-//        }
-//    }
 
     @Override
     public boolean isComplete() throws GameActionException {
@@ -156,15 +110,6 @@ public class MopperOffenceStrategy extends Strategy {
         MapInfo ruin = getNearestCell(c -> c.hasRuin());
         if (ruin != null) {
             lastSeenRuin = ruin.getMapLocation();
-        }
-
-        if (rc.canSenseLocation(enemy)) {
-            // if we can see the enemy, just go to the next enemy loc. it's kinda cyclic for now
-            enemyLocs.removeFirst();
-            if (enemyLocs.isEmpty()) {
-                enemyLocs = guessEnemyLocs(lastSeenRuin);
-            }
-            enemy = enemyLocs.getFirst();
         }
 
         RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
@@ -188,7 +133,6 @@ public class MopperOffenceStrategy extends Strategy {
             GameSupplier<MapInfo> pred = suppliers.get(i);
             MapInfo res = pred.get();
             if (res != null) {
-                indicate("OFFENCE MOPPER - FOUND PRED " + i);
                 rc.setIndicatorDot(res.getMapLocation(), 255, 0, 0);
                 bot.doBestAttack(res.getMapLocation());
                 bot.pathfinder.makeMove(res.getMapLocation());

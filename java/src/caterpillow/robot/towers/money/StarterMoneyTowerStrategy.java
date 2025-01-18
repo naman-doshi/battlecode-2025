@@ -14,6 +14,7 @@ import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.WaitUntilSpawner;
+import caterpillow.robot.towers.spawner.mopper.InstantOffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.*;
@@ -45,7 +46,8 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new ScoutPairSpawner(),
-                new WaitUntilSpawner(() -> rc.getNumberTowers() >= 4),
+                new WaitUntilSpawner(() -> rc.getNumberTowers() >= 3),
+                new InstantOffenceMopperSpawner(),
                 new LoopedSpawner(
                         OffenceMopperSpawner::new,
                         () -> new LoopedSpawner(2,

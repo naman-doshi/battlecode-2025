@@ -6,6 +6,8 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
+
+import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 
 import caterpillow.robot.towers.*;
@@ -36,6 +38,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new ScoutPairSpawner(),
+                new WaitUntilSpawner(() -> rc.getNumberTowers() >= 4),
                 new InstantScoutSpawner(),
 //                new EarlyScoutSpawner(),
                 new LoopedSpawner(
