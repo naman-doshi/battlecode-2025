@@ -11,17 +11,6 @@ import caterpillow.util.Pair;
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
-/*
-
-YOU MUST CALL ISCOMPLETE BEFORE RUNTICK ON THIS STRATEGY
-
-bro this is so cooked, idek anymore
-ive like bandage fixed at least 10 things
-
-ceebs removing marks, its the tower's job to do that now
-
-*/
-
 public class BuildTowerStrategy extends QueueStrategy {
 
     Soldier bot;
@@ -42,35 +31,94 @@ public class BuildTowerStrategy extends QueueStrategy {
             case LEVEL_ONE_MONEY_TOWER:
                 return Direction.SOUTH;
         }
-        assert false;
         return null;
     }
 
     boolean isInView() {
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (!rc.canSenseLocation(new MapLocation(target.x + dx, target.y + dy))) {
-                    return false;
-                }
-            }
-        }
+        if (!rc.canSenseLocation(new MapLocation(target.x - 2, target.y - 2))) return false;
+        if (!rc.canSenseLocation(new MapLocation(target.x - 2, target.y + 2))) return false;
+        if (!rc.canSenseLocation(new MapLocation(target.x + 2, target.y - 2))) return false;
+        if (!rc.canSenseLocation(new MapLocation(target.x + 2, target.y + 2))) return false;
         return true;
     }
 
     boolean shouldGiveUp() throws GameActionException {
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (dx == 0 || dy == 0) {
-                    continue;
-                }
-                MapLocation loc = target.translate(dx, dy);
-                if (rc.canSenseLocation(loc)) {
-                    if (isBlockingPattern(rc.senseMapInfo(loc))) {
-                        return true;
-                    }
-                }
-            }
-        }
+        MapLocation loc;
+
+        loc = target.translate(-2, -2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-2, -1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-2, 0);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-2, 1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-2, 2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-1, -2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-1, -1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-1, 0);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-1, 1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(-1, 2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(0, -2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(0, -1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        // Skip the center location (dx == 0 && dy == 0)
+
+        loc = target.translate(0, 1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(0, 2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(1, -2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(1, -1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(1, 0);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(1, 1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(1, 2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(2, -2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(2, -1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(2, 0);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(2, 1);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
+        loc = target.translate(2, 2);
+        if (rc.canSenseLocation(loc) && isBlockingPattern(rc.senseMapInfo(loc))) return true;
+
         return false;
     }
 
@@ -151,15 +199,18 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
     }
 
-
-//    public boolean isAlreadyBuilt() throws GameActionException {
-//        for (UnitType type : poss) {
-//            if (isPatternComplete(target, type)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
+    public boolean isComplete(UnitType type) throws GameActionException {
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -2; dy <= 2; dy++) {
+                if (dx == 0 && dy == 0) continue;
+                MapInfo info = rc.senseMapInfo(new MapLocation(target.x + dx, target.y + dy));
+                if ((info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != getCellColour(target, info.getMapLocation(), type)) && !info.getPaint().isEnemy()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     public BuildTowerStrategy(MapLocation target, UnitType typePref) {
         super();
@@ -186,10 +237,7 @@ public class BuildTowerStrategy extends QueueStrategy {
             return true;
         }
         if (patternToFinish != null) {
-            if (shouldGiveUp()) {
-                return true;
-            }
-            return false;
+            return shouldGiveUp();
         }
         if (!isInView()) {
             return false;
@@ -197,10 +245,10 @@ public class BuildTowerStrategy extends QueueStrategy {
         if (isTowerBeingBuilt(target)) {
             return true;
         }
-        if (getShownPattern() != null) {
+        UnitType shown;
+        if ((shown = getShownPattern()) != null) {
             // there is a marker
-            Pair<MapLocation, Boolean> next = getNextTile();
-            if (next == null) {
+            if (isComplete(shown)) {
                 // already completed
                 if (isInDanger()) {
                     System.out.println("ABANDONED\n");
@@ -210,7 +258,7 @@ public class BuildTowerStrategy extends QueueStrategy {
                 MapLocation markLoc = target.add(Direction.NORTH);
                 if (rc.canMark(markLoc)) {
                     rc.mark(markLoc, true);
-                    patternToFinish = getShownPattern();
+                    patternToFinish = shown;
                 }
                 return false;
             } else {
@@ -240,9 +288,6 @@ public class BuildTowerStrategy extends QueueStrategy {
             return;
         }
 
-        // go home if if its run out of things to do (which is unlikely since itll probably die first)
-        bot.pathfinder.makeMove(target);
-
         // im putting this up here idc anymore
         if (patternToFinish != null) {
             if (isInDanger()) {
@@ -252,15 +297,22 @@ public class BuildTowerStrategy extends QueueStrategy {
                 }
                 return;
             }
-            if (!isInView()) {
-                bot.pathfinder.makeMove(target);
-                return;
-            }
+//            if (!isInView()) {
+//                bot.pathfinder.makeMove(target);
+//                return;
+//            }
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
             if (res != null) {
                 if (rc.canAttack(res.first)) {
                     rc.attack(res.first, res.second);
+                } else {
+                    bot.pathfinder.makeMove(res.first);
+                    if (rc.canAttack(res.first)) {
+                        rc.attack(res.first, res.second);
+                    }
                 }
+            } else {
+                bot.pathfinder.makeMove(target.add(Direction.NORTH));
             }
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
                 if (patternToFinish == Config.nextResourceType() || ticksDelayed > 0) {
@@ -277,6 +329,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
 
         if (!isInView()) {
+            bot.pathfinder.makeMove(target);
             MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
             if (nearest != null) {
                 bot.checkerboardAttack(nearest.getMapLocation());
@@ -286,6 +339,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
+            bot.pathfinder.makeMove(target.add(getOffset(typePref)));
             MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
             if (nearest != null) {
                 rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), typePref));
@@ -297,7 +351,14 @@ public class BuildTowerStrategy extends QueueStrategy {
         if (todo != null) {
             if (rc.canAttack(todo.first)) {
                 rc.attack(todo.first, todo.second);
+            } else {
+                bot.pathfinder.makeMove(todo.first);
+                if (rc.canAttack(todo.first)) {
+                    rc.attack(todo.first, todo.second);
+                }
             }
+        } else {
+            bot.pathfinder.makeMove(target.add(Direction.NORTH));
         }
     }
 }

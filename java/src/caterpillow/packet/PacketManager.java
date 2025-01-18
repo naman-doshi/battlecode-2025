@@ -28,12 +28,9 @@ public class PacketManager {
     }
 
     public void processMessage(Message msg) throws GameActionException {
-        println("processing message " + Clock.getBytecodeNum());
-        Profiler.begin();
         int type = getBits(msg.getBytes(), PAYLOAD_SIZE, TYPE_SIZE);
         int payload = getBits(msg.getBytes(), 0, PAYLOAD_SIZE);
         int sender = msg.getSenderID();
-        Profiler.end("decode msg");
         switch (type) {
             case 0:
                 println(0);
@@ -55,12 +52,10 @@ public class PacketManager {
                 int id = getBits(payload, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
                 int data = getBits(payload, 0, StrategyPacket.STRATEGY_DATA_SIZE);
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
-                println("prestrategy " + Clock.getBytecodeNum());
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
                 println(4);
-                Profiler.begin();
                 int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
                 srps = res[1];
                 coinTowers = res[2];
@@ -69,7 +64,6 @@ public class PacketManager {
                     TowerTracker.broken = true;
                 }
                 bot.handleOriginPacket(new OriginPacket(decodeLoc(res[0])), sender);
-                Profiler.end("handling init");
                 break;
             default:
                 assert false;
@@ -117,8 +111,8 @@ public class PacketManager {
             case StrategyPacket strategyPacket -> {
                 type = 3;
                 payload = 0;
-                payload = writeBits(payload, strategyPacket.strategyData, 0, StrategyPacket.STRATEGY_DATA_SIZE);
-                payload = writeBits(payload, strategyPacket.strategyID, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
+                payload = writeBits(payload, strategyPacket.strategyData, 0);
+                payload = writeBits(payload, strategyPacket.strategyID, StrategyPacket.STRATEGY_DATA_SIZE);
 //            payload = strategyPacket.strategyData + (strategyPacket.strategyID << StrategyPacket.STRATEGY_DATA_SIZE);
             }
             case InitPacket initPacket -> {

@@ -9,10 +9,8 @@ import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
-import caterpillow.robot.towers.RespawnStrategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerAttackStrategy;
-import caterpillow.robot.towers.TowerStrategy;
+
+import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.RushSpawner;
@@ -40,7 +38,7 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
+        strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
 
         // only rush if map is small (but not too small, as this means that ruins are dense), or short dist to enemy
@@ -52,9 +50,9 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                 new RushSpawner(),
                 new RushSpawner(),
                 new LoopedSpawner(
-                        new SRPSpawner(),
-                        new SplasherSRPSpawner(),
-                        new OffenceMopperSpawner()
+                        SRPSpawner::new,
+                        SplasherSRPSpawner::new,
+                        OffenceMopperSpawner::new
                 )
             ));
         } else {
@@ -62,9 +60,9 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                 new ScoutSpawner(),
                 new ScoutSpawner(),
                 new LoopedSpawner(
-                        new SRPSpawner(),
-                        new SplasherSRPSpawner(),
-                        new OffenceMopperSpawner()
+                        SRPSpawner::new,
+                        SplasherSRPSpawner::new,
+                        OffenceMopperSpawner::new
                 )
             ));
         }
@@ -74,46 +72,8 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("STARTER");
-
-        // double check if im surrounded by paint lol
-        
-        for (MapInfo info : Game.rc.senseNearbyMapInfos(4)) {
-            if (!info.getPaint().isEnemy() && !info.hasRuin()) {
-                //System.out.println("type " + info.getPaint() + " loc " + info.getMapLocation() + " my loc " + Game.rc.getLocation());
-                anyAlly = true;
-                break;
-            }
-        }
-        //System.out.println("ally " + anyAlly);
-
-        if (!anyAlly) {
-            MapInfo info = getNearestCell(c -> Game.rc.canBuildRobot(UnitType.MOPPER, c.getMapLocation()));
-            if (info != null) {
-                bot.build(UnitType.MOPPER, info.getMapLocation());
-                anyAlly = true;
-            }
-        } 
-
-        // if we've already rushed just do normal
-        if (Game.time > 10) {
-            strats = new ArrayList<>();
-            strats.add(new RespawnStrategy());
-            strats.add(new TowerAttackStrategy());
-            strats.add(new SpawnerStrategy(
-                new ScoutSpawner(),
-                new ScoutSpawner(),
-                new LoopedSpawner(
-                        new SRPSpawner(),
-                        new SplasherSRPSpawner(),
-                        new OffenceMopperSpawner()
-                )
-            ));
-        }
-        
-        
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
-
     }
 }

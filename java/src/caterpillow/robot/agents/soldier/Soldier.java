@@ -20,7 +20,7 @@ public class Soldier extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder();
+        pathfinder = new BugnavPathfinder(c -> rc.getPaint() <= 10 && isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         secondaryStrategy = new LinkStrategy(home);
     }

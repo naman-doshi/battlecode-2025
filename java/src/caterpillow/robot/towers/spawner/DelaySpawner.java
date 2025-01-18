@@ -4,7 +4,6 @@ import battlecode.common.GameActionException;
 
 import static caterpillow.Game.ticksExisted;
 
-// HIGHLY ILLEGAL STATEFUL SPAWNER
 public class DelaySpawner extends Spawner {
     int delay;
 

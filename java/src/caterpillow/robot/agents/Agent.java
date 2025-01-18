@@ -33,7 +33,6 @@ public abstract class Agent extends Robot {
 
     public Strategy primaryStrategy;
     public Strategy secondaryStrategy;
-    boolean pathfinderchanged = false;
 
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);
@@ -105,11 +104,6 @@ public abstract class Agent extends Robot {
                     }
                 }
             }
-        }
-
-        if (rc.getHealth() < 10 && !pathfinderchanged) {
-            pathfinder = new BugnavPathfinder(c -> isInDanger(c.getMapLocation()));
-            pathfinderchanged = true;
         }
 
         // kms so i dont bleed paint from other bots

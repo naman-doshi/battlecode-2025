@@ -9,15 +9,12 @@ import battlecode.common.MapInfo;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import caterpillow.robot.towers.RespawnStrategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerAttackStrategy;
-import caterpillow.robot.towers.TowerStrategy;
+import static caterpillow.util.Util.*;
+
+import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {
 
@@ -32,18 +29,17 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     // ill just hardcode for now to make sure it works
     List<TowerStrategy> strats;
 
-    public NormalDefenceTowerStrategy() {
+    public NormalDefenceTowerStrategy() throws GameActionException {
         bot = (Tower) Game.bot;
         seed = new Random(rc.getID()).nextInt();
         rng = new Random(seed);
-        atkstrat = new TowerAttackStrategy();
 
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
-        strats.add(atkstrat);
+        strats.add(new UnstuckStrategy());
+        strats.add(atkstrat = new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new LoopedSpawner(
-                    new OffenceMopperSpawner()
+                    OffenceMopperSpawner::new
                 )
         ));
         nxt = 0;
@@ -53,24 +49,10 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     public void runTick() throws GameActionException {
         indicate("NORMAL");
 
-        // check if i need to kms
-        boolean enemySurround = false;
-        for (MapInfo cell : rc.senseNearbyMapInfos()) {
-            if (cell.getPaint().isEnemy()) {
-                enemySurround = true;
-                break;
-            }
+        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 60) {
+            rc.disintegrate();
+            return;
         }
-
-        for (RobotInfo r : rc.senseNearbyRobots()) {
-            if (!isFriendly(r)) {
-                enemySurround = true;
-                break;
-            }
-        }
-
-        if (!enemySurround && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 60) rc.disintegrate();
-
 
         for (TowerStrategy strat : strats) {
             strat.runTick();

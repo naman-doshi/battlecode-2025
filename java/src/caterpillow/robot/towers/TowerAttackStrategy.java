@@ -28,7 +28,8 @@ public class TowerAttackStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        if (rc.canAttack(null)) rc.attack(null);
+        // towers already perma splash attack
+//        if (rc.canAttack(null)) rc.attack(null);
         int enemies = countEnemies();
         if (enemies > 0) {
             // single target

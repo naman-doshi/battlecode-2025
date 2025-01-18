@@ -203,9 +203,7 @@ public class SRPStrategy extends Strategy {
         indicate("SRP");
         skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
-        Profiler.begin();
         updateStates();
-        Profiler.end();
 
         if(refillStrategy == null && isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());

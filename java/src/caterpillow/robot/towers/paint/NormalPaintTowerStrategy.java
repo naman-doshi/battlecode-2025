@@ -9,10 +9,8 @@ import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
-import caterpillow.robot.towers.RespawnStrategy;
-import caterpillow.robot.towers.Tower;
-import caterpillow.robot.towers.TowerAttackStrategy;
-import caterpillow.robot.towers.TowerStrategy;
+
+import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.PassiveMopperSpawner;
@@ -34,22 +32,22 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
     // ill just hardcode for now to make sure it works
     List<TowerStrategy> strats;
 
-    public NormalPaintTowerStrategy() {
+    public NormalPaintTowerStrategy() throws GameActionException {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
 
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
+        strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 new SRPSpawner(),
                 new LoopedSpawner(
-                        new SplasherSRPSpawner(),
-                        new OffenceMopperSpawner(),
-                        new SplasherSRPSpawner(),
-                        new PassiveMopperSpawner(),
-                        new SplasherSRPSpawner()
+                        SplasherSRPSpawner::new,
+                        OffenceMopperSpawner::new,
+                        SplasherSRPSpawner::new,
+                        PassiveMopperSpawner::new,
+                        SplasherSRPSpawner::new
                 )
         ));
         nxt = 0;

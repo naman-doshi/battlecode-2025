@@ -10,6 +10,7 @@ import battlecode.common.PaintType;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
+import caterpillow.util.Util;
 
 public class BugnavPathfinder extends AbstractPathfinder {
     // temporary patch to make sure nothing breaks
@@ -23,6 +24,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public HashMap<MapLocation, Boolean> leftTurnHist = new HashMap<>();
     public int lastNonzeroStackTime = 0;
     public GamePredicate<MapInfo> avoid;
+    public boolean reset = false;
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
         this.avoid = avoid;
@@ -58,13 +60,14 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if (rc.getLocation().equals(to)) {
             return null;
         }
-        if(rc.getLocation().isAdjacentTo(to) && rc.canMove(rc.getLocation().directionTo(to))) {
+        if(rc.getLocation().isAdjacentTo(to) && canMove(rc.getLocation().directionTo(to))) {
             return rc.getLocation().directionTo(to);
         }
-        if (target == null || expected != rc.getLocation()) {
+        if (target == null || expected != rc.getLocation() || reset) {
             stackSize = 0;
             topDir = bottomDir = rc.getLocation().directionTo(to);
             leftTurnHist.clear();
+            reset = false;
         }
         target = to;
         if(leftTurnHist.containsKey(rc.getLocation()) && (stackSize == 0 || leftTurn == leftTurnHist.get(rc.getLocation()))) {
@@ -216,10 +219,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
     }
 
     @Override
-    public void makeMove(MapLocation to) throws GameActionException {
+    public Direction makeMove(MapLocation to) throws GameActionException {
+        Direction dir = null;
         if (rc.isMovementReady()) {
-            Direction dir = getMove(to);
+            dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
+                assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
                 makeMove(dir);
             } else {
                 // emergency!!!
@@ -237,6 +242,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         }
         // rc.setIndicatorString(topDir.toString() + " " + bottomDir.toString() + " " + leftTurn + " " + stackSize);
         rc.setIndicatorLine(rc.getLocation(), to, 0, 255, 0);
+        return dir;
     }
 
     @Override
@@ -248,5 +254,10 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }
+    }
+
+    @Override
+    public void reset() {
+        reset = true;
     }
 }

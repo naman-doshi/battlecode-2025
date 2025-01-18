@@ -16,7 +16,7 @@ import static java.lang.Math.max;
 public class Util {
     public static final int VISION_RAD = 20;
     public static final int ENC_LOC_SIZE = 12;
-    static final Direction[] directions = {
+    public static final Direction[] directions = {
             Direction.NORTH,
             Direction.NORTHEAST,
             Direction.EAST,
@@ -52,40 +52,29 @@ public class Util {
         int off = start;
         assert data.length == lens.length;
         for (int i = 0; i < data.length; i++) {
-            bits = writeBits(bits, data[i], off, lens[i]);
+            bits |= (data[i] << off);
             off += lens[i];
         }
         return bits;
     }
 
     public static int[] getBits(int bits, int[] segs) {
-        assert segs.length > 1;
+        bits >>>= segs[0];
         int[] ret = new int[segs.length - 1];
-        int off = segs[0];
         for (int i = 0; i < segs.length - 1; i++) {
-            ret[i] = getBits(bits, off, segs[i + 1]);
-            off += segs[i + 1];
+            ret[i] = (bits & ((1 << segs[i + 1]) - 1));
         }
         return ret;
     }
 
-    // inclusive exclusive
     public static int getBits(int bits, int l, int len) {
-        int ret = 0;
-        for (int i = l + len - 1; i >= l; i--) {
-            ret <<= 1;
-            ret += (1 & (bits >>> i));
-        }
-        return ret;
+        int msk = (1 << len) - 1;
+        msk <<= l;
+        return (bits & msk) >>> l;
     }
 
-    public static int writeBits(int bits, int data, int st, int len) {
-        for (int i = 0; i < len; i++) {
-            // clear
-            bits &= ~(1 << (st + i));
-            bits |= (1 & (data >>> i)) << (st + i);
-        }
-        return bits;
+    public static int writeBits(int bits, int data, int st) {
+        return bits | (data << st);
     }
 
     public final static int TOWER_COST = 1000;
