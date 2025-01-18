@@ -7,24 +7,36 @@ import java.util.ArrayList;
 import static caterpillow.Game.rc;
 
 public class Profiler {
-    private static ArrayList<Pair<Integer, Integer>> stk = new ArrayList<>();
+    private static int cnt = 0, turnNum = 0;
+    private static int acc = 0;
+    private static boolean running = false;
     public static void begin() {
-        int cnt = Clock.getBytecodesLeft();
-        int turnNum = rc.getRoundNum();
-        stk.add(new Pair<>(cnt, turnNum));
+        cnt = Clock.getBytecodesLeft();
+        turnNum = rc.getRoundNum();
+        running = true;
     }
     public static void end() {
-        int cnt = stk.getLast().first;
-        int turnNum = stk.getLast().second;
-        stk.removeLast();
-        int res = cnt - Clock.getBytecodesLeft() + (rc.getRoundNum() - turnNum) * 17500;
-        System.out.println("Bytecodes used: " + res);
+        if(!running) return;
+        pause();
+        report();
     }
     public static void end(Object obj) {
-        int cnt = stk.getLast().first;
-        int turnNum = stk.getLast().second;
-        stk.removeLast();
+        if(!running) return;
+        pause();
+        report(obj);
+    }
+    public static void pause() {
+        if(!running) return;
         int res = cnt - Clock.getBytecodesLeft() + (rc.getRoundNum() - turnNum) * 17500;
-        System.out.println(obj.toString() + ": " + res);
+        acc += res;
+        running = false;
+    }
+    public static void report() {
+        System.out.println(acc + (acc >= 17500 ? " EXCEEDED" : ""));
+        acc = 0;
+    }
+    public static void report(Object obj) {
+        System.out.println(obj.toString() + ": " + acc);
+        acc = 0;
     }
 }

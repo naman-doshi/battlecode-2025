@@ -28,6 +28,7 @@ public class Soldier extends Agent {
     @Override
     public void runTick() throws GameActionException {
         super.runTick();
+        // Profiler.end();
     }
 
     public void checkerboardAttack(MapLocation loc) throws GameActionException {
