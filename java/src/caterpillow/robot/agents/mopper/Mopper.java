@@ -48,6 +48,8 @@ public class Mopper extends Agent {
         }
 
         // try mop sweep
+        Direction bestDirection = null;
+        int bestCount = 1;
         for (Direction dir : orthDirections) {
             if (!rc.canMopSwing(dir)) {
                 continue;
@@ -69,17 +71,21 @@ public class Mopper extends Agent {
                 if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
             }
 
-            if (cnt >= 2) {
-                rc.mopSwing(dir);
-                //System.out.println("SWINGGG hitting " + cnt);
-                return;
+            if (cnt > bestCount) {
+                bestCount = cnt;
+                bestDirection = dir;
             }
+        }
+
+        if (bestDirection != null) {
+            rc.mopSwing(bestDirection);
+            return;
         }
 
         if (target != null && rc.canAttack(target)) {
             rc.attack(target);
         } else {
-            RobotInfo target1 = getBestTarget(e -> rc.canAttack(e.getLocation()));
+            RobotInfo target1 = getBestTarget(e -> rc.canAttack(e.getLocation()) && rc.senseMapInfo(e.getLocation()).getPaint().isEnemy());
             if (target1 != null && rc.canAttack(target1.getLocation())) rc.attack(target1.getLocation());
         }
     }
@@ -97,7 +103,7 @@ public class Mopper extends Agent {
         super.runTick();
         // if spawn is surrounded by enemy paint (i.e. no messaging) spawn some moppers to clean it up
         // TODO: make this a proper fix
-        if (primaryStrategy instanceof EmptyStrategy) {
+        if (primaryStrategy instanceof EmptyStrategy && Game.time > 4) {
             if (home != null) {
                 Game.origin = home;
             } else {

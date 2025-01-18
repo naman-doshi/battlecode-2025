@@ -63,6 +63,9 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public void spawnMopper(MapLocation loc) throws GameActionException {
+        if (rc.getChips() < 1300) {
+            return;
+        }
         println("spawning defensive mopper");
         lastSpawnTime = time;
         bot.build(UnitType.MOPPER, loc);

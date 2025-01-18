@@ -15,12 +15,14 @@ import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.RushSpawner;
 import caterpillow.robot.towers.spawner.SRPSpawner;
 import caterpillow.robot.towers.spawner.ScoutSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.expectedRushDistance;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -30,15 +32,27 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
     Tower bot;
     Random rng;
     boolean anyAlly = false;
-
-    public StarterPaintTowerStrategy() {
+    public StarterPaintTowerStrategy() throws GameActionException {
         todo = 1;
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
-        strats.add(new SpawnerStrategy(
+        int size = Game.rc.getMapWidth() * Game.rc.getMapHeight();
+        int expectedDistance = expectedRushDistance(Game.rc.getLocation());
+        if (size < 900 || expectedDistance < 15) {
+            strats.add(new SpawnerStrategy(
+                new RushSpawner(),
+                new RushSpawner(),
+                new LoopedSpawner(
+                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner()
+                )
+            ));
+        } else {
+            strats.add(new SpawnerStrategy(
                 new ScoutSpawner(),
                 new ScoutSpawner(),
                 new LoopedSpawner(
@@ -46,7 +60,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                         new SplasherSRPSpawner(),
                         new OffenceMopperSpawner()
                 )
-        ));
+            ));
+        }
     }
 
     @Override
@@ -69,10 +84,26 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 anyAlly = true;
             }
         }
+
+        if (Game.time > 10) {
+            strats = new ArrayList<>();
+            strats.add(new RespawnStrategy());
+            strats.add(new TowerAttackStrategy());
+            strats.add(new SpawnerStrategy(
+                new ScoutSpawner(),
+                new ScoutSpawner(),
+                new LoopedSpawner(
+                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner()
+                )
+            ));
+        }
         
         
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
+
     }
 }

@@ -69,7 +69,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
             }
         }
 
-        if (!enemySurround && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 100) rc.disintegrate();
+        if (!enemySurround && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 60) rc.disintegrate();
 
 
         for (TowerStrategy strat : strats) {

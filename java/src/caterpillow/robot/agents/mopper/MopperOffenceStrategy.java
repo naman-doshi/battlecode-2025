@@ -61,14 +61,14 @@ public class MopperOffenceStrategy extends Strategy {
             if (bot == null) {
                 return false;
             }
-            if (isEnemyAgent(bot) && bot.getPaintAmount() > 0 && countNearbyMoppers(bot.getLocation()) <= 3) {
+            if (isEnemyAgent(bot) && bot.getPaintAmount() > 0) {
                 return true;
             }
             return false;
         }));
 //         attack (anything visible)
         suppliers.add(() -> {
-            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (!rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
+            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
             if (info == null) {
                 return null;
             } else {

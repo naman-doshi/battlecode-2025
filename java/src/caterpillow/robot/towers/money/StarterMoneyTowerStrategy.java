@@ -31,7 +31,6 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
     Random rng;
     Tower bot;
     boolean anyAlly = false;
-
     // we can *maybe* turn this into a special class if it gets too repetitive
     // ill just hardcode for now to make sure it works
     List<TowerStrategy> strats;
@@ -44,10 +43,11 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new RespawnStrategy());
         strats.add(new TowerAttackStrategy());
 
-        // only rush if map is small, or short dist to enemy
+        // only rush if map is small (but not too small, as this means that ruins are dense), or short dist to enemy
         // we're rushing from money tower to cripple their finances (as the corresponding enemy tower is a money tower)
-        // also why not spawn a mopper since we don't have enough paint for anything else anyway
-        if (Game.rc.getMapWidth() * Game.rc.getMapHeight() < 1000 || expectedRushDistance(Game.rc.getLocation()) < 20) {
+        int size = Game.rc.getMapWidth() * Game.rc.getMapHeight();
+        int expectedDistance = expectedRushDistance(Game.rc.getLocation());
+        if (size < 900 || expectedDistance < 15) {
             strats.add(new SpawnerStrategy(
                 new RushSpawner(),
                 new RushSpawner(),
@@ -93,10 +93,27 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                 anyAlly = true;
             }
         } 
+
+        // if we've already rushed just do normal
+        if (Game.time > 10) {
+            strats = new ArrayList<>();
+            strats.add(new RespawnStrategy());
+            strats.add(new TowerAttackStrategy());
+            strats.add(new SpawnerStrategy(
+                new ScoutSpawner(),
+                new ScoutSpawner(),
+                new LoopedSpawner(
+                        new SRPSpawner(),
+                        new SplasherSRPSpawner(),
+                        new OffenceMopperSpawner()
+                )
+            ));
+        }
         
         
         for (TowerStrategy strat : strats) {
             strat.runTick();
         }
+
     }
 }
