@@ -63,6 +63,7 @@ public class Util {
         int[] ret = new int[segs.length - 1];
         for (int i = 0; i < segs.length - 1; i++) {
             ret[i] = (bits & ((1 << segs[i + 1]) - 1));
+            bits >>= segs[i + 1];
         }
         return ret;
     }

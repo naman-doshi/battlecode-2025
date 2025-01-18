@@ -6,17 +6,13 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
-import caterpillow.Game;
+
 import static caterpillow.Game.origin;
-import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
 import caterpillow.pathfinding.AbstractPathfinder;
-import caterpillow.pathfinding.BugnavPathfinder;
-import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.mopper.MopperOffenceStrategy;
 import caterpillow.util.TowerTracker;
 import static caterpillow.util.Util.dead;
 import static caterpillow.util.Util.getNearestCell;
@@ -79,7 +75,7 @@ public abstract class Agent extends Robot {
             // tiny edge case where your spawning tower dies at the same time you spawn
             MapInfo ruin = getNearestCell(c -> c.hasRuin());
             assert ruin != null;
-            UnitType type = Config.getNextType();
+            UnitType type = Config.nextTowerType();
             if (rc.canCompleteTowerPattern(type, ruin.getMapLocation())) {
                 rc.completeTowerPattern(type, ruin.getMapLocation());
                 assert rc.senseRobotAtLocation(ruin.getMapLocation()) != null;

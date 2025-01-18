@@ -80,7 +80,7 @@ public class SnipeAndBuildStrategy extends Strategy {
             if (secondary.isComplete()) {
                 println("\ntime to build a tower!\n");
                 secondary = null;
-                primary = new BuildTowerStrategy(target, UnitType.LEVEL_ONE_MONEY_TOWER);
+                primary = new BuildTowerStrategy(target);
                 runTick();
             } else {
                 secondary.runTick();

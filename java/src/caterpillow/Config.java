@@ -76,7 +76,7 @@ public class Config {
         return false;
     }
 
-    public static UnitType getNextType() {
+    public static UnitType nextTowerType() {
 
        boolean enemyVisible = false;
 

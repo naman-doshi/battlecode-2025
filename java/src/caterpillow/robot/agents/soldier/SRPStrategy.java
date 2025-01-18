@@ -218,7 +218,7 @@ public class SRPStrategy extends Strategy {
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
             if (target1 != null) {
-                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType());
+                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation());
             }
         }
         if (handleRuinStrategy != null) {

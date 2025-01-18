@@ -3,19 +3,19 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.*;
 import caterpillow.Config;
 import caterpillow.Game;
-import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.util.Pair;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
+import static caterpillow.Config.*;
+
 
 public class BuildTowerStrategy extends QueueStrategy {
 
     Soldier bot;
     MapLocation target;
-    UnitType typePref;
     UnitType readType;
     UnitType patternToFinish;
     int ticksDelayed = 0;
@@ -212,11 +212,10 @@ public class BuildTowerStrategy extends QueueStrategy {
         return true;
     }
 
-    public BuildTowerStrategy(MapLocation target, UnitType typePref) {
+    public BuildTowerStrategy(MapLocation target) {
         super();
         bot = (Soldier) Game.bot;
         this.target = target;
-        this.typePref = typePref;
         readType = null;
         patternToFinish = null;
     }
@@ -272,7 +271,7 @@ public class BuildTowerStrategy extends QueueStrategy {
             }
 
             // set the pattern
-            MapLocation markLoc = target.add(getOffset(typePref));
+            MapLocation markLoc = target.add(getOffset(nextTowerType()));
             if (rc.canMark(markLoc)) {
                 rc.mark(markLoc, true);
             }
@@ -339,10 +338,10 @@ public class BuildTowerStrategy extends QueueStrategy {
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
-            bot.pathfinder.makeMove(target.add(getOffset(typePref)));
+            bot.pathfinder.makeMove(target.add(getOffset(nextTowerType())));
             MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
             if (nearest != null) {
-                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), typePref));
+                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextTowerType()));
             }
             return;
         }
