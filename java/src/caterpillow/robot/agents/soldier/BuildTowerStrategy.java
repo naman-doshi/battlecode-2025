@@ -232,7 +232,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         if (!rc.canSenseLocation(target)) {
             return false;
         }
-        if (rc.senseRobotAtLocation(target) != null) {
+        if (!isRuin(target)) {
             return true;
         }
         if (patternToFinish != null) {

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 
@@ -17,10 +15,17 @@ import caterpillow.robot.towers.spawner.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.SRPSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.*;
+import static caterpillow.Config.*;
 
 public class NormalMoneyTowerStrategy extends TowerStrategy {
+    final boolean[][] paintTowerPattern = {
+        {true, false, false, false, true},
+        {false, true, false, true, false},
+        {false, false, true, false, false},
+        {false, true, false, true, false},
+        {true, false, false, false, true},
+    };
 
     // in case we get rushed
     int seed;
@@ -60,6 +65,26 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         indicate("NORMAL");
         for (TowerStrategy strat : strats) {
             strat.runTick();
+        }
+        if(shouldConvertMoneyToPaint()) {
+            boolean convertToPaintTower = true;
+            MapLocation loc = rc.getLocation();
+            for(int x = loc.x - 2; x <= loc.x + 2; x++) {
+                for(int y = loc.y - 2; y <= loc.y + 2; y++) {
+                    if(x == loc.x && y == loc.y) continue;
+                    PaintType paint = rc.senseMapInfo(new MapLocation(x, y)).getPaint();
+                    if(paint.isAlly() && paint.equals(PaintType.ALLY_SECONDARY) == paintTowerPattern[x - loc.x + 2][y - loc.y + 2]) {
+                        continue;
+                    }
+                    convertToPaintTower = false;
+                    break;
+                }
+                if(!convertToPaintTower) break;
+            }
+            if(convertToPaintTower) {
+                System.out.println("converting to paint tower at " + loc.toString());
+                rc.disintegrate();
+            }
         }
     }
 }
