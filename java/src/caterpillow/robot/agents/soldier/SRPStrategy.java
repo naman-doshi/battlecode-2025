@@ -16,6 +16,7 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
+import caterpillow.robot.troll.StackableStrategy;
 import caterpillow.util.*;
 import caterpillow.robot.agents.TraverseStrategy;
 
@@ -46,6 +47,8 @@ public class SRPStrategy extends Strategy {
     boolean[][] wallProcessed; // whether we've processed this wall/other impassable square
 
     public SRPStrategy() throws GameActionException {
+        println("preconstructor " + Clock.getBytecodeNum());
+        Profiler.begin();
         bot = (Soldier) Game.bot;
         rng = new Random(seed);
         int w = rc.getMapWidth();
@@ -61,6 +64,7 @@ public class SRPStrategy extends Strategy {
         Profiler.begin();
         wallProcessed = new boolean[MAX_MAP_SIZE][MAX_MAP_SIZE];
         Profiler.end("init wallProcessed");
+        Profiler.end("constructor");
     }
 
     public void updateStates() throws GameActionException {
@@ -118,12 +122,21 @@ public class SRPStrategy extends Strategy {
         return false;
     }
 
+    int lastCall = -1;
+
     @Override
     public void runTick() throws GameActionException {
+        assert lastCall != time;
+        lastCall = time;
+
+        println("overhead: " + Clock.getBytecodeNum());
         indicate("SRP");
         skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
+        Profiler.begin();
         updateStates();
+        Profiler.end("update states");
+
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
                 if (handleRuinStrategy.didSkip()) {
@@ -133,7 +146,6 @@ public class SRPStrategy extends Strategy {
                 }
                 handleRuinStrategy = null;
                 towerStratCooldown = 30;
-                runTick();
             } else {
                 handleRuinStrategy.runTick();
             }
@@ -143,14 +155,12 @@ public class SRPStrategy extends Strategy {
         if (isPaintBelowHalf()) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                bot.runTick();
-                return;
+                if (tryStrategy(new WeakRefillStrategy(nearest.getLocation(), 0.3))) return;
             }
         }
 
         if (paintSRPStrategy != null) {
-            if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] + ignoreCooldownReset >= time) {
+            if(paintSRPStrategy.isComplete()) {
                 paintSRPStrategy = null;
             } else {
                 paintSRPStrategy.runTick();
@@ -161,9 +171,7 @@ public class SRPStrategy extends Strategy {
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
             if (enemyTower != null) {
-                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-                bot.runTick();
-                return;
+                if (tryStrategy(new AttackTowerStrategy(enemyTower.getLocation()))) return;
             }
         }
 
@@ -173,9 +181,7 @@ public class SRPStrategy extends Strategy {
                     int finalLevel = level;
                     RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
-                        bot.secondaryStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
-                        bot.runTick();
-                        return;
+                        if (tryStrategy(new UpgradeTowerStrategy(nearest.getLocation(), level))) return;
                     }
                 }
             }
@@ -184,9 +190,7 @@ public class SRPStrategy extends Strategy {
         if (towerStratCooldown <= 0) {
             MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
             if (target1 != null) {
-                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType());
-                runTick();
-                return;
+                if (tryStrategy(new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType()))) return;
             }
         }
 
@@ -196,11 +200,12 @@ public class SRPStrategy extends Strategy {
             if(x < 2 || y < 2 || x >= rc.getMapWidth() - 2 || y >= rc.getMapHeight() - 2) {
                 return false;
             }
-            if(ignoreCooldown[x][y] + ignoreCooldownReset >= time) return false;
-            if(rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
+            if (ignoreCooldown[x][y] + ignoreCooldownReset >= time) return false;
+            if (rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
             return true;
         };
 
+        // whats going on here
         if(traverseStrategy == null || !pred.test(traverseStrategy.target)) {
             MapInfo info = getNearestCell(c -> pred.test(c.getMapLocation()));
             if(info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
@@ -209,11 +214,17 @@ public class SRPStrategy extends Strategy {
         if(traverseStrategy != null && traverseStrategy.isComplete()) {
             indicate(traverseStrategy.target.toString() + " reached");
             rc.mark(traverseStrategy.target, false);
-            paintSRPStrategy = new PaintSRPStrategy(traverseStrategy.target);
+            paintSRPStrategy = new PaintSRPStrategy(traverseStrategy.target) {
+                @Override
+                public boolean isComplete() throws GameActionException {
+                    return super.isComplete() || ignoreCooldown[centre.x][centre.y] + ignoreCooldownReset >= time;
+                }
+            };
             paintSRPStrategy.runTick();
             traverseStrategy = null;
         }
-        if(traverseStrategy != null) {
+
+        if (traverseStrategy != null) {
             traverseStrategy.runTick();
         } else {
             roamStrategy.runTick();

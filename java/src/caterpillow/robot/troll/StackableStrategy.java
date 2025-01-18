@@ -7,23 +7,32 @@ import java.util.Stack;
 
 public abstract class StackableStrategy extends Strategy {
 
-    public Stack<Strategy> stack;
-
-    void stackStrat(Strategy strat) {
-        stack.push(strat);
-    }
+    public Strategy secondaryStrategy;
 
     public StackableStrategy() {
-        stack = new Stack<>();
+        secondaryStrategy = null;
+    }
+
+    protected boolean tryStrategy(Strategy strat) throws GameActionException {
+        if (strat.isComplete()) {
+            return false;
+        }
+        strat.runTick();
+        if (strat.isComplete()) {
+            return false;
+        } else {
+            secondaryStrategy = strat;
+            return true;
+        }
     }
 
     @Override
     public final boolean isComplete() throws GameActionException {
-        while (!stack.isEmpty() && stack.peek().isComplete()) {
-            stack.pop();
-        }
-        if (!stack.isEmpty()) {
-            return false;
+        if (secondaryStrategy != null) {
+            if (!secondaryStrategy.isComplete()) {
+                return false;
+            }
+            secondaryStrategy = null;
         }
         return isBaseComplete();
     }
@@ -32,11 +41,14 @@ public abstract class StackableStrategy extends Strategy {
 
     @Override
     public final void runTick() throws GameActionException {
-        if (!stack.isEmpty()) {
-            stack.peek().runTick();
-        } else {
-            runBaseTick();
+        if (secondaryStrategy != null) {
+            secondaryStrategy.runTick();
+            if (!secondaryStrategy.isComplete()) {
+                return;
+            }
+            secondaryStrategy = null;
         }
+        runBaseTick();
     }
 
     public abstract void runBaseTick() throws GameActionException;

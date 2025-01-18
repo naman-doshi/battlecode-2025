@@ -92,7 +92,6 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
-
         if (!maxedTowers()) {
             MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
             if (target != null) {
@@ -101,6 +100,7 @@ public class ScoutStrategy extends Strategy {
                 return;
             }
         }
+
         roamStrategy.runTick();
         MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
         if (nearest != null ) {

@@ -1,11 +1,9 @@
 package caterpillow.packet;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.Message;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.packet.packets.*;
 import caterpillow.util.Pair;
+import caterpillow.util.Profiler;
 import caterpillow.util.TowerTracker;
 
 import java.util.*;
@@ -30,31 +28,39 @@ public class PacketManager {
     }
 
     public void processMessage(Message msg) throws GameActionException {
-//        int type = (msg.getBytes() >>> PAYLOAD_SIZE);
+        println("processing message " + Clock.getBytecodeNum());
+        Profiler.begin();
         int type = getBits(msg.getBytes(), PAYLOAD_SIZE, TYPE_SIZE);
-//        int payload = (msg.getBytes() & (-1 >>> TYPE_SIZE));
         int payload = getBits(msg.getBytes(), 0, PAYLOAD_SIZE);
         int sender = msg.getSenderID();
+        Profiler.end("decode msg");
         switch (type) {
             case 0:
+                println(0);
                 AdoptionPacket adoptionPacket = new AdoptionPacket();
                 bot.handleAdoptionPacket(adoptionPacket, sender);
             case 1: // make sure these packet types are synced
+                println(1);
                 assert false : "we dont send these anymore\n";
                 OriginPacket originPacket = new OriginPacket(decodeLoc(payload));
                 bot.handleOriginPacket(originPacket, sender);
                 break;
             case 2:
+                println(2);
                 SeedPacket seedPacket = new SeedPacket(payload);
                 bot.handleSeedPacket(seedPacket, sender);
                 break;
             case 3:
+                println(3);
                 int id = getBits(payload, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
                 int data = getBits(payload, 0, StrategyPacket.STRATEGY_DATA_SIZE);
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
+                println("prestrategy " + Clock.getBytecodeNum());
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
+                println(4);
+                Profiler.begin();
                 int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
                 srps = res[1];
                 coinTowers = res[2];
@@ -63,6 +69,7 @@ public class PacketManager {
                     TowerTracker.broken = true;
                 }
                 bot.handleOriginPacket(new OriginPacket(decodeLoc(res[0])), sender);
+                Profiler.end("handling init");
                 break;
             default:
                 assert false;
