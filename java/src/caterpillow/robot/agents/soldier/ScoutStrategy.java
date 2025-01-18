@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
 
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
@@ -11,6 +12,8 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
+import caterpillow.pathfinding.BugnavPathfinder;
+
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
@@ -32,8 +35,9 @@ public class ScoutStrategy extends Strategy {
     Random rng;
     HandleRuinStrategy handleRuinStrategy;
     WeakRefillStrategy refillStrategy;
+    Strategy attackTowerStrategy;
 
-    Strategy roamStrategy;
+    WeakAggroRoamStrategy roamStrategy;
 
     public ScoutStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
@@ -43,6 +47,10 @@ public class ScoutStrategy extends Strategy {
         roamStrategy = new WeakAggroRoamStrategy();
         skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
     }
+    public ScoutStrategy(MapLocation target) throws GameActionException {
+        this();
+        roamStrategy = new WeakAggroRoamStrategy(target);
+    }
 
     @Override
     public boolean isComplete() {
@@ -51,9 +59,33 @@ public class ScoutStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("SCOUTING");
+        indicate("SCOUTING " + isInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
         skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                if (rc.canTransferPaint(nearest.getLocation(), -1)) {
+                    bot.refill(nearest);
+                } else if (getPaintLevel() < 0.5) {
+                    refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
+                }
+            }
+        }
+        if(tryStrategy(refillStrategy)) return;
+
+        if (handleRuinStrategy == null) {
+            MapInfo target1 = getNearestCell(c ->
+                                             isRuin(c.getMapLocation())
+                                             && (c.getMapLocation().distanceSquaredTo(roamStrategy.target) <= rc.getLocation().distanceSquaredTo(roamStrategy.target)
+                                                 || !rc.canSenseLocation(c.getMapLocation().add(Direction.SOUTH))
+                                                 || !rc.senseMapInfo(c.getMapLocation().add(Direction.SOUTH)).getMark().equals(PaintType.ALLY_SECONDARY))
+                                             && !visitedRuins.contains(c.getMapLocation())
+                                             && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
+            if (target1 != null) {
+                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation());
+            }
+        }
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
                 if (handleRuinStrategy.didSkip()) {
@@ -62,42 +94,19 @@ public class ScoutStrategy extends Strategy {
                     visitedRuins.add(handleRuinStrategy.target);
                 }
                 handleRuinStrategy = null;
-                runTick();
             } else {
                 handleRuinStrategy.runTick();
-            }
-            return;
-        }
-
-
-        RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
-        if (enemyTower != null) {
-            bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-            bot.runTick();
-            return;
-        }
-
-        if (getPaintLevel() < 0.8) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                if (rc.canTransferPaint(nearest.getLocation(), -1)) {
-                    bot.refill(nearest);
-                } else if (getPaintLevel() < 0.5) {
-                    bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
-                    bot.runTick();
-                    return;
-                }
-            }
-        }
-
-        if (!maxedTowers()) {
-            MapInfo target = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
-            if (target != null) {
-                handleRuinStrategy = new HandleRuinStrategy(target.getMapLocation());
-                runTick();
                 return;
             }
         }
+
+        if(attackTowerStrategy == null) {
+            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            if (enemyTower != null) {
+                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+            }
+        }
+        if(tryStrategy(attackTowerStrategy)) return;
 
         roamStrategy.runTick();
         MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);

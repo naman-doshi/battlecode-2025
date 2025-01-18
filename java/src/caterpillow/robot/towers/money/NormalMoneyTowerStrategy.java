@@ -6,14 +6,17 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 
 import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.money.*;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
+import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -45,6 +48,8 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
+                trng.nextInt(0, 1) == 0 ? new InstantScoutSpawner() : new NullSpawner(),
+                // new InstantScoutSpawner(),
                 new SRPSpawner(),
                 new LoopedSpawner(
                         () -> new ConditionalSpawner(

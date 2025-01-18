@@ -32,15 +32,15 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
     public StarterPaintTowerStrategy() throws GameActionException {
         todo = 1;
         bot = (Tower) Game.bot;
+        bot.goForEnemy = true;
         rng = new Random(seed);
         strats = new ArrayList<>();
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new ScoutPairSpawner(),
-                new WaitUntilSpawner(() -> rc.getNumberTowers() >= 4),
                 new InstantScoutSpawner(),
-//                new EarlyScoutSpawner(),
+                new InstantScoutSpawner(),
+                new InstantScoutSpawner(),
                 new LoopedSpawner(
                         () -> new LoopedSpawner(2,
                                 () -> new ConditionalSpawner(

@@ -25,6 +25,7 @@ public class Config {
     // right now, we have too much paint in the endgame (when most towers are maxed)
     // we also need more chips on larger maps
     public static double targetRatio() {
+        if(rc.getChips() <= 1200) return 0.8;
         if (rc.getMapHeight() * rc.getMapWidth() < 1500) return 0.6;
         else {
             return 0.7;

@@ -21,6 +21,7 @@ import caterpillow.robot.towers.spawner.soldier.*;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.world.GameStage;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 
 import static caterpillow.util.Util.expectedRushDistance;
 import static caterpillow.util.Util.getNearestCell;
@@ -45,9 +46,9 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new ScoutPairSpawner(),
+                new InstantScoutSpawner(),
+                new InstantScoutSpawner(),
                 new WaitUntilSpawner(() -> rc.getNumberTowers() >= 3),
-                new InstantOffenceMopperSpawner(),
                 new LoopedSpawner(
                         OffenceMopperSpawner::new,
                         () -> new LoopedSpawner(2,

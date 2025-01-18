@@ -106,7 +106,7 @@ public class Util {
         return rc.getTowerPattern(type)[ind.x][ind.y];
     }
 
-    final static int SIZE = 100;
+    final static int SIZE = 60;
     public static MapLocation decodeLoc(int code) {
         // assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
         return new MapLocation(code / SIZE, code % SIZE);

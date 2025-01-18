@@ -27,6 +27,7 @@ public class AttackTowerStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
+        if(rc.getHealth() < 25) return true;
         if (rc.canSenseLocation(target)) {
             RobotInfo bot = rc.senseRobotAtLocation(target);
             return bot == null || isFriendly(bot);

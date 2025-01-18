@@ -8,7 +8,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
-import static caterpillow.Game.seed;
+import static caterpillow.Game.*;
 
 import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
@@ -47,7 +47,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                 new SRPSpawner(),
                 new LoopedSpawner(
                         () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.EARLY,
+                                () -> Game.gameStage == GameStage.EARLY || trng.nextInt(5) == 0,
                                 new SRPSpawner(),
                                 new SplasherSpawner()
                         ),

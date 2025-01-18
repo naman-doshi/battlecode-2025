@@ -20,7 +20,7 @@ public class Soldier extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> rc.getPaint() <= 10 && isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         secondaryStrategy = new LinkStrategy(home);
     }
@@ -45,10 +45,10 @@ public class Soldier extends Agent {
                 primaryStrategy = new StarterStrategy();
                 break;
             case SRP_STRAT:
-                primaryStrategy = new SRPStrategy();
+                primaryStrategy = new SRPStrategy(new MapLocation(packet.strategyData / 64, packet.strategyData % 64));
                 break;
             case SCOUT_STRAT:
-                primaryStrategy = new ScoutStrategy();
+                primaryStrategy = new ScoutStrategy(new MapLocation(packet.strategyData / 64, packet.strategyData % 64));
                 break;
             case RUSH_STRAT:
                 primaryStrategy = new RushStrategy();

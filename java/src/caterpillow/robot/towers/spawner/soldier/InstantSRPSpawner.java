@@ -1,6 +1,6 @@
 package caterpillow.robot.towers.spawner.soldier;
 
-public class InstantScoutSpawner extends ScoutSpawner {
+public class InstantSRPSpawner extends SRPSpawner {
     @Override
     public boolean shouldSpawn() {
         return true;

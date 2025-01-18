@@ -2,6 +2,7 @@ package caterpillow.robot.towers.spawner.soldier;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.soldier.Soldier;
@@ -12,12 +13,17 @@ import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class ScoutSpawner extends Spawner {
+    protected boolean shouldSpawn() {
+        return rc.getChips() >= SOLDIER.moneyCost + 1000;
+    }
+
     @Override
     public boolean spawn() throws GameActionException {
-        if (rc.getChips() >= SOLDIER.moneyCost + 1000) {
+        if (shouldSpawn()) {
             MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
             if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT));
+                MapLocation target = bot.scoutTarget();
+                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT, target.x * 64 + target.y));
                 return true;
             }
         }

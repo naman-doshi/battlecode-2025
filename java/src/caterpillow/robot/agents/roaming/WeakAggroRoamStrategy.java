@@ -20,7 +20,7 @@ import caterpillow.robot.agents.soldier.Soldier;
 public class WeakAggroRoamStrategy extends Strategy {
 
     Agent bot;
-    MapLocation target;
+    public MapLocation target;
     Random rng;
 
     List<MapLocation> targets;
@@ -29,6 +29,10 @@ public class WeakAggroRoamStrategy extends Strategy {
         bot = (Agent) Game.bot;
         rng = new Random(seed);
         target = Config.genAggroTarget(rng);
+    }
+    public WeakAggroRoamStrategy(MapLocation target) throws GameActionException {
+        this();
+        this.target = target;
     }
 
     @Override

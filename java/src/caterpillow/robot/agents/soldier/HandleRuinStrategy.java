@@ -45,5 +45,6 @@ public class HandleRuinStrategy extends QueueStrategy {
     public void runTick() throws GameActionException {
         indicate("HANDLING RUIN");
         super.runTick();
+        // indicate("HANDLING RUIN " + todo.size());
     }
 }

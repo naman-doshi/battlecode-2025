@@ -19,11 +19,13 @@ public class ExplorationRoamStrategy extends Strategy {
     public MapLocation target;
     Random rng;
 
-    List<MapLocation> targets;
-
     public ExplorationRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         rng = new Random(seed);
+    }
+    public ExplorationRoamStrategy(MapLocation target) throws GameActionException {
+        this();
+        this.target = target;
     }
 
     @Override

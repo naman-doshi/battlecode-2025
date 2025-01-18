@@ -13,6 +13,7 @@ if the current strategy doesnt require painting, it should see that it can move 
 public abstract class Strategy {
     // returns true if the strategy is incomplete
     public boolean tryStrategy(Strategy strat) throws GameActionException {
+        if(strat == null) return false;
         if(strat.isComplete()) return false;
         strat.runTick();
         return !strat.isComplete();

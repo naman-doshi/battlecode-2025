@@ -63,6 +63,10 @@ public class SRPStrategy extends Strategy {
         bad = new boolean[w][h];
         processed = new int[w][h];
     }
+    public SRPStrategy(MapLocation target) throws GameActionException {
+        this();
+        roamStrategy = new ExplorationRoamStrategy(target);
+    }
 
     public void updateStates() throws GameActionException {
         int cooldownValue = time + ignoreCooldownReset;
@@ -211,9 +215,7 @@ public class SRPStrategy extends Strategy {
                 refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
             }
         }
-        if (refillStrategy != null) {
-            if(tryStrategy(refillStrategy)) return;
-        }
+        if(tryStrategy(refillStrategy)) return;
 
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapInfo target1 = getNearestCell(c -> isRuin(c.getMapLocation()) && !visitedRuins.contains(c.getMapLocation()) && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
@@ -232,8 +234,8 @@ public class SRPStrategy extends Strategy {
                 towerStratCooldown = 30;
             } else {
                 handleRuinStrategy.runTick();
+                return;
             }
-            return;
         }
 
         if (gameStage.equals(MID)) {
@@ -242,9 +244,7 @@ public class SRPStrategy extends Strategy {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
         }
-        if(attackTowerStrategy != null) {
-            if(tryStrategy(attackTowerStrategy)) return;
-        }
+        if(tryStrategy(attackTowerStrategy)) return;
 
         if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {
@@ -257,9 +257,7 @@ public class SRPStrategy extends Strategy {
                 }
             }
         }
-        if(upgradeTowerStrategy != null) {
-            if(tryStrategy(upgradeTowerStrategy)) return;
-        }
+        if(tryStrategy(upgradeTowerStrategy)) return;
 
         if (paintSRPStrategy != null) {
             if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] >= time) {
