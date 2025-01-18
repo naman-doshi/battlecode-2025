@@ -9,6 +9,7 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 
 import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.money.*;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
@@ -60,6 +61,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                         PassiveMopperSpawner::new
                 )
         ));
+        strats.add(new ConvertToPaintTowerStrategy());
         nxt = 0;
     }
 

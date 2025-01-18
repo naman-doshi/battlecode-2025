@@ -223,14 +223,14 @@ public class BuildTowerStrategy extends QueueStrategy {
     @Override
     public boolean isComplete() throws GameActionException {
         if (!super.isComplete()) return false;
-        if (maxedTowers()) {
+        if (!rc.canSenseLocation(target)) {
+            return false;
+        }
+        if (maxedTowers() && rc.senseRobotAtLocation(target) == null) {
             return true;
         }
         if (shouldGiveUp()) {
             return true;
-        }
-        if (!rc.canSenseLocation(target)) {
-            return false;
         }
         if (!isRuin(target)) {
             return true;
