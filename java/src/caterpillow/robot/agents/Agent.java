@@ -12,6 +12,7 @@ import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
 import caterpillow.pathfinding.AbstractPathfinder;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
@@ -22,8 +23,7 @@ import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isSRPCenter;
-import static caterpillow.util.Util.missingPaint;
-
+import static caterpillow.util.Util.*;
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
 
@@ -33,6 +33,7 @@ public abstract class Agent extends Robot {
 
     public Strategy primaryStrategy;
     public Strategy secondaryStrategy;
+    boolean pathfinderchanged = false;
 
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);
@@ -104,6 +105,11 @@ public abstract class Agent extends Robot {
                     }
                 }
             }
+        }
+
+        if (rc.getHealth() < 10 && !pathfinderchanged) {
+            pathfinder = new BugnavPathfinder(c -> isInDanger(c.getMapLocation()));
+            pathfinderchanged = true;
         }
 
         // kms so i dont bleed paint from other bots

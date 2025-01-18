@@ -708,4 +708,13 @@ public class Util {
             return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1;
         });
     }
+
+    public static boolean isInDanger(MapLocation loc) throws GameActionException {
+        for (RobotInfo bot : rc.senseNearbyRobots()) {
+            if (bot.getType().isTowerType() && !isFriendly(bot) && bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

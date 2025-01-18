@@ -9,7 +9,7 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
-import static caterpillow.util.Util.checkerboardPaint;
+import static caterpillow.util.Util.*;
 
 public class Soldier extends Agent {
 
