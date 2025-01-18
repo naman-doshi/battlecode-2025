@@ -5,22 +5,20 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
-
-import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.RushSpawner;
 import caterpillow.robot.towers.spawner.SRPSpawner;
 import caterpillow.robot.towers.spawner.ScoutSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.SplasherSRPSpawner;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.expectedRushDistance;
+import static caterpillow.util.Util.indicate;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 
@@ -39,27 +37,15 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         int size = Game.rc.getMapWidth() * Game.rc.getMapHeight();
         int expectedDistance = expectedRushDistance(Game.rc.getLocation());
-        if (size < 900 || expectedDistance < 15) {
-            strats.add(new SpawnerStrategy(
-                new RushSpawner(),
-                new RushSpawner(),
-                new LoopedSpawner(
-                        SRPSpawner::new,
-                        SplasherSRPSpawner::new,
-                        OffenceMopperSpawner::new
-                )
-            ));
-        } else {
-            strats.add(new SpawnerStrategy(
-                new ScoutSpawner(),
-                new ScoutSpawner(),
-                new LoopedSpawner(
-                        SRPSpawner::new,
-                        SplasherSRPSpawner::new,
-                        OffenceMopperSpawner::new
-                )
-            ));
-        }
+        strats.add(new SpawnerStrategy(
+            new ScoutSpawner(),
+            new ScoutSpawner(),
+            new LoopedSpawner(
+                    SRPSpawner::new,
+                    SplasherSRPSpawner::new,
+                    OffenceMopperSpawner::new
+            )
+        ));
     }
 
     @Override
