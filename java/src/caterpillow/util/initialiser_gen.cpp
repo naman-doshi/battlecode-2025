@@ -465,18 +465,17 @@ void print_makes() {
         str pfx = "\t\t\t\t\t"; // fuck my life
         println(pfx + get(get(bool_name(name), 'x'), 'y') + " = true;");
         println(pfx + "int minX = " + SBLOCK_SIZE + " * x;");
-        println(pfx + "int maxX = " + SBLOCK_SIZE + " * x + x;");
         println(pfx + "int minY = " + SBLOCK_SIZE + " * y;");
-        println(pfx + "int maxY = " + SBLOCK_SIZE + " * y + y;");
-        println(pfx + "for (int tx = minX; tx < maxX; tx++) {");
-        println(pfx + "\tint[] row = " + get(name, "tx") + ";");
-        println(pfx + "\tfor (int ty = minY; ty < maxY; ty++) {");
-
-        println(pfx + "\t\t" + get("row", "ty") + " = " + val + ";");
-
-        println(pfx + "\t}");
-        println(pfx + "}");
-
+        FOR (i, BLOCK_SIZE) {
+            if (i == 0) {
+                println(pfx + "int[] row = " + get(name, "minX") + ";");
+            } else {
+                println(pfx + "row = " + get(name, "minX + " + to_string(i)) + ";");
+            }
+            FOR (j, BLOCK_SIZE) {
+                println(pfx + get("row", "minY" + string(j ? " + " + to_string(j) : "")) + " = " + val + ";");
+            }
+        }
         println("\t\t\t\t}");
         println("\t\t\t}");
         println("\t\t}");
@@ -491,21 +490,21 @@ void print_upd() {
 
     str pfx = "\t\t\t\t\t"; // fuck my life
     println(pfx + "int minX = " + SBLOCK_SIZE + " * x;");
-    println(pfx + "int maxX = " + SBLOCK_SIZE + " * x + x;");
     println(pfx + "int minY = " + SBLOCK_SIZE + " * y;");
-    println(pfx + "int maxY = " + SBLOCK_SIZE + " * y + y;");
     each (name, val, stuff) {
         println(pfx + "if (" + init_name(name) + " && !" + get(get(bool_name(name), 'x'), 'y') + ") {");
         println(pfx + '\t' + get(get(bool_name(name), 'x'), 'y') + " = true;");
         str pfx2 = pfx + '\t';
-        println(pfx2 + "for (int tx = minX; tx < maxX; tx++) {");
-        println(pfx2 + "\tint[] row = " + get(name, "tx") + ";");
-        println(pfx2 + "\tfor (int ty = minY; ty < maxY; ty++) {");
-
-        println(pfx2 + "\t\t" + get("row", "ty") + " = " + val + ";");
-
-        println(pfx2 + "\t}");
-        println(pfx2 + "}");
+        FOR (i, BLOCK_SIZE) {
+            if (i == 0) {
+                println(pfx2 + "int[] row = " + get(name, "minX") + ";");
+            } else {
+                println(pfx2 + "row = " + get(name, "minX + " + to_string(i)) + ";");
+            }
+            FOR (j, BLOCK_SIZE) {
+                println(pfx2 + get("row", "minY" + string(j ? " + " + to_string(j) : "")) + " = " + val + ";");
+            }
+        }
         println(pfx + "}");
     }
 
@@ -514,20 +513,6 @@ void print_upd() {
     println("\t\t}");
     println("\t}");
 }
-
-// void print_func(Entry entry) {
-//     auto [name, val] = entry;
-//     str nameCap = name;
-//     name[0] = toupper(name[0]);
-//     println("\tpublic static void init" + nameCap + "(int[][] " + name + ") {");
-//     FOR (i, rs) {
-//         println("\t\tint[] row" + to_string(i) + " = " + get(name, i) + ";");
-//         FOR (j, cs) {
-//             println("\t\trow" + to_string(i) + "[" + to_string(j) + "] = " + val + ';');
-//         }
-//     }
-//     println("\t}");
-// }
 
 main() {
     IO::initO();

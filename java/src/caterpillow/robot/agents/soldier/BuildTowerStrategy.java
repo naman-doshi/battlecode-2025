@@ -1,6 +1,7 @@
 package caterpillow.robot.agents.soldier;
 
 import battlecode.common.*;
+import caterpillow.Config;
 import caterpillow.Game;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
@@ -28,6 +29,7 @@ public class BuildTowerStrategy extends QueueStrategy {
     UnitType typePref;
     UnitType readType;
     UnitType patternToFinish;
+    int ticksDelayed = 0;
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
 
@@ -261,10 +263,15 @@ public class BuildTowerStrategy extends QueueStrategy {
                 }
             }
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
-                bot.build(patternToFinish, target);
-                push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
-                push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
-                runTick();
+                if (patternToFinish == Config.nextResourceType() || ticksDelayed > 0) {
+                    bot.build(patternToFinish, target);
+                    push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                    push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
+                    runTick();
+                }
+                ticksDelayed++;
+            } else {
+                ticksDelayed = 0;
             }
             return;
         }

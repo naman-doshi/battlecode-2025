@@ -332,6 +332,10 @@ public class Util {
         return (double) bot.getPaintAmount() / (double) bot.getType().paintCapacity;
     }
 
+    public static double getPaintLevel() {
+        return (double) rc.getPaint() / (double) rc.getType().paintCapacity;
+    }
+
     public static MapInfo cheapGetNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
         MapInfo best = null;
         MapInfo[] cells = rc.senseNearbyMapInfos();

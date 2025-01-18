@@ -14,18 +14,12 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
+import static caterpillow.util.Util.*;
+
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.util.Pair;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.maxedTowers;
-import static caterpillow.util.Util.missingPaint;
-import static caterpillow.util.Util.paintLevel;
 
 public class ScoutStrategy extends Strategy {
 
@@ -83,12 +77,16 @@ public class ScoutStrategy extends Strategy {
             return;
         }
 
-        if (isPaintBelowHalf()) {
+        if (getPaintLevel() < 0.8) {
             RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
-                bot.runTick();
-                return;
+                if (rc.canTransferPaint(nearest.getLocation(), -1)) {
+                    bot.refill(nearest);
+                } else if (getPaintLevel() < 0.5) {
+                    bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.1);
+                    bot.runTick();
+                    return;
+                }
             }
         }
 

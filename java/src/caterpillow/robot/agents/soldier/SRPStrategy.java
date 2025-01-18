@@ -6,7 +6,6 @@ import battlecode.common.*;
 import caterpillow.Config;
 import static caterpillow.Config.canUpgrade;
 import caterpillow.Game;
-import caterpillow.pathfinding.BugnavPathfinder;
 
 import static caterpillow.Game.gameStage;
 import static caterpillow.Game.rc;

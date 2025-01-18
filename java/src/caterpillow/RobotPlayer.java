@@ -53,12 +53,11 @@ public class RobotPlayer {
         Game.postInit();
 
         while (true) {
-            Initialiser.upd();
+//            Initialiser.upd();
             Game.upd();
             time = rc.getRoundNum();
             pm.read();
             TowerTracker.runTick();
-            println("pre bot tick " + Clock.getBytecodeNum());
             bot.runTick();
             pm.flush();
             ticksExisted++;

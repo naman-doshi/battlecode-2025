@@ -13,18 +13,18 @@ public abstract class StackableStrategy extends Strategy {
         secondaryStrategy = null;
     }
 
-    protected boolean tryStrategy(Strategy strat) throws GameActionException {
-        if (strat.isComplete()) {
-            return false;
-        }
-        strat.runTick();
-        if (strat.isComplete()) {
-            return false;
-        } else {
-            secondaryStrategy = strat;
-            return true;
-        }
-    }
+//    protected boolean tryStrategy(Strategy strat) throws GameActionException {
+//        if (strat.isComplete()) {
+//            return false;
+//        }
+//        strat.runTick();
+//        if (strat.isComplete()) {
+//            return false;
+//        } else {
+//            secondaryStrategy = strat;
+//            return true;
+//        }
+//    }
 
     @Override
     public final boolean isComplete() throws GameActionException {

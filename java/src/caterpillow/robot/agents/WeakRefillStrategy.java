@@ -29,6 +29,7 @@ public class WeakRefillStrategy extends Strategy {
     }
 
     public WeakRefillStrategy(MapLocation target, double minRefillMul) {
+        println("tryna refill");
         this.target = target;
         bot = (Agent) Game.bot;
         this.minRefillMul = minRefillMul;

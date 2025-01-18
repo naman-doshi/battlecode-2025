@@ -91,6 +91,10 @@ public class Config {
            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
        }
 
+       return nextResourceType();
+    }
+
+    public static UnitType nextResourceType() {
         if (!TowerTracker.broken) {
             if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
