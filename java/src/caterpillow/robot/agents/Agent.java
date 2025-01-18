@@ -6,7 +6,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
-
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.ticksExisted;
@@ -19,7 +18,7 @@ import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isSRPCenter;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.missingPaint;
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
 
@@ -47,7 +46,7 @@ public abstract class Agent extends Robot {
 
     public int donate(RobotInfo bot) throws GameActionException {
         int missing = missingPaint(bot);
-        int available = rc.getPaint() - UnitType.MOPPER.paintCapacity / 2;
+        int available = rc.getPaint() - 20;
         if (available < 0) {
             return 0;
         }

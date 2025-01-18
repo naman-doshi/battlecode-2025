@@ -19,7 +19,6 @@ import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.countNearbyMoppers;
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isAllyAgent;
 import static caterpillow.util.Util.isEnemyAgent;

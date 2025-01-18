@@ -107,4 +107,21 @@ public class Splasher extends Agent {
                 break;
         }
     }
+
+    @Override
+    public void runTick() throws GameActionException {
+        super.runTick();
+
+        // i saw an edge case where a tower just spawned moppers around it, but they weren't connected by paint so they just afked w/o a strat
+        // LOL
+        if (primaryStrategy instanceof EmptyStrategy && Game.time > 4) {
+            if (home != null) {
+                Game.origin = home;
+            } else {
+                Game.origin = rc.getLocation();
+            }
+            primaryStrategy = new SplasherAggroStrategy();
+        }
+
+    }
 }

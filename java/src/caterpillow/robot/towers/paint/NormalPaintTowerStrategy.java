@@ -8,23 +8,23 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
-import static caterpillow.Game.*;
-
-import caterpillow.robot.towers.*;
+import static caterpillow.Game.seed;
+import static caterpillow.Game.trng;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.NullSpawner;
+import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
-import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
-import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import caterpillow.world.GameStage;
-
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
+import caterpillow.world.GameStage;
 
 public class NormalPaintTowerStrategy extends TowerStrategy {
 
@@ -61,7 +61,12 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                                 new SRPSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new
+                        PassiveMopperSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new NullSpawner(),
+                                new SRPSpawner()
+                        )
                 )
         ));
         nxt = 0;

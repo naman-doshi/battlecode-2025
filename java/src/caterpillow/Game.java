@@ -8,12 +8,9 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
-import battlecode.common.RobotInfo;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
 import caterpillow.util.TowerTracker;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.isFriendly;
 import caterpillow.world.GameStage;
 
 public class Game {
@@ -67,7 +64,7 @@ public class Game {
         // update our spawn "penalty" too
         int coinTowers = TowerTracker.probablyMinCoinTowers();
         // if early/early mid: all level 1, if mid all l2, if late all l3
-        if ((time - TowerTracker.lastTowerChange > 50 || TowerTracker.coinTowers >= 10) && rc.getNumberTowers() > 2) {
+        if ((time - TowerTracker.lastTowerChange > 50 || TowerTracker.coinTowers >= 7) && rc.getNumberTowers() > 2) {
             gameStage = GameStage.MID;
             spawnCoinPenalty = min(0, 1000 - coinTowers * 30 * 3);
         }

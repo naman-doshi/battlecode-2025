@@ -2,7 +2,11 @@ package caterpillow.robot.agents.mopper;
 
 import java.util.List;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
@@ -60,15 +64,17 @@ public class Mopper extends Agent {
                 
                 // first layer
                 MapLocation possibleAttackLoc = rc.getLocation().add(related);
-                if (!rc.canSenseLocation(possibleAttackLoc)) continue;
-                RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
-                if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
+                if (rc.canSenseLocation(possibleAttackLoc)) {
+                    RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
+                    if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
+                }
                 
                 // second layer
                 possibleAttackLoc = possibleAttackLoc.add(dir);
-                if (!rc.canSenseLocation(possibleAttackLoc)) continue;
-                robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
-                if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
+                if (rc.canSenseLocation(possibleAttackLoc)) {
+                    RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
+                    if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
+                }
             }
 
             if (cnt > bestCount) {
@@ -110,6 +116,19 @@ public class Mopper extends Agent {
                 Game.origin = rc.getLocation();
             }
             primaryStrategy = new MopperOffenceStrategy();
+        }
+
+        // all moppers should donate. splashers 1st priority, soldiers 2nd
+        RobotInfo[] bots = rc.senseNearbyRobots(2);
+        for (RobotInfo bot : bots) {
+            if (bot.getType()==UnitType.SPLASHER && bot.getPaintAmount() < bot.getType().paintCapacity) {
+                donate(bot);
+            }
+        }
+        for (RobotInfo bot : bots) {
+            if (bot.getType()==UnitType.SOLDIER && bot.getPaintAmount() < bot.getType().paintCapacity) {
+                donate(bot);
+            }
         }
     }
 

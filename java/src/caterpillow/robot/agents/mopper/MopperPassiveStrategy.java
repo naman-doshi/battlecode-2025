@@ -92,12 +92,12 @@ public class MopperPassiveStrategy extends Strategy {
             return;
         }
 
-        nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
-        if (nearest != null) {
-            bot.secondaryStrategy = new RefillStrategy(nearest);
-            bot.runTick();
-            return;
-        }
+        // nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
+        // if (nearest != null) {
+        //     bot.secondaryStrategy = new RefillStrategy(nearest);
+        //     bot.runTick();
+        //     return;
+        // }
 
         for (GameSupplier<MapInfo> pred : suppliers) {
             MapInfo res = pred.get();

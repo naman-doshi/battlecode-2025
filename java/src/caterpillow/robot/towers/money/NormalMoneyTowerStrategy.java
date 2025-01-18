@@ -6,24 +6,23 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
-import static caterpillow.Game.*;
-
-import caterpillow.robot.towers.*;
-import caterpillow.robot.towers.money.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.NullSpawner;
+import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
-import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import caterpillow.world.GameStage;
-
-import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
+import caterpillow.world.GameStage;
 
 public class NormalMoneyTowerStrategy extends TowerStrategy {
 
@@ -63,7 +62,12 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                                 new SRPSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new
+                        PassiveMopperSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new NullSpawner(),
+                                new SRPSpawner()
+                        )
                 )
         ));
         strats.add(new ConvertToPaintTowerStrategy());
