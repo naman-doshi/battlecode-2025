@@ -13,8 +13,11 @@ import static caterpillow.Game.*;
 import caterpillow.robot.towers.*;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
+import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -44,6 +47,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
+                // trng.nextInt(0, 1) == 0 ? new RushSpawner() : new NullSpawner(),
                 new SRPSpawner(),
                 new LoopedSpawner(
                         () -> new ConditionalSpawner(

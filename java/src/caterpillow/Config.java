@@ -25,11 +25,9 @@ public class Config {
     // right now, we have too much paint in the endgame (when most towers are maxed)
     // we also need more chips on larger maps
     public static double targetRatio() {
-        if(rc.getChips() <= 1200) return 0.8;
-        if (rc.getMapHeight() * rc.getMapWidth() < 1500) return 0.6;
-        else {
-            return 0.7;
-        }
+        double ratio = rc.getMapHeight() * rc.getMapWidth() < 1500 ? 0.6 : 0.7;
+        if(rc.getChips() < 1200) ratio += 0.1;
+        return ratio;
     }
 
     public static boolean canUpgrade(int level) {
@@ -95,7 +93,7 @@ public class Config {
 
     public static UnitType nextResourceType() {
         if (!TowerTracker.broken) {
-            if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() > targetRatio() || rc.getChips() >= 3000) {
+            if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() >= targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
