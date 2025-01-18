@@ -40,6 +40,9 @@ public class SRPStrategy extends Strategy {
     Strategy roamStrategy;
     TraverseStrategy traverseStrategy;
     PaintSRPStrategy paintSRPStrategy;
+    Strategy refillStrategy;
+    Strategy attackTowerStrategy;
+    Strategy upgradeTowerStrategy;
 
     public final int ignoreCooldownReset = 30;
     int[][] ignoreCooldown; // last time that this cell was verified to not be a valid centre
@@ -124,6 +127,23 @@ public class SRPStrategy extends Strategy {
         skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
         updateStates();
+
+        if(refillStrategy == null && isPaintBelowHalf()) {
+            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            if (nearest != null) {
+                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+            }
+        }
+        if (refillStrategy != null) {
+            if(tryStrategy(refillStrategy)) return;
+        }
+
+        if (handleRuinStrategy == null && towerStratCooldown <= 0) {
+            MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
+            if (target1 != null) {
+                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType());
+            }
+        }
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
                 if (handleRuinStrategy.didSkip()) {
@@ -133,38 +153,20 @@ public class SRPStrategy extends Strategy {
                 }
                 handleRuinStrategy = null;
                 towerStratCooldown = 30;
-                runTick();
             } else {
                 handleRuinStrategy.runTick();
             }
             return;
         }
 
-        if (isPaintBelowHalf()) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                bot.runTick();
-                return;
-            }
-        }
-
-        if (paintSRPStrategy != null) {
-            if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] + ignoreCooldownReset >= time) {
-                paintSRPStrategy = null;
-            } else {
-                paintSRPStrategy.runTick();
-                return;
-            }
-        }
-
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
             if (enemyTower != null) {
-                bot.secondaryStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-                bot.runTick();
-                return;
+                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
+        }
+        if(attackTowerStrategy != null) {
+            if(tryStrategy(attackTowerStrategy)) return;
         }
 
         if (gameStage.equals(MID)) {
@@ -173,19 +175,20 @@ public class SRPStrategy extends Strategy {
                     int finalLevel = level;
                     RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
-                        bot.secondaryStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
-                        bot.runTick();
-                        return;
+                        upgradeTowerStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
                     }
                 }
             }
         }
+        if(upgradeTowerStrategy != null) {
+            if(tryStrategy(upgradeTowerStrategy)) return;
+        }
 
-        if (towerStratCooldown <= 0) {
-            MapInfo target1 = getNearestCell(c -> c.hasRuin() && !visitedRuins.contains(c.getMapLocation()) && rc.senseRobotAtLocation(c.getMapLocation()) == null && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
-            if (target1 != null) {
-                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation(), Config.getNextType());
-                runTick();
+        if (paintSRPStrategy != null) {
+            if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] + ignoreCooldownReset >= time) {
+                paintSRPStrategy = null;
+            } else {
+                paintSRPStrategy.runTick();
                 return;
             }
         }

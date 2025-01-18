@@ -46,7 +46,7 @@ public class AttackTowerStrategy extends Strategy {
         }
 
         startedAttacking = true;
-        
+
         // we NEED to attack and move at the same time for this to work, so make sure we can do both and have enough paint
         if (rc.isActionReady() && rc.isMovementReady() && rc.getPaint() >= 8) {
             Direction plannedMove = bot.pathfinder.getMove(target);

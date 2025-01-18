@@ -32,7 +32,7 @@ public class UpgradeTowerStrategy extends Strategy {
         }
 
         if (!rc.canSenseLocation(target)) {
-            return false;
+            return true;
         }
         RobotInfo info = rc.senseRobotAtLocation(target);
         if (info == null || !isFriendly(info)) {
