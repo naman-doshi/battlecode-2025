@@ -167,23 +167,54 @@ public class Util {
             return enemyLocs;
         }
 
+
+        // also make the path as easy as possible between targets
         int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
         int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
         if (dist_hormiddle > dist_vertmiddle) {
             // first is hor
             enemyLocs.addLast(flipHor(src));
-            enemyLocs.addLast(rot180(src));
-            enemyLocs.addLast(flipVer(src));
+
+            int d1 = flipHor(src).distanceSquaredTo(rot180(src)) + rot180(src).distanceSquaredTo(flipVer(src));
+            int d2 = flipHor(src).distanceSquaredTo(flipVer(src)) + flipVer(src).distanceSquaredTo(rot180(src));
+
+            if (d1 < d2) {
+                enemyLocs.addLast(rot180(src));
+                enemyLocs.addLast(flipVer(src));
+            } else {
+                enemyLocs.addLast(flipVer(src));
+                enemyLocs.addLast(rot180(src));
+            }
+
         } else if (dist_hormiddle < dist_vertmiddle) {
             // first is vert ref
             enemyLocs.addLast(flipVer(src));
-            enemyLocs.addLast(rot180(src));
-            enemyLocs.addLast(flipHor(src));
+
+            int d1 = flipVer(src).distanceSquaredTo(rot180(src)) + rot180(src).distanceSquaredTo(flipHor(src));
+            int d2 = flipVer(src).distanceSquaredTo(flipHor(src)) + flipHor(src).distanceSquaredTo(rot180(src));
+
+            if (d1 < d2) {
+                enemyLocs.addLast(rot180(src));
+                enemyLocs.addLast(flipHor(src));
+            } else {
+                enemyLocs.addLast(flipHor(src));
+                enemyLocs.addLast(rot180(src));
+            }
+
         } else {
             // first is rot 180
             enemyLocs.addLast(rot180(src));
-            enemyLocs.addLast(flipHor(src));
-            enemyLocs.addLast(flipVer(src));
+
+            int d1 = rot180(src).distanceSquaredTo(flipHor(src)) + flipHor(src).distanceSquaredTo(flipVer(src));
+            int d2 = rot180(src).distanceSquaredTo(flipVer(src)) + flipVer(src).distanceSquaredTo(flipHor(src));
+
+            if (d1 < d2) {
+                enemyLocs.addLast(flipHor(src));
+                enemyLocs.addLast(flipVer(src));
+            } else {
+                enemyLocs.addLast(flipVer(src));
+                enemyLocs.addLast(flipHor(src));
+            }
             
         }
         return enemyLocs;

@@ -87,7 +87,7 @@ public class Config {
            }
        }
 
-       if (enemyVisible) {
+       if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05) {
            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
        }
 
