@@ -1,9 +1,12 @@
 package caterpillow.robot.towers.money;
 
-import battlecode.common.*;
-import caterpillow.robot.towers.TowerStrategy;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
+import static caterpillow.Config.shouldConvertMoneyToPaint;
 import static caterpillow.Game.rc;
-import static caterpillow.Config.*;
+import caterpillow.robot.towers.TowerStrategy;
 
 public class ConvertToPaintTowerStrategy extends TowerStrategy {
     final boolean[][] paintTowerPattern = {
@@ -33,6 +36,20 @@ public class ConvertToPaintTowerStrategy extends TowerStrategy {
             }
             if(convertToPaintTower) {
                 System.out.println("converting to paint tower at " + loc.toString());
+                // donate paint to surrounding bots
+                RobotInfo[] bots = rc.senseNearbyRobots();
+                for (RobotInfo bot : bots) {
+                    if (bot.getTeam() == rc.getTeam() && bot.getType().isRobotType()) {
+                        int missing = bot.getType().paintCapacity - bot.getPaintAmount();
+                        if (missing > 0) {
+                            int amt = Math.min(rc.getPaint(), missing);
+                            if (rc.getPaint() == 0) break;
+                            if (rc.canTransferPaint(bot.location, amt)) {
+                                rc.transferPaint(bot.location, amt);
+                            }
+                        }
+                    }
+                }
                 rc.disintegrate();
             }
         }
