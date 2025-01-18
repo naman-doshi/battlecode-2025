@@ -33,29 +33,28 @@ public class PacketManager {
         int sender = msg.getSenderID();
         switch (type) {
             case 0:
-                println(0);
+                // println(0);
                 AdoptionPacket adoptionPacket = new AdoptionPacket();
                 bot.handleAdoptionPacket(adoptionPacket, sender);
             case 1: // make sure these packet types are synced
-                println(1);
+                // println(1);
                 assert false : "we dont send these anymore\n";
                 OriginPacket originPacket = new OriginPacket(decodeLoc(payload));
                 bot.handleOriginPacket(originPacket, sender);
                 break;
             case 2:
-                println(2);
+                // println(2);
                 SeedPacket seedPacket = new SeedPacket(payload);
                 bot.handleSeedPacket(seedPacket, sender);
                 break;
             case 3:
-                println(3);
+                // println(3);
                 int id = getBits(payload, StrategyPacket.STRATEGY_DATA_SIZE, StrategyPacket.STRATEGY_ID_SIZE);
                 int data = getBits(payload, 0, StrategyPacket.STRATEGY_DATA_SIZE);
                 StrategyPacket strategyPacket = new StrategyPacket(id, data);
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
-                println(4);
                 int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
                 srps = res[1];
                 coinTowers = res[2];

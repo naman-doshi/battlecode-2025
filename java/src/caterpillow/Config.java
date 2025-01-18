@@ -21,8 +21,6 @@ import static caterpillow.util.Util.project;
 import static caterpillow.util.Util.subtract;
 
 public class Config {
-
-
     // idea : dynamically update this based on coin amt
     // right now, we have too much paint in the endgame (when most towers are maxed)
     // we also need more chips on larger maps
@@ -153,5 +151,9 @@ public class Config {
     public static List<MapLocation> getEnemySpawnList(Random rng) throws GameActionException {
         List<MapLocation> locs = guessEnemyLocs(origin);
         return locs;
+    }
+
+    public static boolean shouldConvertMoneyToPaint() {
+        return rc.getChips() >= 15000;
     }
 }

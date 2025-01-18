@@ -4,7 +4,7 @@ import java.awt.image.DirectColorModel;
 
 import battlecode.common.*;
 import caterpillow.Game;
-import static caterpillow.Config.genExplorationTarget;
+import static caterpillow.Config.*;
 
 import java.util.*;
 
@@ -17,21 +17,21 @@ public class Util {
     public static final int VISION_RAD = 20;
     public static final int ENC_LOC_SIZE = 12;
     public static final Direction[] directions = {
-            Direction.NORTH,
-            Direction.NORTHEAST,
-            Direction.EAST,
-            Direction.SOUTHEAST,
-            Direction.SOUTH,
-            Direction.SOUTHWEST,
-            Direction.WEST,
-            Direction.NORTHWEST,
+        Direction.NORTH,
+        Direction.NORTHEAST,
+        Direction.EAST,
+        Direction.SOUTHEAST,
+        Direction.SOUTH,
+        Direction.SOUTHWEST,
+        Direction.WEST,
+        Direction.NORTHWEST,
     };
 
     public static final Direction[] orthDirections = {
-            Direction.NORTH,
-            Direction.EAST,
-            Direction.SOUTH,
-            Direction.WEST
+        Direction.NORTH,
+        Direction.EAST,
+        Direction.SOUTH,
+        Direction.WEST
     };
 
     public static Direction[] relatedDirections(Direction dir) {
@@ -205,7 +205,6 @@ public class Util {
                 enemyLocs.addLast(flipVer(src));
                 enemyLocs.addLast(flipHor(src));
             }
-            
         }
         return enemyLocs;
     }
@@ -226,13 +225,13 @@ public class Util {
             return type;
         }
         return switch (type) {
-            case LEVEL_ONE_PAINT_TOWER, LEVEL_TWO_PAINT_TOWER, LEVEL_THREE_PAINT_TOWER ->
-                    UnitType.LEVEL_ONE_PAINT_TOWER;
-            case LEVEL_ONE_MONEY_TOWER, LEVEL_TWO_MONEY_TOWER, LEVEL_THREE_MONEY_TOWER ->
-                    UnitType.LEVEL_ONE_MONEY_TOWER;
-            case LEVEL_ONE_DEFENSE_TOWER, LEVEL_TWO_DEFENSE_TOWER, LEVEL_THREE_DEFENSE_TOWER ->
-                    UnitType.LEVEL_ONE_DEFENSE_TOWER;
-            default -> null;
+        case LEVEL_ONE_PAINT_TOWER, LEVEL_TWO_PAINT_TOWER, LEVEL_THREE_PAINT_TOWER ->
+            UnitType.LEVEL_ONE_PAINT_TOWER;
+        case LEVEL_ONE_MONEY_TOWER, LEVEL_TWO_MONEY_TOWER, LEVEL_THREE_MONEY_TOWER ->
+            UnitType.LEVEL_ONE_MONEY_TOWER;
+        case LEVEL_ONE_DEFENSE_TOWER, LEVEL_TWO_DEFENSE_TOWER, LEVEL_THREE_DEFENSE_TOWER ->
+            UnitType.LEVEL_ONE_DEFENSE_TOWER;
+        default -> null;
         };
     }
 
@@ -423,20 +422,20 @@ public class Util {
 
     public static MapInfo getSpawnLoc(UnitType type) throws GameActionException {
         return getBestCell((MapInfo c1, MapInfo c2) -> {
-            int p1 = paintPriority(c1.getPaint());
-            int p2 = paintPriority(c2.getPaint());
-            if (p1 != p2) {
-                if (p1 > p2) return c1;
-                else return c2;
-            }
-            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
-                return c1;
-            } else {
-                return c2;
-            }
-        }, c -> {
-            return rc.canBuildRobot(type, c.getMapLocation());
-        });
+                int p1 = paintPriority(c1.getPaint());
+                int p2 = paintPriority(c2.getPaint());
+                if (p1 != p2) {
+                    if (p1 > p2) return c1;
+                    else return c2;
+                }
+                if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                    return c1;
+                } else {
+                    return c2;
+                }
+            }, c -> {
+                return rc.canBuildRobot(type, c.getMapLocation());
+            });
     }
 
     public static boolean maxedTowers() {
@@ -445,20 +444,20 @@ public class Util {
 
     public static MapInfo getSafeSpawnLoc(UnitType type) throws GameActionException {
         return getBestCell((MapInfo c1, MapInfo c2) -> {
-            int p1 = paintPriority(c1.getPaint());
-            int p2 = paintPriority(c2.getPaint());
-            if (p1 != p2) {
-                if (p1 > p2) return c1;
-                else return c2;
-            }
-            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
-                return c1;
-            } else {
-                return c2;
-            }
-        }, c -> {
-            return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy();
-        });
+                int p1 = paintPriority(c1.getPaint());
+                int p2 = paintPriority(c2.getPaint());
+                if (p1 != p2) {
+                    if (p1 > p2) return c1;
+                    else return c2;
+                }
+                if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                    return c1;
+                } else {
+                    return c2;
+                }
+            }, c -> {
+                return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy();
+            });
     }
 
     public static void println(Object obj) {
@@ -626,7 +625,7 @@ public class Util {
     public static boolean isSRPCenter(MapLocation loc) {
         return (loc.x%4==2 && loc.y%4==2);
     }
-    
+
     public static boolean isWithinRuin(MapLocation loc, MapLocation ruin) {
         return loc.isWithinDistanceSquared(ruin, 8) || (loc.distanceSquaredTo(ruin) == 9 && !(loc.x == ruin.x || loc.y == ruin.y));
     }
@@ -652,22 +651,22 @@ public class Util {
         // sort by distance
         res.sort(Comparator.comparingInt(a -> loc.distanceSquaredTo(a)));
         return res;
-        
+
     }
 
     public static PaintType checkerboardPaint(MapLocation loc) {
-        
+
         switch ((loc.x) % 4) {
-            case (0):
-                return (loc.y%4==2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-            case (1):
-                return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-            case (2):
-                return (loc.y%4!=2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-            case (3):
-                return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
-            default:
-                return PaintType.ALLY_PRIMARY;
+        case (0):
+            return (loc.y%4==2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        case (1):
+            return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        case (2):
+            return (loc.y%4!=2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        case (3):
+            return (loc.y%4!=0) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
+        default:
+            return PaintType.ALLY_PRIMARY;
         }
     }
 
@@ -687,20 +686,20 @@ public class Util {
 
     public static MapInfo getNeighbourSpawnLoc(UnitType type) throws GameActionException {
         return getBestCell((MapInfo c1, MapInfo c2) -> {
-            int p1 = paintPriority(c1.getPaint());
-            int p2 = paintPriority(c2.getPaint());
-            if (p1 != p2) {
-                if (p1 > p2) return c1;
-                else return c2;
-            }
-            if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
-                return c1;
-            } else {
-                return c2;
-            }
-        }, c -> {
-            return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1;
-        });
+                int p1 = paintPriority(c1.getPaint());
+                int p2 = paintPriority(c2.getPaint());
+                if (p1 != p2) {
+                    if (p1 > p2) return c1;
+                    else return c2;
+                }
+                if (c1.getMapLocation().distanceSquaredTo(centre) < c2.getMapLocation().distanceSquaredTo(centre)) {
+                    return c1;
+                } else {
+                    return c2;
+                }
+            }, c -> {
+                return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1;
+            });
     }
 
     public static boolean isInDanger(MapLocation loc) throws GameActionException {
@@ -710,5 +709,11 @@ public class Util {
             }
         }
         return false;
+    }
+
+    public static boolean isRuin(MapLocation loc) throws GameActionException {
+        if(!rc.senseMapInfo(loc).hasRuin()) return false;
+        RobotInfo info = rc.senseRobotAtLocation(loc);
+        return info == null || shouldConvertMoneyToPaint() && info.team.equals(rc.getTeam()) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER);
     }
 }
