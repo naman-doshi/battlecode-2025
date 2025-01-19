@@ -5,14 +5,20 @@ import java.util.List;
 import java.util.Random;
 
 import battlecode.common.GameActionException;
+import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.util.Util.*;
-
-import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
+import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {
 
@@ -37,7 +43,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
         strats.add(atkstrat = new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new LoopedSpawner(
-                    OffenceMopperSpawner::new
+                    SplasherSpawner::new
                 )
         ));
         nxt = 0;
@@ -47,7 +53,22 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     public void runTick() throws GameActionException {
         indicate("NORMAL");
 
-        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 60) {
+        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 20) {
+            // donate paint to surrounding bots
+            RobotInfo[] bots = rc.senseNearbyRobots();
+            for (RobotInfo bot : bots) {
+                if (bot.getTeam() == rc.getTeam() && bot.getType().isRobotType()) {
+                    int missing = bot.getType().paintCapacity - bot.getPaintAmount();
+                    if (missing > 0) {
+                        int amt = Math.min(rc.getPaint(), missing);
+                        if (rc.getPaint() == 0) break;
+                        if (rc.canTransferPaint(bot.location, amt)) {
+                            rc.transferPaint(bot.location, amt);
+                        }
+                    }
+                }
+            }
+            
             rc.disintegrate();
             return;
         }

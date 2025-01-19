@@ -16,11 +16,11 @@ import caterpillow.robot.towers.TowerStrategy;
 import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
@@ -48,8 +48,9 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 // trng.nextInt(0, 1) == 0 ? new RushSpawner() : new NullSpawner(),
-                new SRPSpawner(),
+                
                 new LoopedSpawner(
+                        SRPSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY || trng.nextInt(5) == 0,
                                 new SRPSpawner(),
@@ -58,15 +59,10 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new SRPSpawner(),
+                                new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new,
-                        () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.EARLY,
-                                new NullSpawner(),
-                                new SRPSpawner()
-                        )
+                        PassiveMopperSpawner::new
                 )
         ));
         nxt = 0;

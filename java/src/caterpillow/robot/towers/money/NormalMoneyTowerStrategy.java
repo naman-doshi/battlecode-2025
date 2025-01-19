@@ -20,6 +20,7 @@ import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
@@ -49,8 +50,8 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                 //new ScoutSpawner(),
                 trng.nextInt(0, 1) == 0 ? new InstantScoutSpawner() : new NullSpawner(),
                 // new InstantScoutSpawner(),
-                new SRPSpawner(),
                 new LoopedSpawner(
+                    SRPSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
                                 new SRPSpawner(),
@@ -59,15 +60,10 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new SRPSpawner(),
+                                new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new,
-                        () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.EARLY,
-                                new NullSpawner(),
-                                new SRPSpawner()
-                        )
+                        PassiveMopperSpawner::new
                 )
         ));
         strats.add(new ConvertToPaintTowerStrategy());
