@@ -93,8 +93,9 @@ public class Util {
     }
 
     // for debugging purposes
+    public static String indicatorString = "";
     public static void indicate(String str) {
-        rc.setIndicatorString(str);
+        indicatorString += str + ";";
     }
 
     public static int manhattan(MapLocation a, MapLocation b) {
