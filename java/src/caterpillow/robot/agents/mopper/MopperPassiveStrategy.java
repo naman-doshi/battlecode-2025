@@ -12,26 +12,21 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.PassiveRoamStrategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isAllyAgent;
-import static caterpillow.util.Util.isCellInTowerBounds;
-import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInAttackRange;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.getPaintLevel;
 
 public class MopperPassiveStrategy extends Strategy {
 
     public Mopper bot;
 
     public List<GameSupplier<MapInfo>> suppliers;
-    WeakRefillStrategy refillStrategy;
+    Strategy refillStrategy;
     Strategy roamStrategy;
 
     public MopperPassiveStrategy() throws GameActionException {
@@ -76,14 +71,15 @@ public class MopperPassiveStrategy extends Strategy {
         indicate("PASSIVE MOPPER");
         // just checking and updating enemy locs:
 
-        if (isPaintBelowHalf()) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                bot.runTick();
-                return;
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            if (getPaintLevel() < 0.5) {
+                refillStrategy = new StrongRefillStrategy(0.8);
+            } else {
+                refillStrategy = new WeakRefillStrategy(0.2);
             }
         }
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
 
         RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
         if (nearest != null) {

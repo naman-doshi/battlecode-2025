@@ -10,14 +10,13 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.getPaintLevel;
 
 public class SplasherAggroStrategy extends Strategy {
 
@@ -27,9 +26,9 @@ public class SplasherAggroStrategy extends Strategy {
     public List<MapLocation> enemyLocs;
     public MapLocation enemy;
     public List<GameSupplier<MapInfo>> suppliers;
-    WeakRefillStrategy refillStrategy;
     MapLocation lastSeenTower;
 
+    Strategy refillStrategy;
     Strategy roamStrategy;
 
     public SplasherAggroStrategy() throws GameActionException {
@@ -53,18 +52,15 @@ public class SplasherAggroStrategy extends Strategy {
             lastSeenTower = nearest.getLocation();
         }
 
-        if (isPaintBelowHalf()) {
-            nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.2);
-                bot.runTick();
-                return;
-            } else if (rc.getPaint() < 50) {
-                indicate("retreating with paint " + rc.getPaint() + " and bytecode " + Clock.getBytecodeNum());
-                bot.pathfinder.makeMove(Game.origin);
-                return;
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            if (getPaintLevel() < 0.5) {
+                refillStrategy = new StrongRefillStrategy(0.8);
+            } else {
+                refillStrategy = new WeakRefillStrategy(0.2);
             }
-        } 
+        }
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
 
         MapLocation target = bot.bestAttackLocation();
         if (target != null) {

@@ -4,6 +4,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.packet.packets.InitPacket;
+import caterpillow.util.GamePredicate;
 
 import java.util.ArrayList;
 
@@ -28,10 +29,59 @@ public class TowerTracker {
     public static boolean hasReceivedInitPacket = false;
     public static int srps = 0;
 
-    public static ArrayList<MapLocation> paintLocs;
+    public static ArrayList<MapLocation> paintLocs, nonPaintLocs;
 
     public static void init() {
         paintLocs = new ArrayList<>();
+        nonPaintLocs = new ArrayList<>();
+    }
+
+    public static MapLocation getClosestPaintTower(GamePredicate<MapLocation> pred) throws GameActionException {
+        if (paintLocs.isEmpty()) {
+            return null;
+        }
+        MapLocation best = null;
+        MapLocation cur = rc.getLocation();
+        for (int i = paintLocs.size() - 1; i >= 0; i--) {
+            MapLocation cand = paintLocs.get(i);
+            if (pred.test(cand)) {
+                if (best == null || best.distanceSquaredTo(cur) > cand.distanceSquaredTo(cur)) {
+                    best = cand;
+                }
+            }
+        }
+        return best;
+    }
+
+    public static MapLocation getClosestNonPaintTower(GamePredicate<MapLocation> pred) throws GameActionException {
+        if (nonPaintLocs.isEmpty()) {
+            return null;
+        }
+        MapLocation best = null;
+        MapLocation cur = rc.getLocation();
+        for (int i = nonPaintLocs.size() - 1; i >= 0; i--) {
+            MapLocation cand = nonPaintLocs.get(i);
+            if (pred.test(cand)) {
+                if (best == null || best.distanceSquaredTo(cur) > cand.distanceSquaredTo(cur)) {
+                    best = cand;
+                }
+            }
+        }
+        return best;
+    }
+
+    public static RobotInfo getNearestTower(GamePredicate<RobotInfo> pred) throws GameActionException {
+        RobotInfo best = null;
+        for (int i = CellTracker.nearbyRuins.length - 1; i >= 0; i--) {
+            MapLocation loc = CellTracker.nearbyRuins[i];
+            RobotInfo info = rc.senseRobotAtLocation(loc);
+            if (info != null && pred.test(info)) {
+                if (best == null || best.getLocation().distanceSquaredTo(rc.getLocation()) > info.getLocation().distanceSquaredTo(rc.getLocation())) {
+                    best = info;
+                }
+            }
+        }
+        return best;
     }
 
     public static void sendInitPacket(MapLocation loc) throws GameActionException {

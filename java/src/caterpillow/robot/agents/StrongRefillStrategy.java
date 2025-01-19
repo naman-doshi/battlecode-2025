@@ -3,9 +3,13 @@ package caterpillow.robot.agents;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.TowerTracker;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
@@ -14,36 +18,53 @@ import static java.lang.Math.max;
 /*
 
 will go towards target location, trying to refill from there
-returns once refilled or deemed impossible
-will wait if necessary
+will refill as much as possible, or deem not worth
 
 */
 public class StrongRefillStrategy extends Strategy {
 
     MapLocation target;
     Agent bot;
-    double minAmt;
+    double minPaintCapacity;
+    boolean hasRefilled;
+    ArrayList<MapLocation> skipped;
 
-    int req() {
-        return max(0, (int) ((double) rc.getType().paintCapacity * minAmt) - rc.getPaint());
+    int minPaintCapacity() {
+        return (int) ((double) rc.getType().paintCapacity * minPaintCapacity);
     }
 
-    public StrongRefillStrategy(MapLocation target, double minAmt) {
-        this.target = target;
+    public StrongRefillStrategy(double minPaintCapacity) {
+        println("tryna refill");
         bot = (Agent) Game.bot;
-        this.minAmt = minAmt;
+        this.minPaintCapacity = minPaintCapacity;
+        hasRefilled = false;
+        skipped = new ArrayList<>();
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if (req() == 0) return true;
-        if (rc.canSenseLocation(target)) {
-            RobotInfo bot = rc.senseRobotAtLocation(target);
-            if (bot == null || !bot.getType().isTowerType() || !isFriendly(bot)) {
-                // give up
+        if (rc.getPaint() >= minPaintCapacity()) {
+            println("enough paint");
+            return true;
+        }
+
+        target = TowerTracker.getClosestPaintTower(c -> !skipped.contains(c));
+
+        RobotInfo pot = TowerTracker.getNearestTower(c -> {
+            if (isFriendly(c) && (c.getPaintAmount() > minPaintCapacity() - rc.getPaint() || c.getPaintAmount() > 69) && !skipped.contains(c.getLocation())) {
                 return true;
             }
-            if (bot.getPaintAmount() < req() && !downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
+            return false;
+        });
+
+        if (pot != null && target != null && 2 * Math.sqrt(pot.getLocation().distanceSquaredTo(rc.getLocation())) < Math.sqrt(target.distanceSquaredTo(rc.getLocation()))) {
+            target = pot.getLocation();
+        }
+        if (target == null) {
+            target = TowerTracker.getClosestNonPaintTower(c -> !skipped.contains(c));
+            if (target == null) {
+                // ff
+                println("wrap it up bud");
                 return true;
             }
         }
@@ -52,9 +73,13 @@ public class StrongRefillStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
+        indicate("STRONG REFILL");
         bot.pathfinder.makeMove(target);
-        if (rc.canSenseLocation(target)) {
+        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null && rc.canTransferPaint(target, -1)) {
             bot.refill(rc.senseRobotAtLocation(target));
+            println("added target to skipped " + target);
+            skipped.add(target);
         }
+        rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
     }
 }

@@ -12,6 +12,7 @@ import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
@@ -209,13 +210,16 @@ public class SRPStrategy extends Strategy {
         towerStratCooldown--;
         updateStates();
 
-        if(refillStrategy == null && isPaintBelowHalf()) {
-            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
-            if (nearest != null) {
-                refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            if (handleRuinStrategy == null && getPaintLevel() < 0.5) {
+                refillStrategy = new StrongRefillStrategy(0.8);
+            } else {
+                refillStrategy = new WeakRefillStrategy(0.2);
             }
         }
-        if(tryStrategy(refillStrategy)) return;
+
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
 
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapInfo target1 = CellTracker.getNearestCell(c -> isRuin(c.getMapLocation()) && !visitedRuins.contains(c.getMapLocation()) && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
@@ -244,7 +248,9 @@ public class SRPStrategy extends Strategy {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
         }
-        if(tryStrategy(attackTowerStrategy)) return;
+
+        if (tryStrategy(attackTowerStrategy)) return;
+        attackTowerStrategy = null;
 
         if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {
@@ -257,7 +263,9 @@ public class SRPStrategy extends Strategy {
                 }
             }
         }
-        if(tryStrategy(upgradeTowerStrategy)) return;
+
+        if (tryStrategy(upgradeTowerStrategy)) return;
+        upgradeTowerStrategy = null;
 
         if (paintSRPStrategy != null) {
             if(paintSRPStrategy.isComplete() || ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] >= time) {

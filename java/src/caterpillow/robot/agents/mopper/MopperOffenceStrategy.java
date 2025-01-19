@@ -30,7 +30,8 @@ public class MopperOffenceStrategy extends Strategy {
     public List<GameSupplier<MapInfo>> suppliers;
     Random rng;
     public MapLocation lastSeenRuin;
-    WeakRefillStrategy refillStrategy;
+    Strategy rescueStrategy;
+    Strategy refillStrategy;
     Strategy roamStrategy;
 
 
@@ -89,21 +90,22 @@ public class MopperOffenceStrategy extends Strategy {
             lastSeenRuin = ruin.getMapLocation();
         }
 
-        RobotInfo nearest = RobotTracker.getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
-        if (nearest != null) {
-            bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
-            bot.runTick();
-            return;
-        }
-
-        if (isPaintBelowHalf()) {
-            nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+        if (rescueStrategy == null) {
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
             if (nearest != null) {
-                bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
-                bot.runTick();
-                return;
+                rescueStrategy = new RescueStrategy(nearest.getLocation());
             }
         }
+
+        if (tryStrategy(rescueStrategy)) return;
+        rescueStrategy = null;
+
+        if (refillStrategy == null && isPaintBelowHalf()) {
+            refillStrategy = new WeakRefillStrategy(0.2);
+        }
+
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
 
         // move
         for (int i = 0; i < suppliers.size(); i++) {

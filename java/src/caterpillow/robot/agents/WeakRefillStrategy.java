@@ -6,6 +6,7 @@ import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.TowerTracker;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
@@ -21,37 +22,32 @@ public class WeakRefillStrategy extends Strategy {
 
     MapLocation target;
     Agent bot;
+    // minimum amount of paint to refill
     double minRefillMul;
     boolean hasRefilled;
+    int minSkipAmt;
 
     int minRefill() {
         return (int) ((double) rc.getType().paintCapacity * minRefillMul);
     }
 
-    public WeakRefillStrategy(MapLocation target, double minRefillMul) {
-        println("tryna refill");
-        this.target = target;
+    public WeakRefillStrategy(double minRefillMul) {
         bot = (Agent) Game.bot;
         this.minRefillMul = minRefillMul;
         hasRefilled = false;
+        minSkipAmt = rc.getPaint() + minRefill();
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if (hasRefilled) {
+        if (hasRefilled || rc.getPaint() >= minSkipAmt) {
             return true;
         }
-        if (rc.canSenseLocation(target)) {
-            RobotInfo bot = rc.senseRobotAtLocation(target);
-            if (bot == null || !bot.getType().isTowerType() || !isFriendly(bot)) {
-                // give up
-                return true;
-            }
-            assert bot != null;
-            if (bot.getPaintAmount() < minRefill() && !downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
-                return true;
-            }
+        RobotInfo res = TowerTracker.getNearestTower(b -> isFriendly(b) && b.getPaintAmount() >= minRefill());
+        if (res == null) {
+            return true;
         }
+        target = res.getLocation();
         return false;
     }
 
@@ -59,7 +55,7 @@ public class WeakRefillStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("REFILLING");
         bot.pathfinder.makeMove(target);
-        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null) {
+        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null && rc.canTransferPaint(target, -1)) {
             bot.refill(rc.senseRobotAtLocation(target));
             hasRefilled = true;
         }

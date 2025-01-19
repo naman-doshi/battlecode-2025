@@ -7,6 +7,7 @@ import caterpillow.util.Profiler;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.downgrade;
+import static caterpillow.util.Util.isFriendly;
 
 public class CellTracker {
     private static int maxX, maxY;
@@ -53,6 +54,18 @@ public class CellTracker {
             }
         }
         return best;
+    }
+
+    public static MapLocation findRuin(GamePredicate<MapLocation> pred) throws GameActionException {
+        switch (nearbyRuins.length) {
+            case 5: if (pred.test(nearbyRuins[4])) return nearbyRuins[4];
+            case 4: if (pred.test(nearbyRuins[3])) return nearbyRuins[3];
+            case 3: if (pred.test(nearbyRuins[2])) return nearbyRuins[2];
+            case 2: if (pred.test(nearbyRuins[1])) return nearbyRuins[1];
+            case 1: if (pred.test(nearbyRuins[0])) return nearbyRuins[0];
+            case 0: return null;
+            default: throw new IllegalArgumentException("nearbyRuins exceeds 5");
+        }
     }
 
     public static MapInfo getNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
@@ -141,18 +154,23 @@ public class CellTracker {
 
                     // special
 
-                    Profiler.begin();
-                    RobotInfo paint = rc.senseRobotAtLocation(loc);
-                    if (paint != null) {
-                        if (downgrade(paint.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
-                            TowerTracker.paintLocs.remove(paint.location);
+                    RobotInfo bot = rc.senseRobotAtLocation(loc);
+                    if (bot == null || rc.getTeam() != bot.getTeam()) {
+                        TowerTracker.paintLocs.remove(loc);
+                        TowerTracker.nonPaintLocs.remove(loc);
+                    } else {
+                        if (downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
+                            TowerTracker.nonPaintLocs.remove(loc);
+                            if (!TowerTracker.paintLocs.contains(loc)) {
+                                TowerTracker.paintLocs.add(loc);
+                            }
                         } else {
-                            if (!TowerTracker.paintLocs.contains(paint.location)) {
-                                TowerTracker.paintLocs.add(paint.location);
+                            TowerTracker.paintLocs.remove(loc);
+                            if (!TowerTracker.nonPaintLocs.contains(loc)) {
+                                TowerTracker.nonPaintLocs.add(loc);
                             }
                         }
                     }
-                    Profiler.end("tracking paint towers");
 
                     // special
 
