@@ -154,11 +154,10 @@ public class BugnavPathfinder extends AbstractPathfinder {
             topDir = bottomDir;
             Direction[] poss = {topDir, topDir.rotateRight(), topDir.rotateLeft()};
             Direction best = null;
-            int bestScore = 1000000;
+            int bestScore = 1000000000;
             for(Direction d : poss) {
                 if(canMove(d)) {
                     int score = 0;
-                    if(d.equals(topDir)) score--;
                     for(Direction off : directions) {
                         if(off.equals(d.opposite())) continue;
                         MapLocation loc = rc.getLocation().add(d).add(off);
@@ -173,12 +172,17 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     if(info.getPaint().isEnemy()) {
                         score *= 2;
                     }
+                    score *= 1000000;
+                    score += rc.getLocation().add(d).distanceSquaredTo(target) * 10;
+                    score += trng.nextInt(10);
                     if(score < bestScore) {
                         bestScore = score;
                         best = d;
                     }
+                    indicate(d.toString() + " " + score);
                 }
             }
+            if(best != null) indicate(best.toString());
             if(best != null) {
                 if(best.equals(topDir.rotateRight())) {
                     leftTurn = false;
@@ -258,7 +262,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         // rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
         if (dir != null && rc.canMove(dir)) {
             if(stackSize > 0) {
-                indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
+                // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
             rc.move(dir);
@@ -268,7 +272,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }
-        indicate("LeftTurn: " + leftTurn);
+        // indicate("LeftTurn: " + leftTurn);
     }
 
     @Override
