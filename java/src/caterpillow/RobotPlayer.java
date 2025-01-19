@@ -10,8 +10,8 @@ import caterpillow.robot.agents.splasher.Splasher;
 import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.defence.DefenceTower;
 import caterpillow.robot.towers.paint.PaintTower;
-import caterpillow.util.Initialiser;
-import caterpillow.util.TowerTracker;
+import caterpillow.util.*;
+import static caterpillow.util.Util.*;
 
 public class RobotPlayer {
     @SuppressWarnings("unused")
@@ -61,6 +61,8 @@ public class RobotPlayer {
             bot.runTick();
             pm.flush();
             ticksExisted++;
+            rc.setIndicatorString(indicatorString);
+            indicatorString = "";
             Clock.yield();
         }
     }
