@@ -1,6 +1,7 @@
 package caterpillow.pathfinding;
 
 import java.util.HashMap;
+import java.util.function.ToIntFunction;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -29,10 +30,17 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public HashMap<MapLocation, Boolean> leftTurnHist = new HashMap<>();
     public int lastNonzeroStackTime = 0;
     public GamePredicate<MapInfo> avoid;
+    public ToIntFunction<MapInfo> cellPenalty;
     public boolean reset = false;
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
         this.avoid = avoid;
+        this.cellPenalty = m -> 0;
+        this.expected = rc.getLocation();
+    }
+    public BugnavPathfinder(GamePredicate<MapInfo> avoid, ToIntFunction<MapInfo> cellPenalty) {
+        this.avoid = avoid;
+        this.cellPenalty = cellPenalty;
         this.expected = rc.getLocation();
     }
     public BugnavPathfinder() {
@@ -172,6 +180,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     if(info.getPaint().isEnemy()) {
                         score *= 2;
                     }
+                    score += cellPenalty.applyAsInt(info);
                     score *= 1000000;
                     score += rc.getLocation().add(d).distanceSquaredTo(target) * 10;
                     score += trng.nextInt(10);

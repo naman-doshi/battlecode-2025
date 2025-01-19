@@ -18,7 +18,15 @@ public class Soldier extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && isInDanger(c.getMapLocation()), c -> {
+                MapLocation loc = c.getMapLocation();
+                int res = 0;
+                if(loc.x < 4) res += 4 - loc.x;
+                if(loc.x > rc.getMapWidth() - 5) res += loc.x - (rc.getMapWidth() - 5);
+                if(loc.y < 4) res += 4 - loc.y;
+                if(loc.y > rc.getMapHeight() - 5) res += loc.y - (rc.getMapHeight() - 5);
+                return res;
+        });
         primaryStrategy = new EmptyStrategy();
         secondaryStrategy = new LinkStrategy(home);
     }

@@ -112,9 +112,10 @@ public class ScoutStrategy extends Strategy {
         attackTowerStrategy = null;
 
         roamStrategy.runTick();
-        MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
-        if (nearest != null ) {
-            bot.checkerboardAttack(nearest.getMapLocation());
-        }
+        if(rc.senseMapInfo(rc.getLocation()).getPaint().equals(PaintType.EMPTY)) bot.checkerboardAttack(rc.getLocation());
+        // MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
+        // if (nearest != null) {
+        //     bot.checkerboardAttack(nearest.getMapLocation());
+        // }
     }
 }
