@@ -52,7 +52,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                 new LoopedSpawner(
                         SRPSpawner::new,
                         () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.EARLY || trng.nextInt(5) == 0,
+                                () -> Game.gameStage == GameStage.EARLY || trng.nextInt(3) == 0,
                                 new SRPSpawner(),
                                 new SplasherSpawner()
                         ),

@@ -14,6 +14,7 @@ import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.soldier.SRPStrategy;
 import caterpillow.robot.agents.soldier.Soldier;
 
 // when u wanna push in the general direction of the enemy
@@ -50,7 +51,7 @@ public class WeakAggroRoamStrategy extends Strategy {
 
         // make sure we're painting ahead of us, if we're a soldier
         // soldier uses weakaggro
-        if (bot.getClass()==Soldier.class) {
+        if (bot.getClass()==Soldier.class && bot.primaryStrategy instanceof SRPStrategy) {
             Soldier bot1 = (Soldier) bot;
             if (dir != null && rc.onTheMap(rc.getLocation().add(dir))) {
                 MapLocation next = rc.getLocation().add(dir);
