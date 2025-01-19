@@ -18,7 +18,9 @@ import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -49,6 +51,11 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 trng.nextInt(0, 1) == 0 ? new InstantScoutSpawner() : new NullSpawner(),
+                // trng.nextInt(4) == 0
+                //     ? Game.gameStage == GameStage.EARLY ? new InstantScoutSpawner() : new InstantSRPSpawner()
+                //     : trng.nextInt(3) != 0
+                //     ? new RushSpawner()
+                //     : new NullSpawner(),
                 // new InstantScoutSpawner(),
                 new LoopedSpawner(
                     SRPSpawner::new,

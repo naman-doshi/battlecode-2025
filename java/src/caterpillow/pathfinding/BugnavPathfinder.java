@@ -7,6 +7,8 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
+
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
@@ -37,22 +39,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     public boolean canMove(Direction dir) throws GameActionException {
         return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
-    }
-
-    boolean canMoveAndIsAlly(Direction dir) throws GameActionException {
-        if (!rc.canMove(dir)) {
-            return false;
-        }
-        MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
-        return info.getPaint().isAlly() && !avoid.test(info);
-    }
-
-    boolean canMoveAndIsNeutral(Direction dir) throws GameActionException {
-        if (!rc.canMove(dir)) {
-            return false;
-        }
-        MapInfo info = rc.senseMapInfo(rc.getLocation().add(dir));
-        return info.getPaint().equals(PaintType.EMPTY) && !avoid.test(info);
     }
 
     @Override
@@ -160,34 +146,46 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 topDir = topDir.rotateLeft();
             }
         }
-        if(stackSize == 0) {
-            // TODO: remove right turn bias
-            if(canMoveAndIsAlly(topDir)) return topDir;
-            if(canMoveAndIsAlly(topDir.rotateRight())) {
-                leftTurn = false;
-                return topDir.rotateRight();
+        if(stackSize <= 1) {
+            stackSize = 0;
+            topDir = bottomDir;
+            Direction[] poss = {topDir, topDir.rotateRight(), topDir.rotateLeft()};
+            Direction best = null;
+            int bestScore = 1000000;
+            for(Direction d : poss) {
+                if(canMove(d)) {
+                    int score = 0;
+                    if(d.equals(topDir)) score--;
+                    for(Direction off : directions) {
+                        if(off.equals(d.opposite())) continue;
+                        MapLocation loc = rc.getLocation().add(d).add(off);
+                        if(!rc.onTheMap(loc)) continue;
+                        RobotInfo robot = rc.senseRobotAtLocation(loc);
+                        if(robot != null && robot.team.equals(rc.getTeam())) {
+                            score++;
+                        }
+                    }
+                    MapInfo info = rc.senseMapInfo(rc.getLocation().add(d));
+                    if(!info.getPaint().isAlly()) score++;
+                    if(info.getPaint().isEnemy()) {
+                        score *= 2;
+                    }
+                    if(score < bestScore) {
+                        bestScore = score;
+                        best = d;
+                    }
+                }
             }
-            if(canMoveAndIsAlly(topDir.rotateLeft())) {
-                leftTurn = true;
-                return topDir.rotateLeft();
-            }
-            if(canMoveAndIsNeutral(topDir)) return topDir;
-            if(canMoveAndIsNeutral(topDir.rotateRight())) {
-                leftTurn = false;
-                return topDir.rotateRight();
-            }
-            if(canMoveAndIsNeutral(topDir.rotateLeft())) {
-                leftTurn = true;
-                return topDir.rotateLeft();
-            }
-            if(canMove(topDir)) return topDir;
-            if(canMove(topDir.rotateRight())) {
-                leftTurn = false;
-                return topDir.rotateRight();
-            }
-            if(canMove(topDir.rotateLeft())) {
-                leftTurn = true;
-                return topDir.rotateLeft();
+            if(best != null) {
+                if(best.equals(topDir.rotateRight())) {
+                    leftTurn = false;
+                    stackSize = 1;
+                }
+                if(best.equals(topDir.rotateLeft())) {
+                    leftTurn = true;
+                    stackSize = 1;
+                }
+                return best;
             }
         }
         int iters = 0;
@@ -257,7 +255,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         // rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
         if (dir != null && rc.canMove(dir)) {
             if(stackSize > 0) {
-                indicate("LEFTTURNHIST " + rc.getLocation().toString());
+                indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
             rc.move(dir);
@@ -266,6 +264,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }
+        indicate("LeftTurn: " + leftTurn);
     }
 
     @Override
