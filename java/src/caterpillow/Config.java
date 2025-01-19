@@ -13,7 +13,7 @@ import static caterpillow.Game.centre;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.isFriendly;

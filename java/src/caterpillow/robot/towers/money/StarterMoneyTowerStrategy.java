@@ -16,15 +16,12 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.WaitUntilSpawner;
 import caterpillow.robot.towers.spawner.mopper.InstantOffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.*;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.world.GameStage;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 
-import static caterpillow.util.Util.expectedRushDistance;
-import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
 
 public class StarterMoneyTowerStrategy extends TowerStrategy {

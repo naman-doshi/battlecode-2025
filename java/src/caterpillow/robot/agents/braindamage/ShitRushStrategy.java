@@ -8,6 +8,7 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.soldier.AttackTowerStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
+import caterpillow.tracking.RobotTracker;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,7 +56,7 @@ public class ShitRushStrategy extends Strategy {
         }
 
         if (secondary == null) {
-            RobotInfo nearest = getNearestRobot(b -> !isFriendly(b) && b.getType().isTowerType());
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> !isFriendly(b) && b.getType().isTowerType());
             if (nearest != null) {
                 secondary = new AttackTowerStrategy(nearest.getLocation());
             }

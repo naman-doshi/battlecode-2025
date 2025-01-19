@@ -6,19 +6,20 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
+
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
-import static caterpillow.Game.ticksExisted;
+
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.dead;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isSRPCenter;
 import static caterpillow.util.Util.missingPaint;
+
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
 
@@ -46,7 +47,7 @@ public abstract class Agent extends Robot {
 
     public int donate(RobotInfo bot) throws GameActionException {
         int missing = missingPaint(bot);
-        int available = rc.getPaint() - 20;
+        int available = rc.getPaint() - UnitType.MOPPER.paintCapacity / 2;
         if (available < 0) {
             return 0;
         }
@@ -89,18 +90,6 @@ public abstract class Agent extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
-        
-        if (ticksExisted >= 2) {
-            for (MapInfo cell : rc.senseNearbyMapInfos()) {
-                MapLocation loc = cell.getMapLocation();
-                if (isSRPCenter(loc)) {
-                    if (rc.getChips() >= 1200 && rc.canCompleteResourcePattern(loc)) {
-                        rc.completeResourcePattern(loc);
-                    }
-                }
-            }
-        }
-
         // kms so i dont bleed paint from other bots
         if (rc.getPaint() < 5) {
             ticksRanOutOfPaint++;

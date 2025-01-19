@@ -8,6 +8,7 @@ import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.soldier.AttackTowerStrategy;
 import caterpillow.robot.agents.soldier.Soldier;
+import caterpillow.tracking.RobotTracker;
 
 import static caterpillow.Config.canUpgrade;
 import static caterpillow.util.Util.*;
@@ -33,14 +34,14 @@ public class ExampleStrategy extends StackableStrategy {
     public void runBaseTick() throws GameActionException {
 
         if (isPaintBelowHalf()) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
                 if (tryStrategy(new WeakRefillStrategy(nearest.getLocation(), 0.3))) return;
             }
         }
 
         if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            RobotInfo enemyTower = RobotTracker.getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
             if (enemyTower != null) {
                 if (tryStrategy(new AttackTowerStrategy(enemyTower.getLocation()))) return;
             }
@@ -50,7 +51,7 @@ public class ExampleStrategy extends StackableStrategy {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
-                    RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
+                    RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
                         if (tryStrategy(new UpgradeTowerStrategy(nearest.getLocation(), level))) return;
                     }

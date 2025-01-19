@@ -9,7 +9,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotController;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 import caterpillow.world.GameStage;
 
 public class Game {

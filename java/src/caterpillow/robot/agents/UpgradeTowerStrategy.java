@@ -5,7 +5,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
-import caterpillow.util.TowerTracker;
 
 import static caterpillow.util.Util.isFriendly;
 

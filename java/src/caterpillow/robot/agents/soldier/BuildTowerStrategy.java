@@ -5,6 +5,7 @@ import caterpillow.Config;
 import caterpillow.Game;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
+import caterpillow.tracking.CellTracker;
 import caterpillow.util.Pair;
 
 import static caterpillow.util.Util.*;
@@ -296,10 +297,10 @@ public class BuildTowerStrategy extends QueueStrategy {
                 }
                 return;
             }
-//            if (!isInView()) {
-//                bot.pathfinder.makeMove(target);
-//                return;
-//            }
+            if (!isInView()) {
+                bot.pathfinder.makeMove(target);
+                return;
+            }
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
             if (res != null) {
                 if (rc.canAttack(res.first)) {
@@ -329,7 +330,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
         if (!isInView()) {
             bot.pathfinder.makeMove(target);
-            MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
+            MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
             if (nearest != null) {
                 bot.checkerboardAttack(nearest.getMapLocation());
             }
@@ -339,7 +340,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         UnitType pattern = getShownPattern();
         if (pattern == null) {
             bot.pathfinder.makeMove(target.add(getOffset(nextTowerType())));
-            MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
+            MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
             if (nearest != null) {
                 rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextTowerType()));
             }

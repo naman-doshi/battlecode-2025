@@ -8,7 +8,7 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 

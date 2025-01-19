@@ -17,9 +17,7 @@ import caterpillow.robot.towers.spawner.soldier.*;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.world.GameStage;
 
-import static caterpillow.util.Util.getNearestCell;
 import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.expectedRushDistance;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
 

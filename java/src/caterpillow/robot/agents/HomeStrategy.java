@@ -5,6 +5,7 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.packet.packets.AdoptionPacket;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.RobotTracker;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
@@ -40,7 +41,7 @@ public class HomeStrategy extends Strategy {
         }
         if (bot.home == null) {
             if (rc.isActionReady()) {
-                RobotInfo sus = getNearestRobot(info -> info.getTeam().isPlayer() && info.getType().isTowerType());
+                RobotInfo sus = RobotTracker.getNearestRobot(info -> info.getTeam().isPlayer() && info.getType().isTowerType());
                 if (sus != null) {
                     bot.setParent(sus);
                     pm.send(sus.getID(), new AdoptionPacket());

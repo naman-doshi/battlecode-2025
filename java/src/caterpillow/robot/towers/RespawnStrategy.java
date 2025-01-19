@@ -11,7 +11,7 @@ import static caterpillow.Game.rc;
 import static caterpillow.Game.time;
 import caterpillow.packet.packets.StrategyPacket;
 import static caterpillow.util.Util.add;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.getSafeSpawnLoc;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;

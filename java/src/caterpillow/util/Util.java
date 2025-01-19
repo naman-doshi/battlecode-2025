@@ -1,9 +1,9 @@
 package caterpillow.util;
 
-import java.awt.image.DirectColorModel;
-
 import battlecode.common.*;
 import caterpillow.Game;
+import caterpillow.tracking.CellTracker;
+
 import static caterpillow.Config.*;
 
 import java.util.*;
@@ -133,20 +133,6 @@ public class Util {
         return new Pair(abs(relX - 0.5), abs(relY - 0.5));
     }
 
-    public static RobotInfo getBestRobot(GameBinaryOperator<RobotInfo> comp, GamePredicate<RobotInfo> pred) throws GameActionException {
-        RobotInfo best = null;
-        for (RobotInfo bot : rc.senseNearbyRobots()) {
-            if (pred.test(bot)) {
-                if (best == null) {
-                    best = bot;
-                } else {
-                    best = comp.apply(bot, best);
-                }
-            }
-        }
-        return best;
-    }
-
     public static List<MapLocation> guessEnemyLocs(MapLocation src) throws GameActionException {
         List<MapLocation> enemyLocs = new LinkedList<>();
 
@@ -221,49 +207,15 @@ public class Util {
     }
 
     public static UnitType downgrade(UnitType type) {
-        if (type.isRobotType()) {
-            assert false : "not a tower";
-            return type;
-        }
         return switch (type) {
-        case LEVEL_ONE_PAINT_TOWER, LEVEL_TWO_PAINT_TOWER, LEVEL_THREE_PAINT_TOWER ->
-            UnitType.LEVEL_ONE_PAINT_TOWER;
-        case LEVEL_ONE_MONEY_TOWER, LEVEL_TWO_MONEY_TOWER, LEVEL_THREE_MONEY_TOWER ->
-            UnitType.LEVEL_ONE_MONEY_TOWER;
-        case LEVEL_ONE_DEFENSE_TOWER, LEVEL_TWO_DEFENSE_TOWER, LEVEL_THREE_DEFENSE_TOWER ->
-            UnitType.LEVEL_ONE_DEFENSE_TOWER;
-        default -> null;
+            case LEVEL_ONE_PAINT_TOWER, LEVEL_TWO_PAINT_TOWER, LEVEL_THREE_PAINT_TOWER ->
+                    UnitType.LEVEL_ONE_PAINT_TOWER;
+            case LEVEL_ONE_MONEY_TOWER, LEVEL_TWO_MONEY_TOWER, LEVEL_THREE_MONEY_TOWER ->
+                    UnitType.LEVEL_ONE_MONEY_TOWER;
+            case LEVEL_ONE_DEFENSE_TOWER, LEVEL_TWO_DEFENSE_TOWER, LEVEL_THREE_DEFENSE_TOWER ->
+                    UnitType.LEVEL_ONE_DEFENSE_TOWER;
+            default -> throw new IllegalArgumentException("Cannot downgrade robot type");
         };
-    }
-
-    public static MapInfo getBestCell(GameBinaryOperator<MapInfo> comp, GamePredicate<MapInfo> pred) throws GameActionException {
-        MapInfo best = null;
-        MapInfo[] infos = rc.senseNearbyMapInfos();
-        for (int i = infos.length - 1; i >= 0; i--) {
-            MapInfo cell = infos[i];
-            if (pred.test(cell)) {
-                if (best == null) {
-                    best = cell;
-                } else {
-                    best = comp.apply(cell, best);
-                }
-            }
-        }
-        return best;
-    }
-
-    public static RobotInfo getNearestRobot(GamePredicate<RobotInfo> pred) throws GameActionException {
-        RobotInfo best = null;
-        RobotInfo[] bots = rc.senseNearbyRobots();
-        for (int i = bots.length - 1; i >= 0; i--) {
-            RobotInfo bot = bots[i];
-            if (pred.test(bot)) {
-                if (best == null || best.getLocation().distanceSquaredTo(rc.getLocation()) > bot.location.distanceSquaredTo(rc.getLocation())) {
-                    best = bot;
-                }
-            }
-        }
-        return best;
     }
 
     public static int countNearbyMoppers(MapLocation loc) throws GameActionException {
@@ -290,53 +242,12 @@ public class Util {
         return info.getPaint().isEnemy() || !info.isPassable();
     }
 
-    public static MapInfo getNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
-        MapInfo best = null;
-        MapInfo[] cells = rc.senseNearbyMapInfos();
-        for (int i = cells.length - 1; i >= 0; i--) {
-            MapInfo cell = cells[i];
-            if (pred.test(cell)) {
-                if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
-                    best = cell;
-                }
-            }
-        }
-        return best;
-    }
-
-    public static MapInfo getNearestCell(GamePredicate<MapInfo> pred, int rad) throws GameActionException {
-        MapInfo best = null;
-        MapInfo[] cells = rc.senseNearbyMapInfos(rad);
-        for (int i = cells.length - 1; i >= 0; i--) {
-            MapInfo cell = cells[i];
-            if (pred.test(cell)) {
-                if (best == null || best.getMapLocation().distanceSquaredTo(rc.getLocation()) > cell.getMapLocation().distanceSquaredTo(rc.getLocation())) {
-                    best = cell;
-                }
-            }
-        }
-        return best;
-    }
-
     public static double getPaintLevel(RobotInfo bot) {
         return (double) bot.getPaintAmount() / (double) bot.getType().paintCapacity;
     }
 
     public static double getPaintLevel() {
         return (double) rc.getPaint() / (double) rc.getType().paintCapacity;
-    }
-
-    public static MapInfo cheapGetNearestCell(GamePredicate<MapInfo> pred) throws GameActionException {
-        MapInfo best = null;
-        MapInfo[] cells = rc.senseNearbyMapInfos();
-        // sort by distance to rc.getLocation()
-        Arrays.sort(cells, Comparator.comparingInt(a -> a.getMapLocation().distanceSquaredTo(rc.getLocation())));
-        for (MapInfo cell : cells) {
-            if (pred.test(cell)) {
-                return cell;
-            }
-        }
-        return null;
     }
 
     public static boolean isAllyAgent(RobotInfo bot) {
@@ -422,7 +333,7 @@ public class Util {
     }
 
     public static MapInfo getSpawnLoc(UnitType type) throws GameActionException {
-        return getBestCell((MapInfo c1, MapInfo c2) -> {
+        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {
@@ -444,7 +355,7 @@ public class Util {
     }
 
     public static MapInfo getSafeSpawnLoc(UnitType type) throws GameActionException {
-        return getBestCell((MapInfo c1, MapInfo c2) -> {
+        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {
@@ -623,40 +534,11 @@ public class Util {
         return project(cur, new MapLocation(dx, dy));
     }
 
-    public static boolean isSRPCenter(MapLocation loc) {
-        return (loc.x%4==2 && loc.y%4==2);
-    }
-
     public static boolean isWithinRuin(MapLocation loc, MapLocation ruin) {
         return loc.isWithinDistanceSquared(ruin, 8) || (loc.distanceSquaredTo(ruin) == 9 && !(loc.x == ruin.x || loc.y == ruin.y));
     }
 
-    public static List<MapLocation> findNearestSRPCenters(MapLocation loc) {
-        // cancer wtf
-        List<MapLocation> res = new ArrayList<>();
-
-        // x = 4n + 2
-        // y = 4m + 2
-        int n = (loc.x - 2) / 4;
-        for (int possibleN = n-1; possibleN <= n+1; possibleN++) {
-            int m = (loc.y - 2) / 4;
-            for (int possibleM = m-1; possibleM <= m+2; possibleM++) {
-                int x = 4*n + 2;
-                int y = 4*m + 2;
-                if (isSRPCenter(new MapLocation(x, y))) {
-                    res.add(new MapLocation(x, y));
-                }
-            }
-        }
-
-        // sort by distance
-        res.sort(Comparator.comparingInt(a -> loc.distanceSquaredTo(a)));
-        return res;
-
-    }
-
     public static PaintType checkerboardPaint(MapLocation loc) {
-
         switch ((loc.x) % 4) {
         case (0):
             return (loc.y%4==2) ? PaintType.ALLY_PRIMARY : PaintType.ALLY_SECONDARY;
@@ -671,22 +553,8 @@ public class Util {
         }
     }
 
-    public static List<Integer> getSRPIds(MapLocation loc) {
-        // since one cell can belong to multiple SRPs, up to 3, we need to return a list
-        List<MapLocation> centers = findNearestSRPCenters(loc);
-        List<Integer> res = new ArrayList<>();
-        for (MapLocation center : centers) {
-            // this includes only the square, so it's very accurate
-            if (isWithinRuin(loc, center)) {
-                res.add(encodeLoc(center));
-            }
-        }
-        return res;
-
-    }
-
     public static MapInfo getNeighbourSpawnLoc(UnitType type) throws GameActionException {
-        return getBestCell((MapInfo c1, MapInfo c2) -> {
+        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {

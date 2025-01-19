@@ -10,7 +10,7 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import static caterpillow.util.Util.VISION_RAD;
 import static caterpillow.util.Util.downgrade;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
 
 // defend your home against invaders!@!!!

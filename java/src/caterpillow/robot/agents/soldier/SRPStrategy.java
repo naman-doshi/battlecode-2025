@@ -3,7 +3,7 @@ package caterpillow.robot.agents.soldier;
 import java.util.*;
 
 import battlecode.common.*;
-import caterpillow.Config;
+
 import static caterpillow.Config.canUpgrade;
 import caterpillow.Game;
 
@@ -15,11 +15,12 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
+import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.RobotTracker;
 import caterpillow.util.*;
 import caterpillow.robot.agents.TraverseStrategy;
 
 import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
 import static caterpillow.world.GameStage.MID;
 import static java.lang.Math.*;
 
@@ -70,9 +71,8 @@ public class SRPStrategy extends Strategy {
 
     public void updateStates() throws GameActionException {
         int cooldownValue = time + ignoreCooldownReset;
-        MapLocation[] nearbyRuins = rc.senseNearbyRuins(VISION_RAD);
-        for (int i = nearbyRuins.length - 1; i >= 0; i--) {
-            MapLocation ruin = nearbyRuins[i];
+        for (int i = CellTracker.nearbyRuins.length - 1; i >= 0; i--) {
+            MapLocation ruin = CellTracker.nearbyRuins[i];
             if (rc.senseRobotAtLocation(ruin) != null) {
                 continue;
             }
@@ -210,7 +210,7 @@ public class SRPStrategy extends Strategy {
         updateStates();
 
         if(refillStrategy == null && isPaintBelowHalf()) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
                 refillStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
             }
@@ -218,7 +218,7 @@ public class SRPStrategy extends Strategy {
         if(tryStrategy(refillStrategy)) return;
 
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
-            MapInfo target1 = getNearestCell(c -> isRuin(c.getMapLocation()) && !visitedRuins.contains(c.getMapLocation()) && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
+            MapInfo target1 = CellTracker.getNearestCell(c -> isRuin(c.getMapLocation()) && !visitedRuins.contains(c.getMapLocation()) && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation());
             }
@@ -239,7 +239,7 @@ public class SRPStrategy extends Strategy {
         }
 
         if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            RobotInfo enemyTower = RobotTracker.getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
             if (enemyTower != null) {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
@@ -250,7 +250,7 @@ public class SRPStrategy extends Strategy {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
-                    RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
+                    RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
                         upgradeTowerStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
                     }
@@ -281,7 +281,7 @@ public class SRPStrategy extends Strategy {
         };
 
         if(traverseStrategy == null || !pred.test(traverseStrategy.target)) {
-            MapInfo info = getNearestCell(c -> pred.test(c.getMapLocation()));
+            MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));
             if(info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
             else traverseStrategy = null;
         }

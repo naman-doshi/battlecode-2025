@@ -15,17 +15,13 @@ import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.countNearbyMoppers;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isAllyAgent;
-import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInAttackRange;
-import static caterpillow.util.Util.isPaintBelowHalf;
-import static caterpillow.util.Util.missingPaint;
+
+import static caterpillow.Game.ticksExisted;
+import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.util.Util.*;
 
 public class MopperOffenceStrategy extends Strategy {
 
@@ -62,7 +58,7 @@ public class MopperOffenceStrategy extends Strategy {
         }));
 //         attack (anything visible)
         suppliers.add(() -> {
-            RobotInfo info = getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
+            RobotInfo info = RobotTracker.getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
             if (info == null) {
                 return null;
             } else {
@@ -71,25 +67,7 @@ public class MopperOffenceStrategy extends Strategy {
         });
         // mop cell near ruin
         // TODO: FIX BYTECODE FOR THIS
-//        suppliers.add(() -> {
-//            ArrayList<MapLocation> ruins = new ArrayList<>();
-//            for (MapInfo c : rc.senseNearbyMapInfos()) {
-//                if (c.hasRuin()) {
-//                    ruins.add(c.getMapLocation());
-//                }
-//            }
-//            return getNearestCell(c -> {
-//                if (!c.getPaint().isEnemy() || isInAttackRange(c.getMapLocation())) {
-//                    return false;
-//                }
-//                for (MapLocation ruin : ruins) {
-//                    if (isCellInTowerBounds(ruin, c.getMapLocation())) {
-//                        return true;
-//                    }
-//                }
-//                return false;
-//            });
-//        });
+        suppliers.add(() -> getNearestCell(c -> ticksExisted > 0 && c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]));
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
         roamStrategy = new StrongAggroRoamStrategy();
@@ -111,7 +89,7 @@ public class MopperOffenceStrategy extends Strategy {
             lastSeenRuin = ruin.getMapLocation();
         }
 
-        RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
+        RobotInfo nearest = RobotTracker.getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
         if (nearest != null) {
             bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
             bot.runTick();
@@ -119,7 +97,7 @@ public class MopperOffenceStrategy extends Strategy {
         }
 
         if (isPaintBelowHalf()) {
-            nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
                 bot.secondaryStrategy = new WeakRefillStrategy(nearest.getLocation(), 0.3);
                 bot.runTick();

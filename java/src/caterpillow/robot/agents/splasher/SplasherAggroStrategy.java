@@ -13,7 +13,7 @@ import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isPaintBelowHalf;

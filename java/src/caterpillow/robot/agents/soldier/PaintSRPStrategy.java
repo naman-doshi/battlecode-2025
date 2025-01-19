@@ -2,11 +2,10 @@ package caterpillow.robot.agents.soldier;
 
 import battlecode.common.*;
 import caterpillow.Game;
-import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.*;
 import caterpillow.robot.agents.*;
+import caterpillow.tracking.CellTracker;
 
-import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 import static java.lang.Math.*;
 
@@ -51,13 +50,14 @@ public class PaintSRPStrategy extends Strategy {
             } else {
                 dir = rc.getLocation().directionTo(centre).rotateRight();
             }
-            if(rc.canMove(dir)) rc.move(dir);
+//            if(rc.canMove(dir)) rc.move(dir);
+            bot.pathfinder.makeMove(dir);
         }
         rc.setIndicatorLine(rc.getLocation(), centre, 255, 255, 0);
         if(rc.canCompleteResourcePattern(centre)) {
             rc.completeResourcePattern(centre);
         }
-        MapInfo cell = getNearestCell(c -> {
+        MapInfo cell = CellTracker.getNearestCell(c -> {
                 MapLocation loc = c.getMapLocation();
                 if(abs(loc.x - centre.x) > 2 || abs(loc.y - centre.y) > 2) return false;
                 if(c.getPaint().isEnemy()) return false;

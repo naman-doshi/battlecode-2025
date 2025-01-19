@@ -13,6 +13,9 @@ import static caterpillow.Game.rc;
 import static caterpillow.Game.trng;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.*;
+import caterpillow.tracking.CellTracker;
+import caterpillow.util.Profiler;
+
 
 public class BugnavPathfinder extends AbstractPathfinder {
     // temporary patch to make sure nothing breaks
@@ -259,6 +262,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
             rc.move(dir);
+            CellTracker.postMove(dir);
         }
         expected = rc.getLocation();
         if(stackSize > 0) {

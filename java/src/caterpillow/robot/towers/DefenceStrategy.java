@@ -1,6 +1,7 @@
 package caterpillow.robot.towers;
 
 import battlecode.common.*;
+import caterpillow.tracking.RobotTracker;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
@@ -8,7 +9,7 @@ import static caterpillow.Game.*;
 public class DefenceStrategy extends TowerStrategy {
 
     private boolean isInDanger() throws GameActionException {
-        return getNearestRobot(bot -> !isFriendly(bot)) != null;
+        return RobotTracker.getNearestRobot(bot -> !isFriendly(bot)) != null;
     }
 
     @Override
@@ -16,7 +17,7 @@ public class DefenceStrategy extends TowerStrategy {
         if (!isInDanger()) {
             return;
         }
-        RobotInfo nearest = getNearestRobot(bot -> !isFriendly(bot));
+        RobotInfo nearest = RobotTracker.getNearestRobot(bot -> !isFriendly(bot));
         assert nearest != null;
         int enemyCount = countNearbyBots(bot -> !isFriendly(bot));
         int friendlyCount = countNearbyBots(bot -> bot.getType().equals(UnitType.MOPPER) && isFriendly(bot));
@@ -28,7 +29,7 @@ public class DefenceStrategy extends TowerStrategy {
                 rc.buildRobot(UnitType.MOPPER, spawn.getMapLocation());
             }
         }
-        RobotInfo info = getBestRobot((a, b) -> {
+        RobotInfo info = RobotTracker.getBestRobot((a, b) -> {
             boolean a1 = a.getType().equals(UnitType.SOLDIER);
             boolean b1 = b.getType().equals(UnitType.SOLDIER);
             int h1 = a.getHealth();

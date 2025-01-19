@@ -1,12 +1,13 @@
-package caterpillow.util;
+package caterpillow.tracking;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.packet.packets.InitPacket;
 
+import java.util.ArrayList;
+
 import static caterpillow.Game.*;
-import static caterpillow.util.Util.println;
 import static java.lang.Math.max;
 
 import static java.lang.Math.min;
@@ -26,6 +27,12 @@ public class TowerTracker {
     public static int blindTicks = 0;
     public static boolean hasReceivedInitPacket = false;
     public static int srps = 0;
+
+    public static ArrayList<MapLocation> paintLocs;
+
+    public static void init() {
+        paintLocs = new ArrayList<>();
+    }
 
     public static void sendInitPacket(MapLocation loc) throws GameActionException {
         if (broken) {

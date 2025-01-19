@@ -3,14 +3,13 @@ package caterpillow.packet;
 import battlecode.common.*;
 import caterpillow.packet.packets.*;
 import caterpillow.util.Pair;
-import caterpillow.util.Profiler;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 
 import java.util.*;
 
 import static caterpillow.Game.*;
-import static caterpillow.util.TowerTracker.coinTowers;
-import static caterpillow.util.TowerTracker.srps;
+import static caterpillow.tracking.TowerTracker.coinTowers;
+import static caterpillow.tracking.TowerTracker.srps;
 import static caterpillow.util.Util.*;
 
 public class PacketManager {

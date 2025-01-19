@@ -6,7 +6,7 @@ import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.util.Profiler;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.*;
 
 import java.util.ArrayDeque;
@@ -44,6 +44,7 @@ public abstract class Tower extends Robot {
     }
 
     public int build(UnitType type, MapLocation loc, List<Packet> packets) throws GameActionException {
+        assert rc.senseRobotAtLocation(loc) == null;
         rc.buildRobot(type, loc);
         RobotInfo newBot = rc.senseRobotAtLocation(loc);
         kids.add(newBot.getID());
@@ -91,7 +92,7 @@ public abstract class Tower extends Robot {
                 System.out.println("average: " + average.toString());
                 MapLocation vec = subtract(average, origin);
                 MapLocation target = project(average, vec);
-                System.out.println("origin: " + origin.toString() + " projection: "+ target.toString());
+                System.out.println("origin: " + origin.toString() + " projection: " + target.toString());
                 for(int i = 0; i < edges.length; i++) {
                     if(edges[i].equals(target)) {
                         shift = i;

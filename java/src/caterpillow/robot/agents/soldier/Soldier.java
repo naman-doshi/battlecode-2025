@@ -4,13 +4,13 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.*;
+
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
-import static caterpillow.util.Util.checkerboardPaint;
-import static caterpillow.util.Util.isInDanger;
 
 public class Soldier extends Agent {
 
@@ -43,10 +43,10 @@ public class Soldier extends Agent {
                 primaryStrategy = new StarterStrategy();
                 break;
             case SRP_STRAT:
-                primaryStrategy = new SRPStrategy(new MapLocation(packet.strategyData / 64, packet.strategyData % 64));
+                primaryStrategy = new SRPStrategy(decodeLoc(packet.strategyData));
                 break;
             case SCOUT_STRAT:
-                primaryStrategy = new ScoutStrategy(new MapLocation(packet.strategyData / 64, packet.strategyData % 64));
+                primaryStrategy = new ScoutStrategy(decodeLoc(packet.strategyData));
                 break;
             case RUSH_STRAT:
                 primaryStrategy = new RushStrategy();

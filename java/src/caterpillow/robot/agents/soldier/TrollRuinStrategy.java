@@ -3,6 +3,7 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.CellTracker;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
@@ -40,7 +41,7 @@ public class TrollRuinStrategy extends Strategy {
     }
 
     MapInfo getPlaceCell() throws GameActionException {
-        return getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && isPaintable(c));
+        return CellTracker.getNearestCell(c -> isCellInTowerBounds(target, c.getMapLocation()) && isPaintable(c));
     }
 
     public TrollRuinStrategy(MapLocation target) {

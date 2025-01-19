@@ -10,18 +10,18 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
-import caterpillow.Config;
 import caterpillow.Game;
-import caterpillow.pathfinding.BugnavPathfinder;
 
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
+import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.util.Util.*;
 
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
+import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
 
 public class ScoutStrategy extends Strategy {
@@ -63,7 +63,7 @@ public class ScoutStrategy extends Strategy {
         skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
-            RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getPaintAmount() >= missingPaint());
             if (nearest != null) {
                 if (rc.canTransferPaint(nearest.getLocation(), -1)) {
                     bot.refill(nearest);
@@ -101,7 +101,7 @@ public class ScoutStrategy extends Strategy {
         }
 
         if(attackTowerStrategy == null) {
-            RobotInfo enemyTower = getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            RobotInfo enemyTower = RobotTracker.getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
             if (enemyTower != null) {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }

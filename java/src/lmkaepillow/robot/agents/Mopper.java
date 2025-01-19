@@ -147,7 +147,8 @@ public class Mopper extends Agent {
             }
 
             if (dir != null) {
-                rc.move(dir);
+//                rc.move(dir);
+
             }
         } else {
             

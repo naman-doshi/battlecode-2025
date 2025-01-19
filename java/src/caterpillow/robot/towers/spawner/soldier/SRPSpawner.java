@@ -23,7 +23,7 @@ public class SRPSpawner extends Spawner {
             MapInfo loc = getSpawnLoc(SOLDIER);
             if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
                 MapLocation target = bot.scoutTarget();
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SRP_STRAT, target.x * 64 + target.y));
+                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SRP_STRAT, encodeLoc(target)));
                 return true;
             }
         }

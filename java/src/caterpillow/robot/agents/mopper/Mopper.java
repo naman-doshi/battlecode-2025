@@ -14,7 +14,7 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GamePredicate;
-import static caterpillow.util.Util.getBestRobot;
+import static caterpillow.tracking.RobotTracker.getBestRobot;
 import static caterpillow.util.Util.isEnemyAgent;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.orthDirections;

@@ -15,8 +15,8 @@ import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.getNearestCell;
-import static caterpillow.util.Util.getNearestRobot;
+import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 

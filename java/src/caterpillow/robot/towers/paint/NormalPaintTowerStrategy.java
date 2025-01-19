@@ -22,7 +22,7 @@ import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.getNearestCell;
+import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 

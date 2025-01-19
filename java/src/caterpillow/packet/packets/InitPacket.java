@@ -2,7 +2,7 @@ package caterpillow.packet.packets;
 
 import battlecode.common.MapLocation;
 import caterpillow.packet.Packet;
-import caterpillow.util.TowerTracker;
+import caterpillow.tracking.TowerTracker;
 
 import static caterpillow.Game.rc;
 

@@ -1,7 +1,6 @@
 package caterpillow;
 
 import static caterpillow.Game.*;
-import static caterpillow.util.Util.println;
 
 import battlecode.common.*;
 import caterpillow.robot.agents.mopper.Mopper;
@@ -10,15 +9,53 @@ import caterpillow.robot.agents.splasher.Splasher;
 import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.defence.DefenceTower;
 import caterpillow.robot.towers.paint.PaintTower;
+import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.RobotTracker;
+import caterpillow.util.Profiler;
+import caterpillow.tracking.TowerTracker;
 import caterpillow.util.*;
 import static caterpillow.util.Util.*;
 
 public class RobotPlayer {
+
+    static boolean test = false;
+//    static boolean test = true;
+
     @SuppressWarnings("unused")
     public static void run(RobotController rc) throws GameActionException {
+        if (test) {
+            testRun(rc);
+        } else {
+            actualRun(rc);
+        }
+    }
+
+    public static void testRun(RobotController rc) throws GameActionException {
+        Game.rc = rc;
+        Profiler.begin();
+        CellTracker.init();
+        Profiler.end("init celltracker cost");
+        Profiler.begin();
+        CellTracker.updateTick();
+        Profiler.end("update cost");
+        Profiler.begin();
+        CellTracker.getNearestCell(c -> false);
+        Profiler.end("util nearest cell cost");
+        Profiler.begin();
+        CellTracker.getNearestCell(c -> false);
+        Profiler.end("tracker nearest cell cost");
+    }
+
+    public static void actualRun(RobotController rc) throws GameActionException {
         time = rc.getRoundNum();
         Game.rc = rc;
         Game.preInit();
+
+        RobotTracker.init();
+        RobotTracker.updateTick();
+        TowerTracker.init();
+        CellTracker.init();
+        CellTracker.updateTick();
 
         switch (rc.getType()) {
             case SOLDIER:
@@ -54,8 +91,8 @@ public class RobotPlayer {
 
         while (true) {
 //            Initialiser.upd();
-            Game.upd();
             time = rc.getRoundNum();
+            Game.upd();
             pm.read();
             TowerTracker.runTick();
             bot.runTick();
@@ -64,6 +101,8 @@ public class RobotPlayer {
             rc.setIndicatorString(indicatorString);
             indicatorString = "";
             Clock.yield();
+            CellTracker.updateTick();
+            RobotTracker.updateTick();
         }
     }
 }

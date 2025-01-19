@@ -1,6 +1,5 @@
 package caterpillow.robot.agents.soldier;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,7 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.TraverseStrategy;
-import static caterpillow.util.Util.getNearestRobot;
+
 import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;

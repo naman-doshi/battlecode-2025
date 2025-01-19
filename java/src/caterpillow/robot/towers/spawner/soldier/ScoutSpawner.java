@@ -7,6 +7,7 @@ import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.soldier.Soldier;
 import caterpillow.robot.towers.spawner.Spawner;
+import caterpillow.util.Profiler;
 
 import static battlecode.common.UnitType.SOLDIER;
 import static caterpillow.util.Util.*;
@@ -23,7 +24,7 @@ public class ScoutSpawner extends Spawner {
             MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
             if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
                 MapLocation target = bot.scoutTarget();
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT, target.x * 64 + target.y));
+                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT, encodeLoc(target)));
                 return true;
             }
         }
