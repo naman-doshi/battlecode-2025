@@ -1,5 +1,6 @@
 package caterpillow.robot.agents;
 
+import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
@@ -15,7 +16,7 @@ import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.dead;
-import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.missingPaint;
@@ -56,6 +57,11 @@ public abstract class Agent extends Robot {
             return Math.min(available, missing);
         }
         return 0;
+    }
+
+    public void move(Direction dir) throws GameActionException {
+        rc.move(dir);
+        postMove(dir);
     }
 
     public void setParent(RobotInfo parent) {

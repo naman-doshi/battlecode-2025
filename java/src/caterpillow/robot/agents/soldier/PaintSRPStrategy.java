@@ -44,14 +44,15 @@ public class PaintSRPStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         if(rc.isMovementReady()) {
-            Direction dir;
+            Direction dir = null;
             if(rc.getLocation().equals(centre)) {
                 dir = Direction.NORTH;
-            } else {
+            } else if(rc.getLocation().isAdjacentTo(centre)) {
                 dir = rc.getLocation().directionTo(centre).rotateRight();
+            } else {
+                bot.pathfinder.makeMove(centre);
             }
-//            if(rc.canMove(dir)) rc.move(dir);
-            bot.pathfinder.makeMove(dir);
+            if(dir != null && rc.canMove(dir)) bot.move(dir);
         }
         rc.setIndicatorLine(rc.getLocation(), centre, 255, 255, 0);
         if(rc.canCompleteResourcePattern(centre)) {

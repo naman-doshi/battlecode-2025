@@ -10,8 +10,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
+import static caterpillow.Game.*;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.*;
 import caterpillow.tracking.CellTracker;
@@ -274,7 +273,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
-            rc.move(dir);
+            bot.move(dir);
             CellTracker.postMove(dir);
         }
         expected = rc.getLocation();
