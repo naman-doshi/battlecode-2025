@@ -67,7 +67,7 @@ public class SplasherAggroStrategy extends Strategy {
             indicate("attacking "+target);
             
             if (rc.canAttack(target)) {
-                rc.attack(target);
+                rc.attack(target, true);
             }
 
             bot.pathfinder.makeMove(target);

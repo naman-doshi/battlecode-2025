@@ -19,21 +19,6 @@ public class HandleRuinStrategy extends QueueStrategy {
     MapLocation target;
     Agent bot;
 
-    public boolean didSkip() throws GameActionException {
-        if (maxedTowers()) {
-            return true;
-        }
-        if (!rc.canSenseLocation(target.add(Direction.NORTH))) {
-            return true;
-        }
-        if (isTowerBeingBuilt(target)) {
-            return false;
-        }
-        if (!rc.canSenseLocation(target)) return false;
-        RobotInfo info = rc.senseRobotAtLocation(target);
-        return info == null || !isFriendly(info);
-    }
-
     public HandleRuinStrategy(MapLocation target) {
         bot = (Agent) Game.bot;
         this.target = target;

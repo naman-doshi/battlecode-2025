@@ -3,11 +3,9 @@ package caterpillow.tracking;
 import battlecode.common.*;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
-import caterpillow.util.Profiler;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.downgrade;
-import static caterpillow.util.Util.isFriendly;
 
 public class CellTracker {
     private static int maxX, maxY;
@@ -50,6 +48,19 @@ public class CellTracker {
                     best = cell;
                 } else {
                     best = comp.apply(cell, best);
+                }
+            }
+        }
+        return best;
+    }
+
+    public static MapLocation getNearestRuin(GamePredicate<MapLocation> pred) throws GameActionException {
+        MapLocation best = null;
+        for (int i = nearbyRuins.length - 1; i >= 0; i--) {
+            MapLocation loc = nearbyRuins[i];
+            if (pred.test(loc)) {
+                if (best == null || rc.getLocation().distanceSquaredTo(loc) < rc.getLocation().distanceSquaredTo(best)) {
+                    best = loc;
                 }
             }
         }

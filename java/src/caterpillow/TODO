@@ -1,0 +1,17 @@
+changes made:
+    - use TowerTracker, RobotTracker, etc for getNearest functions which are more specific
+    - StrongRefillStrategy now actually tries really hard to refill
+    - WeakRefillStrategy will only look or towers in vision and otherwise give up
+
+general:
+- fix tle
+- hill climb macro strats
+- dont make the scouts fully split up
+    - group the first pair of scouts and make them split off after maybe
+    - try to minimise the amount of time spent pending on coin
+- strategy logic was changed after fixing some bugs which made some things better and some things worse
+    - keep the behaviour we want, etc
+    - a big one is refill logic
+
+alex:
+- why are you using markers to communicate what tower type when you could have just started building

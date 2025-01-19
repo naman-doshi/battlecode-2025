@@ -295,7 +295,6 @@ public class BuildTowerStrategy extends QueueStrategy {
                 if (rc.canRemoveMark(target.add(Direction.NORTH))) {
                     rc.removeMark(target.add(Direction.NORTH));
                 }
-                return;
             }
             if (!isInView()) {
                 bot.pathfinder.makeMove(target);

@@ -11,6 +11,8 @@ import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 
 import static caterpillow.Game.*;
+
+import caterpillow.robot.agents.Agent;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.*;
 import caterpillow.tracking.CellTracker;
@@ -273,8 +275,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
-            bot.move(dir);
-            CellTracker.postMove(dir);
+            ((Agent) bot).move(dir);
         }
         expected = rc.getLocation();
         if(stackSize > 0) {

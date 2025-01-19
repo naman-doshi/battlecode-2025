@@ -14,10 +14,9 @@ import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
-import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
 import caterpillow.tracking.CellTracker;
-import caterpillow.tracking.RobotTracker;
+import caterpillow.tracking.TowerTracker;
 import caterpillow.util.*;
 import caterpillow.robot.agents.TraverseStrategy;
 
@@ -32,8 +31,7 @@ public class SRPStrategy extends Strategy {
     public Soldier bot;
 
     HandleRuinStrategy handleRuinStrategy;
-    ArrayList<MapLocation> visitedRuins;
-    LinkedList<Pair<MapLocation, Integer>> skippedRuins;
+    LinkedList<Pair<MapLocation, Integer>> visitedRuins;
     int towerStratCooldown;
     int skipCooldown;
     Random rng;
@@ -56,8 +54,7 @@ public class SRPStrategy extends Strategy {
     public SRPStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
         rng = new Random(seed);
-        visitedRuins = new ArrayList<>();
-        skippedRuins = new LinkedList<>();
+        visitedRuins = new LinkedList<>();
         towerStratCooldown = 0;
         skipCooldown = (w + h) / 2;
         roamStrategy = new ExplorationRoamStrategy();
@@ -206,7 +203,7 @@ public class SRPStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("SRP");
-        skippedRuins.removeIf(el -> time >= el.second + skipCooldown);
+        visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
         updateStates();
 
@@ -214,7 +211,10 @@ public class SRPStrategy extends Strategy {
             if (handleRuinStrategy == null && getPaintLevel() < 0.5) {
                 refillStrategy = new StrongRefillStrategy(0.8);
             } else {
-                refillStrategy = new WeakRefillStrategy(0.2);
+                RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
+                if (nearest != null) {
+                    bot.refill(nearest);
+                }
             }
         }
 
@@ -222,18 +222,14 @@ public class SRPStrategy extends Strategy {
         refillStrategy = null;
 
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
-            MapInfo target1 = CellTracker.getNearestCell(c -> isRuin(c.getMapLocation()) && !visitedRuins.contains(c.getMapLocation()) && skippedRuins.stream().noneMatch(el -> el.first.equals(c.getMapLocation())));
+            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
             if (target1 != null) {
-                handleRuinStrategy = new HandleRuinStrategy(target1.getMapLocation());
+                handleRuinStrategy = new HandleRuinStrategy(target1);
             }
         }
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
-                if (handleRuinStrategy.didSkip()) {
-                    skippedRuins.add(new Pair<>(handleRuinStrategy.target, time));
-                } else {
-                    visitedRuins.add(handleRuinStrategy.target);
-                }
+                visitedRuins.add(new Pair<>(handleRuinStrategy.target, time));
                 handleRuinStrategy = null;
                 towerStratCooldown = 30;
             } else {
@@ -243,7 +239,7 @@ public class SRPStrategy extends Strategy {
         }
 
         if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = RobotTracker.getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
+            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
             if (enemyTower != null) {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
@@ -256,7 +252,7 @@ public class SRPStrategy extends Strategy {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
-                    RobotInfo nearest = RobotTracker.getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType() && b.getType().level == finalLevel - 1);
+                    RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
                         upgradeTowerStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
                     }

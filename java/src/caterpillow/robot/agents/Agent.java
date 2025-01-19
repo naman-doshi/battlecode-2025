@@ -2,7 +2,6 @@ package caterpillow.robot.agents;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
@@ -14,11 +13,13 @@ import static caterpillow.Game.rc;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
+import caterpillow.util.Util;
+
 import static caterpillow.util.Util.dead;
 import static caterpillow.tracking.CellTracker.*;
-import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
@@ -62,6 +63,7 @@ public abstract class Agent extends Robot {
     public void move(Direction dir) throws GameActionException {
         rc.move(dir);
         postMove(dir);
+        RobotTracker.updateTick();
     }
 
     public void setParent(RobotInfo parent) {
@@ -73,23 +75,23 @@ public abstract class Agent extends Robot {
     @Override
     public void init() throws GameActionException {
         // set home
-        RobotInfo parent = getNearestRobot(info -> info.getType().isTowerType() && isFriendly(info));
+        RobotInfo parent = TowerTracker.getNearestTower(Util::isFriendly);
         if (parent != null) {
             setParent(parent);
         } else {
             // rip parent died
             // tiny edge case where your spawning tower dies at the same time you spawn
-            MapInfo ruin = getNearestCell(c -> c.hasRuin());
+            MapLocation ruin = CellTracker.getNearestRuin(c -> true);
             assert ruin != null;
             UnitType type = Config.nextTowerType();
-            if (rc.canCompleteTowerPattern(type, ruin.getMapLocation())) {
-                rc.completeTowerPattern(type, ruin.getMapLocation());
-                assert rc.senseRobotAtLocation(ruin.getMapLocation()) != null;
-                setParent(rc.senseRobotAtLocation(ruin.getMapLocation()));
+            if (rc.canCompleteTowerPattern(type, ruin)) {
+                rc.completeTowerPattern(type, ruin);
+                assert rc.senseRobotAtLocation(ruin) != null;
+                setParent(rc.senseRobotAtLocation(ruin));
             } else {
                 // there is this stupid edge case where you get spawned, and then the tower dies before it can send over a message
-                origin = ruin.getMapLocation();
-                home = ruin.getMapLocation();
+                origin = ruin;
+                home = ruin;
             }
         }
     }

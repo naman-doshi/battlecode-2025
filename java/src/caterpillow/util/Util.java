@@ -250,6 +250,10 @@ public class Util {
         return (double) rc.getPaint() / (double) rc.getType().paintCapacity;
     }
 
+    public static boolean isOccupied(MapLocation loc) throws GameActionException {
+        return rc.senseRobotAtLocation(loc) != null;
+    }
+
     public static boolean isAllyAgent(RobotInfo bot) {
         return isFriendly(bot) && bot.getType().isRobotType();
     }
