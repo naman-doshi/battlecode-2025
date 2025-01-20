@@ -19,9 +19,9 @@ import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
-import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
@@ -228,7 +228,7 @@ public class SRPStrategy extends Strategy {
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
             if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
-                refillStrategy = new WeakRefillStrategy(0.4);
+                refillStrategy = new StrongRefillStrategy(0.8);
             } else {
                 RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
@@ -237,8 +237,7 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        if (tryStrategy(refillStrategy)) return;
-        refillStrategy = null;
+        
 
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
@@ -256,10 +255,6 @@ public class SRPStrategy extends Strategy {
                 return;
             }
         }
-
-        
-
-        
 
         if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {
@@ -296,6 +291,9 @@ public class SRPStrategy extends Strategy {
             if(rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
             return true;
         };
+
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
 
         if(traverseStrategy == null || !pred.test(traverseStrategy.target)) {
             MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));

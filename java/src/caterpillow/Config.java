@@ -26,7 +26,7 @@ public class Config {
     // we also need more chips on larger maps
     public static double targetRatio() {
         int area = rc.getMapHeight() * rc.getMapWidth();
-        double ratio = area < 1500 ? 0.6 : 0.7;
+        double ratio = area < 1500 ? 0.63 : 0.7;
         if(TowerTracker.coinTowers < 4 && area >= 1500) ratio += 0.1;
         return ratio;
     }
@@ -85,7 +85,7 @@ public class Config {
            }
        }
 
-       if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05) {
+       if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05 && rc.getNumberTowers() >= 4) {
            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
        }
 

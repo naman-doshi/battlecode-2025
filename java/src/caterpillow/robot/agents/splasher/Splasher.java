@@ -100,7 +100,7 @@ public class Splasher extends Agent {
         if (bestLoc != null) {
             //System.out.println("best " + bestLoc);
             if (rc.canAttack(bestLoc)) {
-                rc.attack(bestLoc, savedAllyTiles - savedPrimaryTiles >= savedPrimaryTiles);
+                rc.attack(bestLoc, savedAllyTiles - savedPrimaryTiles > savedPrimaryTiles);
             }
 
             bot.pathfinder.makeMove(bestLoc);

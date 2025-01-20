@@ -8,7 +8,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
@@ -50,12 +49,8 @@ public class SplasherAggroStrategy extends Strategy {
             lastSeenTower = nearest.getLocation();
         }
 
-        if (refillStrategy == null && getPaintLevel() < 0.8) {
-            if (getPaintLevel() < 0.5) {
-                refillStrategy = new StrongRefillStrategy(0.8);
-            } else {
-                refillStrategy = new WeakRefillStrategy(0.2);
-            }
+        if (refillStrategy == null && getPaintLevel() < 0.3) {
+            refillStrategy = new WeakRefillStrategy(0.4);
         }
         if (tryStrategy(refillStrategy)) return;
         refillStrategy = null;

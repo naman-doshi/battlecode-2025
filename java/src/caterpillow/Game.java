@@ -60,7 +60,7 @@ public class Game {
     // can change
     public static void upd() {
         int area = rc.getMapHeight() * rc.getMapWidth();
-        if (time - TowerTracker.lastTowerChange > 50 || rc.getNumberTowers() >= 5 * area / 900) {
+        if (time - TowerTracker.lastTowerChange > 50 || rc.getNumberTowers() >= 4 * area / 900) {
             gameStage = GameStage.MID;
         }
 
