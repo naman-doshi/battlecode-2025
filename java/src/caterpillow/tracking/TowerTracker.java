@@ -38,7 +38,7 @@ public class TowerTracker {
         enemyLocs = new ArrayList<>();
     }
 
-    public static MapLocation getNearestPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
+    public static MapLocation getNearestFriendlyPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
         if (paintLocs.isEmpty()) {
             return null;
         }
@@ -55,7 +55,7 @@ public class TowerTracker {
         return best;
     }
 
-    public static MapLocation getNearestNonPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
+    public static MapLocation getNearestFriendlyNonPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
         if (nonPaintLocs.isEmpty()) {
             return null;
         }
@@ -72,7 +72,7 @@ public class TowerTracker {
         return best;
     }
 
-    public static MapLocation getNearestTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
+    public static MapLocation getNearestFriendlyTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
         MapLocation best = null;
         MapLocation cur = rc.getLocation();
         for (int i = paintLocs.size() - 1; i >= 0; i--) {

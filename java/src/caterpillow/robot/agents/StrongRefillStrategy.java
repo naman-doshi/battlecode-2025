@@ -46,7 +46,7 @@ public class StrongRefillStrategy extends Strategy {
             return true;
         }
 
-        target = TowerTracker.getNearestPaintTowerGlobal(c -> !skipped.contains(c));
+        target = TowerTracker.getNearestFriendlyPaintTowerGlobal(c -> !skipped.contains(c));
 
         RobotInfo pot = TowerTracker.getNearestVisibleTower(c -> {
             if (isFriendly(c) && (c.getPaintAmount() > minPaintCapacity() - rc.getPaint() || c.getPaintAmount() > 69) && !skipped.contains(c.getLocation())) {
@@ -59,7 +59,7 @@ public class StrongRefillStrategy extends Strategy {
             target = pot.getLocation();
         }
         if (target == null) {
-            target = TowerTracker.getNearestNonPaintTowerGlobal(c -> !skipped.contains(c));
+            target = TowerTracker.getNearestFriendlyNonPaintTowerGlobal(c -> !skipped.contains(c));
             if (target == null) {
                 // ff
                 println("wrap it up bud");
