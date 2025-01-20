@@ -15,13 +15,15 @@ import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
-import caterpillow.tracking.CellTracker;
+import static caterpillow.tracking.CellTracker.getNearestCell;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameSupplier;
-
-import static caterpillow.Game.ticksExisted;
-import static caterpillow.tracking.CellTracker.getNearestCell;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.countNearbyMoppers;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isAllyAgent;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isInAttackRange;
+import static caterpillow.util.Util.isPaintBelowHalf;
 
 public class MopperOffenceStrategy extends Strategy {
 
@@ -68,7 +70,7 @@ public class MopperOffenceStrategy extends Strategy {
         });
         // mop cell near ruin
         // TODO: FIX BYTECODE FOR THIS
-        suppliers.add(() -> getNearestCell(c -> ticksExisted > 0 && c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]));
+        //suppliers.add(() -> getNearestCell(c -> ticksExisted > 0 && c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]));
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
         roamStrategy = new StrongAggroRoamStrategy();

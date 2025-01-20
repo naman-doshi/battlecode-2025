@@ -8,18 +8,20 @@ import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
-import static caterpillow.util.Util.*;
-
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.StrongRefillStrategy;
+import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInDanger;
+import static caterpillow.util.Util.isOccupied;
 
 public class ScoutStrategy extends Strategy {
 
@@ -58,10 +60,20 @@ public class ScoutStrategy extends Strategy {
         indicate("SCOUTING " + isInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
+        if (attackTowerStrategy == null) {
+            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
+            if (enemyTower != null) {
+                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+            }
+        }
+
+        if (tryStrategy(attackTowerStrategy)) return;
+        attackTowerStrategy = null;
+
         if (refillStrategy == null && getPaintLevel() < 0.8) {
             // we need a solid amount of paint
-            if (handleRuinStrategy == null && getPaintLevel() < 0.7) {
-                refillStrategy = new StrongRefillStrategy(0.8);
+            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
+                refillStrategy = new WeakRefillStrategy(0.4);
             } else {
                 RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
@@ -90,15 +102,9 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
-        if (attackTowerStrategy == null) {
-            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
-            if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-            }
-        }
+        
 
-        if (tryStrategy(attackTowerStrategy)) return;
-        attackTowerStrategy = null;
+        
 
         roamStrategy.runTick();
         if (getPaintLevel() > 0.7 && rc.senseMapInfo(rc.getLocation()).getPaint().equals(PaintType.EMPTY)) {

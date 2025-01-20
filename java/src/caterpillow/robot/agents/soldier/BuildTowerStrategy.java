@@ -1,16 +1,27 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.UnitType;
 import caterpillow.Config;
+import static caterpillow.Config.nextTowerType;
 import caterpillow.Game;
+import static caterpillow.Game.rc;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.util.Pair;
-
-import static caterpillow.util.Util.*;
-import static caterpillow.Game.*;
-import static caterpillow.Config.*;
+import static caterpillow.util.Util.getCellColour;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isBlockingPattern;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isRuin;
+import static caterpillow.util.Util.isTowerBeingBuilt;
+import static caterpillow.util.Util.maxedTowers;
+import static caterpillow.util.Util.paintLevel;
 
 
 public class BuildTowerStrategy extends QueueStrategy {

@@ -2,21 +2,19 @@ package caterpillow.robot.agents.splasher;
 
 import java.util.List;
 
-import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
-import caterpillow.util.GameSupplier;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.*;
+import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.isFriendly;
 
 public class SplasherAggroStrategy extends Strategy {
 
@@ -63,18 +61,8 @@ public class SplasherAggroStrategy extends Strategy {
         refillStrategy = null;
 
         MapLocation target = bot.bestAttackLocation();
-        if (target != null) {
-            indicate("attacking "+target);
-            
-            if (rc.canAttack(target)) {
-                rc.attack(target, true);
-            }
-
-            bot.pathfinder.makeMove(target);
-            
-        } else {
+        if (target == null) {
             roamStrategy.runTick();
-            // indicate("roaming");
         }
     }
 }

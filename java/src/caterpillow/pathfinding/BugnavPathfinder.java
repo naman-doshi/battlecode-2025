@@ -1,22 +1,20 @@
 package caterpillow.pathfinding;
 
 import java.util.HashMap;
-import java.util.function.ToIntFunction;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
-import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
-
-import static caterpillow.Game.*;
-
+import static caterpillow.Game.bot;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
 import caterpillow.robot.agents.Agent;
+import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
-import static caterpillow.util.Util.*;
-import caterpillow.tracking.CellTracker;
-import caterpillow.util.Profiler;
+import static caterpillow.util.Util.directions;
+import static caterpillow.util.Util.indicate;
 
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -31,7 +29,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public HashMap<MapLocation, Boolean> leftTurnHist = new HashMap<>();
     public int lastNonzeroStackTime = 0;
     public GamePredicate<MapInfo> avoid;
-    public ToIntFunction<MapInfo> cellPenalty;
+    public GameFunction<MapInfo, Integer> cellPenalty;
     public boolean reset = false;
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
@@ -39,7 +37,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         this.cellPenalty = m -> 0;
         this.expected = rc.getLocation();
     }
-    public BugnavPathfinder(GamePredicate<MapInfo> avoid, ToIntFunction<MapInfo> cellPenalty) {
+    public BugnavPathfinder(GamePredicate<MapInfo> avoid, GameFunction<MapInfo, Integer> cellPenalty) {
         this.avoid = avoid;
         this.cellPenalty = cellPenalty;
         this.expected = rc.getLocation();
@@ -181,7 +179,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     if(info.getPaint().isEnemy()) {
                         score *= 2;
                     }
-                    score += cellPenalty.applyAsInt(info);
+                    if (cellPenalty != null) score += cellPenalty.apply(info);
                     score *= 1000000;
                     score += rc.getLocation().add(d).distanceSquaredTo(target) * 10;
                     score += trng.nextInt(10);

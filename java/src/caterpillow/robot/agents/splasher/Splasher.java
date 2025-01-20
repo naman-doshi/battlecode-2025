@@ -43,11 +43,14 @@ public class Splasher extends Agent {
         // check if u can bomb only enemy/neutral tiles
         int bestEnemyTiles = 0;
         int bestNeutralTiles = 0;
+        int savedAllyTiles = 0;
+        int savedPrimaryTiles = 0;
         MapLocation bestLoc = null;
         for (MapInfo info : attackable) {
             int enemyTiles = 0;
             int neutralTiles = 0;
             int allyTiles = 0;
+            int primaryTiles = 0;
             boolean bad = false;
             
             if (isEdge(info.getMapLocation())) {
@@ -66,6 +69,7 @@ public class Splasher extends Agent {
                     neutralTiles++;
                 }
                 if (neigh.getPaint().isAlly()) {
+                    if (neigh.getPaint() == PaintType.ALLY_PRIMARY) primaryTiles++;
                     allyTiles++;
                 }
 
@@ -82,14 +86,24 @@ public class Splasher extends Agent {
             if (!bad && enemyTiles > bestEnemyTiles) {
                 bestEnemyTiles = enemyTiles;
                 bestLoc = info.getMapLocation();
+                bestNeutralTiles = neutralTiles;
+                savedAllyTiles = allyTiles;
+                savedPrimaryTiles = primaryTiles;
             } else if (!bad && enemyTiles == bestEnemyTiles && neutralTiles > bestNeutralTiles) {
                 bestLoc = info.getMapLocation();
-                bestNeutralTiles = neutralTiles;  
+                bestNeutralTiles = neutralTiles;
+                savedAllyTiles = allyTiles;
+                savedPrimaryTiles = primaryTiles;  
             }
         }
 
         if (bestLoc != null) {
             //System.out.println("best " + bestLoc);
+            if (rc.canAttack(bestLoc)) {
+                rc.attack(bestLoc, savedAllyTiles - savedPrimaryTiles >= savedPrimaryTiles);
+            }
+
+            bot.pathfinder.makeMove(bestLoc);
             return bestLoc;
         }
 

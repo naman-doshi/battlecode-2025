@@ -1,28 +1,37 @@
 package caterpillow.robot.agents.soldier;
 
-import java.util.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Random;
 
-import battlecode.common.*;
-
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
 import static caterpillow.Config.canUpgrade;
 import caterpillow.Game;
-
 import static caterpillow.Game.gameStage;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.StrongRefillStrategy;
+import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
+import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
-import caterpillow.util.*;
-import caterpillow.robot.agents.TraverseStrategy;
-
-import static caterpillow.util.Util.*;
+import caterpillow.util.GamePredicate;
+import caterpillow.util.Pair;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isOccupied;
 import static caterpillow.world.GameStage.MID;
-import static java.lang.Math.*;
 
 public class SRPStrategy extends Strategy {
 
@@ -207,9 +216,19 @@ public class SRPStrategy extends Strategy {
         towerStratCooldown--;
         updateStates();
 
+        if (gameStage.equals(MID)) {
+            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
+            if (enemyTower != null) {
+                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+            }
+        }
+
+        if (tryStrategy(attackTowerStrategy)) return;
+        attackTowerStrategy = null;
+
         if (refillStrategy == null && getPaintLevel() < 0.8) {
-            if (handleRuinStrategy == null && getPaintLevel() < 0.5) {
-                refillStrategy = new StrongRefillStrategy(0.8);
+            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
+                refillStrategy = new WeakRefillStrategy(0.4);
             } else {
                 RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
@@ -238,15 +257,9 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
-            if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
-            }
-        }
+        
 
-        if (tryStrategy(attackTowerStrategy)) return;
-        attackTowerStrategy = null;
+        
 
         if (gameStage.equals(MID)) {
             for (int level = 2; level <= 3; level++) {

@@ -1,15 +1,17 @@
 package caterpillow.robot.agents.soldier;
 
-import battlecode.common.*;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.util.Util.*;
-
-import caterpillow.pathfinding.AbstractPathfinder;
-import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
-import static caterpillow.tracking.CellTracker.*;
+import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInDanger;
 
 // pathfinding testing
 public class AttackTowerStrategy extends Strategy {
@@ -26,7 +28,7 @@ public class AttackTowerStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if(rc.getHealth() < 25) return true;
+        if(rc.getHealth() < 30) return true;
         if (rc.canSenseLocation(target)) {
             RobotInfo bot = rc.senseRobotAtLocation(target);
             return bot == null || isFriendly(bot);
@@ -35,7 +37,7 @@ public class AttackTowerStrategy extends Strategy {
     }
 
     public void tryAttack() throws GameActionException {
-        if (rc.isActionReady() && rc.getPaint() >= 8) {
+        if (rc.isActionReady()) {
             if(rc.canAttack(target)) {
                 rc.attack(target);
             }
