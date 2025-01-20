@@ -42,16 +42,13 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
-                new ConditionalSpawner(
-                    () -> rc.getMapHeight() * rc.getMapWidth() < 1300,
-                    new RushSpawner(),
-                    new InstantScoutSpawner()
-                ),
-                new ConditionalSpawner(
-                    () -> rc.getMapHeight() * rc.getMapWidth() < 1300,
-                    new RushSpawner(),
-                    new InstantScoutSpawner()
-                ),
+                // new ConditionalSpawner(
+                //     () -> rc.getMapHeight() * rc.getMapWidth() < 1300,
+                //     new RushSpawner(),
+                //     new InstantScoutSpawner()
+                // ),
+                new InstantScoutSpawner(),
+                new InstantScoutSpawner(),
                 new WaitUntilSpawner(() -> rc.getNumberTowers() >= 3),
                 new LoopedSpawner(
                         OffenceMopperSpawner::new,

@@ -238,8 +238,6 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        
-
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
             if (target1 != null) {

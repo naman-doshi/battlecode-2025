@@ -49,7 +49,7 @@ public class RushStrategy extends Strategy {
             primary.runTick();
             return;
         }
-        
+
         // become a scout once done
         if (target == null || todo.isEmpty()) {
             if (!(primary instanceof ScoutStrategy)) {

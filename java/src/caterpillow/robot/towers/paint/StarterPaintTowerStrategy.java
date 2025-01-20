@@ -6,7 +6,7 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
-import static caterpillow.Game.seed;
+import static caterpillow.Game.*;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -16,6 +16,7 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.util.Util.indicate;
@@ -38,6 +39,11 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
+                // new ConditionalSpawner(
+                //     () -> rc.getMapHeight() * rc.getMapWidth() < 1300,
+                //     new RushSpawner(),
+                //     new InstantScoutSpawner()
+                // ),
                 new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
