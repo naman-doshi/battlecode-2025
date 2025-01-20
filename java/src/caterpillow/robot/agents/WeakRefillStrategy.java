@@ -3,7 +3,6 @@ package caterpillow.robot.agents;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.tracking.TowerTracker;
@@ -43,7 +42,7 @@ public class WeakRefillStrategy extends Strategy {
         if (hasRefilled || rc.getPaint() >= minSkipAmt) {
             return true;
         }
-        RobotInfo res = TowerTracker.getNearestTower(b -> isFriendly(b) && b.getPaintAmount() >= minRefill());
+        RobotInfo res = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && b.getPaintAmount() >= minRefill());
         if (res == null) {
             return true;
         }

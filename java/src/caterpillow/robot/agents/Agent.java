@@ -72,7 +72,7 @@ public abstract class Agent extends Robot {
     @Override
     public void init() throws GameActionException {
         // set home
-        RobotInfo parent = TowerTracker.getNearestTower(Util::isFriendly);
+        RobotInfo parent = TowerTracker.getNearestVisibleTower(Util::isFriendly);
         if (parent != null) {
             setParent(parent);
         } else {

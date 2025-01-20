@@ -59,7 +59,7 @@ public class ScoutStrategy extends Strategy {
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
         if (attackTowerStrategy == null) {
-            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
+            RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
@@ -73,7 +73,7 @@ public class ScoutStrategy extends Strategy {
             if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
                 refillStrategy = new WeakRefillStrategy(0.4);
             } else {
-                RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
+                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
                     bot.refill(nearest);
                 }

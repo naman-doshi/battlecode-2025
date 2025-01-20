@@ -218,7 +218,7 @@ public class SRPStrategy extends Strategy {
         updateStates();
         Profiler.begin();
         if (gameStage.equals(MID)) {
-            RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
+            RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
                 attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
@@ -231,7 +231,7 @@ public class SRPStrategy extends Strategy {
             if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
                 refillStrategy = new StrongRefillStrategy(0.8);
             } else {
-                RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
+                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
                     bot.refill(nearest);
                 }
@@ -259,7 +259,7 @@ public class SRPStrategy extends Strategy {
             for (int level = 2; level <= 3; level++) {
                 if (canUpgrade(level)) {
                     int finalLevel = level;
-                    RobotInfo nearest = TowerTracker.getNearestTower(b -> isFriendly(b) && b.getType().level == finalLevel - 1);
+                    RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && b.getType().level == finalLevel - 1);
                     if (nearest != null) {
                         upgradeTowerStrategy = new UpgradeTowerStrategy(nearest.getLocation(), level);
                     }

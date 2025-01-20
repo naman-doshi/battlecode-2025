@@ -30,13 +30,15 @@ public class TowerTracker {
     public static int srps = 0;
 
     public static ArrayList<MapLocation> paintLocs, nonPaintLocs;
+    public static ArrayList<MapLocation> enemyLocs;
 
     public static void init() {
         paintLocs = new ArrayList<>();
         nonPaintLocs = new ArrayList<>();
+        enemyLocs = new ArrayList<>();
     }
 
-    public static MapLocation getClosestPaintTower(GamePredicate<MapLocation> pred) throws GameActionException {
+    public static MapLocation getNearestPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
         if (paintLocs.isEmpty()) {
             return null;
         }
@@ -53,7 +55,7 @@ public class TowerTracker {
         return best;
     }
 
-    public static MapLocation getClosestNonPaintTower(GamePredicate<MapLocation> pred) throws GameActionException {
+    public static MapLocation getNearestNonPaintTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
         if (nonPaintLocs.isEmpty()) {
             return null;
         }
@@ -70,7 +72,44 @@ public class TowerTracker {
         return best;
     }
 
-    public static RobotInfo getNearestTower(GamePredicate<RobotInfo> pred) throws GameActionException {
+    public static MapLocation getNearestTowerGlobal(GamePredicate<MapLocation> pred) throws GameActionException {
+        MapLocation best = null;
+        MapLocation cur = rc.getLocation();
+        for (int i = paintLocs.size() - 1; i >= 0; i--) {
+            MapLocation cand = paintLocs.get(i);
+            if (pred.test(cand)) {
+                if (best == null || best.distanceSquaredTo(cur) > cand.distanceSquaredTo(cur)) {
+                    best = cand;
+                }
+            }
+        }
+        for (int i = nonPaintLocs.size() - 1; i >= 0; i--) {
+            MapLocation cand = nonPaintLocs.get(i);
+            if (pred.test(cand)) {
+                if (best == null || best.distanceSquaredTo(cur) > cand.distanceSquaredTo(cur)) {
+                    best = cand;
+                }
+            }
+        }
+        return best;
+    }
+
+    public static MapLocation getNearestEnemyTowerGlobal(GamePredicate<RobotInfo> pred) throws GameActionException {
+        RobotInfo best = null;
+        MapLocation cur = rc.getLocation();
+        for (int i = enemyLocs.size() - 1; i >= 0; i--) {
+            MapLocation loc = enemyLocs.get(i);
+            RobotInfo info = rc.senseRobotAtLocation(loc);
+            if (info != null && pred.test(info)) {
+                if (best == null || best.getLocation().distanceSquaredTo(cur) > info.getLocation().distanceSquaredTo(cur)) {
+                    best = info;
+                }
+            }
+        }
+        return best == null ? null : best.getLocation();
+    }
+
+    public static RobotInfo getNearestVisibleTower(GamePredicate<RobotInfo> pred) throws GameActionException {
         RobotInfo best = null;
         for (int i = CellTracker.nearbyRuins.length - 1; i >= 0; i--) {
             MapLocation loc = CellTracker.nearbyRuins[i];

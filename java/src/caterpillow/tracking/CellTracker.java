@@ -166,10 +166,18 @@ public class CellTracker {
                     // special
 
                     RobotInfo bot = rc.senseRobotAtLocation(loc);
-                    if (bot == null || rc.getTeam() != bot.getTeam()) {
+                    if (bot == null) {
                         TowerTracker.paintLocs.remove(loc);
                         TowerTracker.nonPaintLocs.remove(loc);
+                        TowerTracker.enemyLocs.remove(loc);
+                    } else if (rc.getTeam() != bot.getTeam()) {
+                        TowerTracker.paintLocs.remove(loc);
+                        TowerTracker.nonPaintLocs.remove(loc);
+                        if (!TowerTracker.enemyLocs.contains(loc)) {
+                            TowerTracker.enemyLocs.add(loc);
+                        }
                     } else {
+                        TowerTracker.enemyLocs.remove(loc);
                         if (downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
                             TowerTracker.nonPaintLocs.remove(loc);
                             if (!TowerTracker.paintLocs.contains(loc)) {

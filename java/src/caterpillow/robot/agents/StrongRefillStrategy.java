@@ -5,11 +5,9 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
-import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
@@ -48,9 +46,9 @@ public class StrongRefillStrategy extends Strategy {
             return true;
         }
 
-        target = TowerTracker.getClosestPaintTower(c -> !skipped.contains(c));
+        target = TowerTracker.getNearestPaintTowerGlobal(c -> !skipped.contains(c));
 
-        RobotInfo pot = TowerTracker.getNearestTower(c -> {
+        RobotInfo pot = TowerTracker.getNearestVisibleTower(c -> {
             if (isFriendly(c) && (c.getPaintAmount() > minPaintCapacity() - rc.getPaint() || c.getPaintAmount() > 69) && !skipped.contains(c.getLocation())) {
                 return true;
             }
@@ -61,7 +59,7 @@ public class StrongRefillStrategy extends Strategy {
             target = pot.getLocation();
         }
         if (target == null) {
-            target = TowerTracker.getClosestNonPaintTower(c -> !skipped.contains(c));
+            target = TowerTracker.getNearestNonPaintTowerGlobal(c -> !skipped.contains(c));
             if (target == null) {
                 // ff
                 println("wrap it up bud");
