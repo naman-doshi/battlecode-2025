@@ -20,7 +20,7 @@ public class Splasher extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> !c.getPaint().isAlly());
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
         primaryStrategy = new EmptyStrategy();
         bot = (Splasher) Game.bot;
     }
