@@ -5,6 +5,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 
 import java.util.ArrayList;
@@ -46,25 +47,37 @@ public class StrongRefillStrategy extends Strategy {
             return true;
         }
 
-        target = TowerTracker.getNearestFriendlyPaintTowerGlobal(c -> !skipped.contains(c));
+        while (true) {
+            target = TowerTracker.getNearestFriendlyPaintTowerGlobal(c -> !skipped.contains(c));
 
-        RobotInfo pot = TowerTracker.getNearestVisibleTower(c -> {
-            if (isFriendly(c) && (c.getPaintAmount() > minPaintCapacity() - rc.getPaint() || c.getPaintAmount() > 69) && !skipped.contains(c.getLocation())) {
-                return true;
+            RobotInfo pot = TowerTracker.getNearestVisibleTower(c -> {
+                if (isFriendly(c) && (c.getPaintAmount() > minPaintCapacity() - rc.getPaint() || c.getPaintAmount() > 69) && !skipped.contains(c.getLocation())) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (pot != null && target != null && 2 * Math.sqrt(pot.getLocation().distanceSquaredTo(rc.getLocation())) < Math.sqrt(target.distanceSquaredTo(rc.getLocation()))) {
+                target = pot.getLocation();
             }
-            return false;
-        });
-
-        if (pot != null && target != null && 2 * Math.sqrt(pot.getLocation().distanceSquaredTo(rc.getLocation())) < Math.sqrt(target.distanceSquaredTo(rc.getLocation()))) {
-            target = pot.getLocation();
-        }
-        if (target == null) {
-            target = TowerTracker.getNearestFriendlyNonPaintTowerGlobal(c -> !skipped.contains(c));
             if (target == null) {
-                // ff
-                println("wrap it up bud");
-                return true;
+                target = TowerTracker.getNearestFriendlyNonPaintTowerGlobal(c -> !skipped.contains(c));
+                if (target == null) {
+                    // ff
+                    println("wrap it up bud");
+                    return true;
+                }
             }
+
+            if (rc.canSenseLocation(target)) {
+                RobotInfo info = rc.senseRobotAtLocation(target);
+                assert info != null;
+                if (info.getPaintAmount() < 10) {
+                    skipped.add(target);
+                    continue;
+                }
+            }
+            break;
         }
         return false;
     }
@@ -73,10 +86,12 @@ public class StrongRefillStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("STRONG REFILL");
         bot.pathfinder.makeMove(target);
-        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null && rc.canTransferPaint(target, -1)) {
-            bot.refill(rc.senseRobotAtLocation(target));
-            println("added target to skipped " + target);
-            skipped.add(target);
+        if (rc.canSenseLocation(target) && rc.senseRobotAtLocation(target) != null) {
+            if (rc.canTransferPaint(target, -1)) {
+                bot.refill(rc.senseRobotAtLocation(target));
+                println("added target to skipped " + target);
+                skipped.add(target);
+            }
         }
         rc.setIndicatorLine(rc.getLocation(), target, 0, 255, 0);
     }
