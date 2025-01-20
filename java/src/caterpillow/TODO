@@ -11,7 +11,7 @@ general:
 - make spawners wait TWO ticks before spawning at 1k coin
 - after optimising srp stuff, make scouts double as srp placers
 - make soldiers prioritise ruin trolling even when doing other stuff like building
-- fix afk splashers
+- splasher tower kiting
 
 alex:
 - why are you using markers to communicate what tower type when you could have just started building
