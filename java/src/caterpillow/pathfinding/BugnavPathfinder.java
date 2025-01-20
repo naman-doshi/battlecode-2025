@@ -14,7 +14,6 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
-import static caterpillow.util.Util.indicate;
 
 
 public class BugnavPathfinder extends AbstractPathfinder {
@@ -244,7 +243,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if (rc.isMovementReady()) {
             dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
-                assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
+                //assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
                 makeMove(dir);
             } else {
                 // emergency!!!

@@ -10,7 +10,6 @@ import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
-import static caterpillow.util.Util.*;
 
 public class Splasher extends Agent {
 

@@ -1,20 +1,23 @@
 package caterpillow;
 
-import static caterpillow.Game.*;
-
-import battlecode.common.*;
+import battlecode.common.Clock;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotController;
+import static caterpillow.Game.bot;
+import static caterpillow.Game.pm;
+import static caterpillow.Game.ticksExisted;
+import static caterpillow.Game.time;
 import caterpillow.robot.agents.mopper.Mopper;
 import caterpillow.robot.agents.soldier.Soldier;
 import caterpillow.robot.agents.splasher.Splasher;
-import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.defence.DefenceTower;
+import caterpillow.robot.towers.money.MoneyTower;
 import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
-import caterpillow.util.Profiler;
 import caterpillow.tracking.TowerTracker;
-import caterpillow.util.*;
-import static caterpillow.util.Util.*;
+import caterpillow.util.Profiler;
+import static caterpillow.util.Util.indicatorString;
 
 public class RobotPlayer {
 
@@ -91,18 +94,23 @@ public class RobotPlayer {
 
         while (true) {
 //            Initialiser.upd();
-            time = rc.getRoundNum();
-            Game.upd();
-            pm.read();
-            TowerTracker.runTick();
-            bot.runTick();
-            pm.flush();
-            ticksExisted++;
-            rc.setIndicatorString(indicatorString);
-            indicatorString = "";
-            Clock.yield();
-            CellTracker.updateTick();
-            RobotTracker.updateTick();
+            try {
+                time = rc.getRoundNum();
+                Game.upd();
+                pm.read();
+                TowerTracker.runTick();
+                bot.runTick();
+                pm.flush();
+                ticksExisted++;
+                rc.setIndicatorString(indicatorString);
+                indicatorString = "";
+                Clock.yield();
+                CellTracker.updateTick();
+                RobotTracker.updateTick();
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+            
         }
     }
 }

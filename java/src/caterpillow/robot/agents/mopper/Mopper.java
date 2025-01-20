@@ -13,10 +13,11 @@ import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
-import caterpillow.util.GamePredicate;
 import static caterpillow.tracking.RobotTracker.getBestRobot;
+import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.isEnemyAgent;
 import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInDanger;
 import static caterpillow.util.Util.orthDirections;
 import static caterpillow.util.Util.relatedDirections;
 
@@ -99,7 +100,7 @@ public class Mopper extends Agent {
     @Override
     public void init() throws GameActionException {
         super.init();
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() && !isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
     }
