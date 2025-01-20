@@ -9,19 +9,15 @@ import battlecode.common.UnitType;
 import caterpillow.Config;
 import static caterpillow.Config.nextTowerType;
 import caterpillow.Game;
+import caterpillow.pathfinding.*;
+
 import static caterpillow.Game.rc;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.util.Pair;
-import static caterpillow.util.Util.getCellColour;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isBlockingPattern;
-import static caterpillow.util.Util.isCellInTowerBounds;
-import static caterpillow.util.Util.isRuin;
-import static caterpillow.util.Util.isTowerBeingBuilt;
-import static caterpillow.util.Util.maxedTowers;
-import static caterpillow.util.Util.paintLevel;
+import static caterpillow.util.Util.*;
+import caterpillow.util.Util;
 
 
 public class BuildTowerStrategy extends QueueStrategy {
@@ -33,6 +29,8 @@ public class BuildTowerStrategy extends QueueStrategy {
     int ticksDelayed = 0;
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
+
+    AbstractPathfinder pathfinder;
 
     Direction getOffset(UnitType type) {
         switch (type) {
@@ -230,6 +228,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         this.target = target;
         readType = null;
         patternToFinish = null;
+        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && Util.isInDanger(c.getMapLocation()));
     }
 
     @Override
@@ -302,13 +301,13 @@ public class BuildTowerStrategy extends QueueStrategy {
         // im putting this up here idc anymore
         if (patternToFinish != null) {
             if (isInDanger()) {
-                bot.pathfinder.makeMove(target.add(Direction.NORTH));
+                pathfinder.makeMove(target.add(Direction.NORTH));
                 if (rc.canRemoveMark(target.add(Direction.NORTH))) {
                     rc.removeMark(target.add(Direction.NORTH));
                 }
             }
             if (!isInView()) {
-                bot.pathfinder.makeMove(target);
+                pathfinder.makeMove(target);
                 return;
             }
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
@@ -316,13 +315,13 @@ public class BuildTowerStrategy extends QueueStrategy {
                 if (rc.canAttack(res.first)) {
                     rc.attack(res.first, res.second);
                 } else {
-                    bot.pathfinder.makeMove(res.first);
+                    pathfinder.makeMove(res.first);
                     if (rc.canAttack(res.first)) {
                         rc.attack(res.first, res.second);
                     }
                 }
             } else {
-                bot.pathfinder.makeMove(target.add(Direction.NORTH));
+                pathfinder.makeMove(target.add(Direction.NORTH));
             }
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
                 if (patternToFinish == Config.nextResourceType() || ticksDelayed > 0) {
@@ -339,7 +338,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         }
 
         if (!isInView()) {
-            bot.pathfinder.makeMove(target);
+            pathfinder.makeMove(target);
             MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
             if (nearest != null) {
                 bot.checkerboardAttack(nearest.getMapLocation());
@@ -349,7 +348,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
-            bot.pathfinder.makeMove(target.add(getOffset(nextTowerType())));
+            pathfinder.makeMove(target.add(getOffset(nextTowerType())));
             MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
             if (nearest != null) {
                 rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextTowerType()));
@@ -362,13 +361,13 @@ public class BuildTowerStrategy extends QueueStrategy {
             if (rc.canAttack(todo.first)) {
                 rc.attack(todo.first, todo.second);
             } else {
-                bot.pathfinder.makeMove(todo.first);
+                pathfinder.makeMove(todo.first);
                 if (rc.canAttack(todo.first)) {
                     rc.attack(todo.first, todo.second);
                 }
             }
         } else {
-            bot.pathfinder.makeMove(target.add(Direction.NORTH));
+            pathfinder.makeMove(target.add(Direction.NORTH));
         }
     }
 }

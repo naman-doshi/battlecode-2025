@@ -52,16 +52,16 @@ public class Splasher extends Agent {
             int allyTiles = 0;
             int primaryTiles = 0;
             boolean bad = false;
-            
+
             if (isEdge(info.getMapLocation())) {
                 //System.out.println("bad " + info.getMapLocation());
                 continue;
             }
 
             for (MapInfo neigh : rc.senseNearbyMapInfos(info.getMapLocation(), 2)) {
-                
+
                 if (neigh.isWall() || neigh.hasRuin()) continue;
-                
+
                 if (neigh.getPaint().isEnemy()) {
                     enemyTiles++;
                 }
@@ -82,7 +82,7 @@ public class Splasher extends Agent {
 
                 //System.out.println("info " + info.getMapLocation() + " " + enemyTiles + " " + neutralTiles + " " + allyTiles);
             }
-            
+
             if (!bad && enemyTiles > bestEnemyTiles) {
                 bestEnemyTiles = enemyTiles;
                 bestLoc = info.getMapLocation();
@@ -93,7 +93,7 @@ public class Splasher extends Agent {
                 bestLoc = info.getMapLocation();
                 bestNeutralTiles = neutralTiles;
                 savedAllyTiles = allyTiles;
-                savedPrimaryTiles = primaryTiles;  
+                savedPrimaryTiles = primaryTiles;
             }
         }
 
@@ -116,9 +116,9 @@ public class Splasher extends Agent {
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-            case AGGRO_STRAT:
-                primaryStrategy = new SplasherAggroStrategy();
-                break;
+        case AGGRO_STRAT:
+            primaryStrategy = new SplasherAggroStrategy();
+            break;
         }
     }
 
