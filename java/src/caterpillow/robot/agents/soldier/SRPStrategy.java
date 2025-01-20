@@ -27,11 +27,12 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.GamePredicate;
 import caterpillow.util.Pair;
+import caterpillow.util.Profiler;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isOccupied;
-import static caterpillow.world.GameStage.MID;
+import  static caterpillow.world.GameStage.MID;
 
 public class SRPStrategy extends Strategy {
 
@@ -215,7 +216,7 @@ public class SRPStrategy extends Strategy {
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
         updateStates();
-
+        Profiler.begin();
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestTower(b -> !isFriendly(b));
             if (enemyTower != null) {
