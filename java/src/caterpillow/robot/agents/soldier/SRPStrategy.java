@@ -217,6 +217,7 @@ public class SRPStrategy extends Strategy {
         towerStratCooldown--;
         updateStates();
         Profiler.begin();
+
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
@@ -228,8 +229,8 @@ public class SRPStrategy extends Strategy {
         attackTowerStrategy = null;
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
-            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
-                refillStrategy = new StrongRefillStrategy(0.8);
+            if (handleRuinStrategy == null && getPaintLevel() < 0.5) {
+                refillStrategy = new StrongRefillStrategy(0.7);
             } else {
                 RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {

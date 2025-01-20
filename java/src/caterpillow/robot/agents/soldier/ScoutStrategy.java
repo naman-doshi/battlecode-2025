@@ -3,23 +3,19 @@ package caterpillow.robot.agents.soldier;
 import java.util.LinkedList;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.PaintType;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.*;
+import static caterpillow.util.Util.*;
+
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.tracking.CellTracker;
+import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
-import static caterpillow.util.Util.getPaintLevel;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInDanger;
-import static caterpillow.util.Util.isOccupied;
 
 public class ScoutStrategy extends Strategy {
 
@@ -70,8 +66,10 @@ public class ScoutStrategy extends Strategy {
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
             // we need a solid amount of paint
-            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
-                refillStrategy = new WeakRefillStrategy(0.4);
+            if (handleRuinStrategy == null && getPaintLevel() < (RobotTracker.countNearbyFriendly(c -> isFriendly(c) && c.type == UnitType.SOLDIER) > 0 ? 0.3 : 0.6)) {
+//            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
+                refillStrategy = new StrongRefillStrategy(0.6);
+//                refillStrategy = new WeakRefillStrategy(0.4);
             } else {
                 RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
                 if (nearest != null) {
@@ -102,10 +100,8 @@ public class ScoutStrategy extends Strategy {
 
         
 
-        
-
         roamStrategy.runTick();
-        if (getPaintLevel() > 0.7 && rc.senseMapInfo(rc.getLocation()).getPaint().equals(PaintType.EMPTY)) {
+        if (getPaintLevel() > 0.7 && rc.senseMapInfo(rc.getLocation()).getPaint().equals(PaintType.EMPTY) && rc.canAttack(rc.getLocation())) {
             bot.checkerboardAttack(rc.getLocation());
         }
         // MapInfo nearest = getNearestCell(c -> c.getPaint().equals(PaintType.EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);

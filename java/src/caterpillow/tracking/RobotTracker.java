@@ -26,6 +26,16 @@ public class RobotTracker {
 
     }
 
+    public static int countNearbyFriendly(GamePredicate<RobotInfo> pred) throws GameActionException {
+        int cnt = 0;
+        for (int i = nearbyCnt - 1; i >= 0; i--) {
+            if (pred.test(nearby[i])) {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
     public static void updateTick() {
         lazyInit();
         nearby = rc.senseNearbyRobots();
