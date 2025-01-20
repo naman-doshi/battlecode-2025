@@ -11,6 +11,7 @@ import static caterpillow.util.Util.*;
 
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.mopper.Mopper;
+import caterpillow.tracking.RobotTracker;
 
 public class UnstuckStrategy extends TowerStrategy {
 
@@ -22,7 +23,7 @@ public class UnstuckStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
-        if (countNearbyMoppers(rc.getLocation()) == 0) {
+        if (RobotTracker.countNearbyFriendly(c -> c.type == UnitType.MOPPER) == 0) {
             MapInfo nearest = getClosestNeighbourTo(centre, c -> !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1);
             if (nearest == null) {
                 MapLocation loc = getClosestNeighbourTo(centre, c -> true).getMapLocation();

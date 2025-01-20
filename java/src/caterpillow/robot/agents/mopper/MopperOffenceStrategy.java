@@ -4,11 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.PaintType;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
@@ -18,7 +14,6 @@ import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.countNearbyMoppers;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isAllyAgent;
 import static caterpillow.util.Util.isEnemyAgent;
@@ -61,7 +56,7 @@ public class MopperOffenceStrategy extends Strategy {
         }));
 //         attack (anything visible)
         suppliers.add(() -> {
-            RobotInfo info = RobotTracker.getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && countNearbyMoppers(b.getLocation()) <= 3 && (rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
+            RobotInfo info = RobotTracker.getNearestRobot(b -> isEnemyAgent(b) && b.getPaintAmount() > 0 && RobotTracker.countNearbyFriendly(c -> c.type == UnitType.MOPPER) <= 3 && (rc.senseMapInfo(b.getLocation()).getPaint().isEnemy() || isInAttackRange(b.getLocation())));
             if (info == null) {
                 return null;
             } else {

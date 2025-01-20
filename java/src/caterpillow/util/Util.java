@@ -218,22 +218,6 @@ public class Util {
         };
     }
 
-    public static int countNearbyMoppers(MapLocation loc) throws GameActionException {
-        int cnt = 0;
-        for (Direction dir : directions) {
-            MapLocation nloc = loc.add(dir);
-            if (rc.canSenseLocation(nloc)) {
-                RobotInfo botInfo = rc.senseRobotAtLocation(nloc);
-                if (botInfo != null) {
-                    if (isFriendly(botInfo) && botInfo.getType().equals(UnitType.MOPPER)) {
-                        cnt++;
-                    }
-                }
-            }
-        }
-        return cnt;
-    }
-
     public static boolean isPaintable(MapInfo info) {
         return info.getPaint().equals(PaintType.EMPTY) && info.isPassable();
     }

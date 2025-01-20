@@ -4,10 +4,17 @@ import battlecode.common.*;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
 
+import java.util.ArrayList;
+
 import static caterpillow.Game.*;
 import static caterpillow.util.Util.downgrade;
+import static java.lang.Math.*;
 
 public class CellTracker {
+    public static final int ignoreCooldownReset = 30;
+    public static int[][] ignoreCooldown; // the time until which we want to treat this cell as not a valid centre
+    public static boolean[][] bad;
+    public static int[][] processed; // what time we've processed this square (0 means unprocessed)
     private static int maxX, maxY;
 
     public static MapInfo[][] mapInfos;
@@ -28,6 +35,9 @@ public class CellTracker {
         nearbyCnt = 0;
         maxX = rc.getMapWidth();
         maxY = rc.getMapHeight();
+        CellTracker.ignoreCooldown = new int[maxX][maxY];
+        CellTracker.bad = new boolean[maxX][maxY];
+        CellTracker.processed = new int[maxX][maxY];
     }
 
     private static void lazyInit() {
@@ -76,6 +86,134 @@ public class CellTracker {
             case 1: if (pred.test(nearbyRuins[0])) return nearbyRuins[0];
             case 0: return null;
             default: throw new IllegalArgumentException("nearbyRuins exceeds 5");
+        }
+    }
+
+    public static void updateStates() throws GameActionException {
+        int cooldownValue = time + ignoreCooldownReset;
+        for (int i = nearbyRuins.length - 1; i >= 0; i--) {
+            MapLocation ruin = nearbyRuins[i];
+            if (rc.senseRobotAtLocation(ruin) != null) {
+                continue;
+            }
+
+            if(processed[ruin.x][ruin.y] > time - 10) continue;
+            for (int x = max(0, ruin.x - 4); x <= min(rc.getMapWidth() - 1, ruin.x + 4); x++) {
+                for (int y = max(0, ruin.y - 4); y <= min(rc.getMapHeight() - 1, ruin.y + 4); y++) {
+                    ignoreCooldown[x][y] = cooldownValue;
+                }
+            }
+            break;
+        }
+
+        ArrayList<MapLocation> enemyPaint = new ArrayList<>();
+        MapInfo[] cells = rc.senseNearbyMapInfos();
+        for (int ci = cells.length - 1; ci >= 0; ci--) {
+            MapLocation loc = cells[ci].getMapLocation();
+            if(!cells[ci].isPassable() && processed[loc.x][loc.y] == 0) {
+                boolean[] arr;
+                if(loc.x >= 2) {
+                    arr = bad[loc.x - 2];
+                    if(loc.y >= 2) arr[loc.y - 2] = true;
+                    if(loc.y >= 1) arr[loc.y - 1] = true;
+                    arr[loc.y] = true;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = true;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = true;
+                }
+                if(loc.x >= 1) {
+                    arr = bad[loc.x - 1];
+                    if(loc.y >= 2) arr[loc.y - 2] = true;
+                    if(loc.y >= 1) arr[loc.y - 1] = true;
+                    arr[loc.y] = true;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = true;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = true;
+                }
+                arr = bad[loc.x];
+                if(loc.y >= 2) arr[loc.y - 2] = true;
+                if(loc.y >= 1) arr[loc.y - 1] = true;
+                arr[loc.y] = true;
+                if(loc.y + 1 < maxY) arr[loc.y + 1] = true;
+                if(loc.y + 2 < maxY) arr[loc.y + 2] = true;
+                if(loc.x + 1 < maxX) {
+                    arr = bad[loc.x + 1];
+                    if(loc.y >= 2) arr[loc.y - 2] = true;
+                    if(loc.y >= 1) arr[loc.y - 1] = true;
+                    arr[loc.y] = true;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = true;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = true;
+                }
+                if(loc.x + 2 < maxX) {
+                    arr = bad[loc.x + 2];
+                    if(loc.y >= 2) arr[loc.y - 2] = true;
+                    if(loc.y >= 1) arr[loc.y - 1] = true;
+                    arr[loc.y] = true;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = true;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = true;
+                }
+                // for(int i = max(0, loc.x - 2); i <= min(rc.getMapWidth() - 1, loc.x + 2); i++) {
+                //     for(int j = max(0, loc.y - 2); j <= min(rc.getMapHeight() - 1, loc.y + 2); j++) {
+                //         bad[i][j] = true;
+                //     }
+                // }
+                processed[loc.x][loc.y] = time;
+            }
+            if(cells[ci].getMark().equals(PaintType.ALLY_PRIMARY) && processed[loc.x][loc.y] == 0) {
+                rc.setIndicatorDot(loc, 0, 255, 255);
+                for(int i = max(0, loc.x - 4); i <= min(rc.getMapWidth() - 1, loc.x + 4); i++) {
+                    for(int j = max(0, loc.y - 4); j <= min(rc.getMapHeight() - 1, loc.y + 4); j++) {
+                        if((i - loc.x) % 4 == 0 && (j - loc.y) % 4 == 0 || abs(i - loc.x) + abs(j - loc.y) == 7) continue; // tiling
+                        bad[i][j] = true;
+                    }
+                }
+                processed[loc.x][loc.y] = time;
+            }
+            if(cells[ci].getPaint().isEnemy()) {
+                enemyPaint.add(loc);
+            }
+        }
+        if(!enemyPaint.isEmpty()) {
+            for(int ei = 3; ei >= 0; ei--) {
+                MapLocation loc = enemyPaint.get(trng.nextInt(enemyPaint.size()));
+                int[] arr;
+                if(loc.x >= 2) {
+                    arr = ignoreCooldown[loc.x - 2];
+                    if(loc.y >= 2) arr[loc.y - 2] = cooldownValue;
+                    if(loc.y >= 1) arr[loc.y - 1] = cooldownValue;
+                    arr[loc.y] = cooldownValue;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = cooldownValue;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = cooldownValue;
+                }
+                if(loc.x >= 1) {
+                    arr = ignoreCooldown[loc.x - 1];
+                    if(loc.y >= 2) arr[loc.y - 2] = cooldownValue;
+                    if(loc.y >= 1) arr[loc.y - 1] = cooldownValue;
+                    arr[loc.y] = cooldownValue;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = cooldownValue;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = cooldownValue;
+                }
+                arr = ignoreCooldown[loc.x];
+                if(loc.y >= 2) arr[loc.y - 2] = cooldownValue;
+                if(loc.y >= 1) arr[loc.y - 1] = cooldownValue;
+                arr[loc.y] = cooldownValue;
+                if(loc.y + 1 < maxY) arr[loc.y + 1] = cooldownValue;
+                if(loc.y + 2 < maxY) arr[loc.y + 2] = cooldownValue;
+                if(loc.x + 1 < maxX) {
+                    arr = ignoreCooldown[loc.x + 1];
+                    if(loc.y >= 2) arr[loc.y - 2] = cooldownValue;
+                    if(loc.y >= 1) arr[loc.y - 1] = cooldownValue;
+                    arr[loc.y] = cooldownValue;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = cooldownValue;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = cooldownValue;
+                }
+                if(loc.x + 2 < maxX) {
+                    arr = ignoreCooldown[loc.x + 2];
+                    if(loc.y >= 2) arr[loc.y - 2] = cooldownValue;
+                    if(loc.y >= 1) arr[loc.y - 1] = cooldownValue;
+                    arr[loc.y] = cooldownValue;
+                    if(loc.y + 1 < maxY) arr[loc.y + 1] = cooldownValue;
+                    if(loc.y + 2 < maxY) arr[loc.y + 2] = cooldownValue;
+                }
+            }
         }
     }
 
