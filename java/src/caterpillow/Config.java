@@ -92,9 +92,15 @@ public class Config {
        return nextResourceType();
     }
 
+    public static int moneyTowerThreshold() {
+        if(rc.getMapHeight() * rc.getMapWidth() <= 900) return 4;
+        if(rc.getMapHeight()* rc.getMapWidth() <= 1500) return 5;
+        return 6;
+    }
+
     public static UnitType nextResourceType() {
         if (!TowerTracker.broken) {
-            if ((double) TowerTracker.coinTowers / (double) rc.getNumberTowers() >= targetRatio() || rc.getChips() >= 3000) {
+            if (rc.getNumberTowers() >= moneyTowerThreshold() && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() >= targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;

@@ -187,10 +187,10 @@ public class BugnavPathfinder extends AbstractPathfinder {
                         bestScore = score;
                         best = d;
                     }
-                    indicate(d.toString() + " " + score);
+                    // indicate(d.toString() + " " + score);
                 }
             }
-            if(best != null) indicate(best.toString());
+            // if(best != null) indicate(best.toString());
             if(best != null) {
                 if(best.equals(topDir.rotateRight())) {
                     leftTurn = false;
@@ -232,7 +232,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 return null;
             }
         }
-        assert canMove(topDir);
+        // assert canMove(topDir);
         // rc.setIndicatorLine(rc.getLocation(), rc.getLocation().add(topDir), 0, 0, 255);
         // rc.setIndicatorString(topDir + " " + bottomDir + " " + leftTurn + " " + stackSize);
         return topDir;

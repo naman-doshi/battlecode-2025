@@ -5,6 +5,7 @@ import caterpillow.packet.Packet;
 import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.towers.paint.StarterPaintTowerStrategy;
 import caterpillow.util.Profiler;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.*;
@@ -13,6 +14,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 
+import static caterpillow.Config.genAggroTarget;
 import static caterpillow.Game.*;
 
 public abstract class Tower extends Robot {
@@ -21,9 +23,6 @@ public abstract class Tower extends Robot {
     public Strategy primaryStrategy;
 
     public ArrayList<Integer> kids;
-
-    boolean[] edgeUsed = new boolean[(rc.getMapWidth() + rc.getMapHeight() - 2) * 2];
-    MapLocation[] edges = new MapLocation[edgeUsed.length];
 
     public void registerKid(int id) {
         kids.add(id);
@@ -63,75 +62,13 @@ public abstract class Tower extends Robot {
         System.out.println("Tower adopted " + senderID);
     }
 
-    public boolean goForEnemy = false;
+    ArrayList<MapLocation> initialTargets = new ArrayList<>();
     public MapLocation scoutTarget() throws GameActionException {
-        int usedCount = 0;
-        for(int i = edgeUsed.length - 1; i >= 0; i--) {
-            if(edgeUsed[i]) {
-                usedCount++;
-            }
-        }
-        if(usedCount == edgeUsed.length) {
-            for(int i = edgeUsed.length - 1; i >= 0; i--) {
-                edgeUsed[i] = false;
-            }
-            usedCount = 0;
-        }
         MapLocation res;
-        if(usedCount == 0) {
-            int shift = -1;
-            if(goForEnemy) {
-                List<MapLocation> enemyLocs = guessSpawnLocs();
-                int x = 0;
-                int y = 0;
-                for(MapLocation loc : enemyLocs) {
-                    x += loc.x;
-                    y += loc.y;
-                }
-                MapLocation average = new MapLocation(x / enemyLocs.size(), y / enemyLocs.size());
-                System.out.println("average: " + average.toString());
-                MapLocation vec = subtract(average, origin);
-                MapLocation target = project(average, vec);
-                System.out.println("origin: " + origin.toString() + " projection: " + target.toString());
-                for(int i = 0; i < edges.length; i++) {
-                    if(edges[i].equals(target)) {
-                        shift = i;
-                        break;
-                    }
-                }
-            } else {
-                shift = trng.nextInt(edgeUsed.length);
-            }
-            MapLocation[] shifted = new MapLocation[edges.length];
-            int k = 0;
-            for(int j = shift + 1; j < edges.length; j++) {
-                shifted[k++] = edges[j];
-            }
-            for(int j = 0; j <= shift; j++) {
-                shifted[k++] = edges[j];
-            }
-            edges = shifted;
-            edgeUsed[edgeUsed.length - 1] = true;
-            res = edges[edges.length - 1];
-        } else {
-            int longestRun = 0;
-            int best = 0;
-            int lastUsed = -1;
-            for(int i = 0; i < edgeUsed.length; i++) {
-                if(edgeUsed[i]) {
-                    if(i - lastUsed > longestRun) {
-                        longestRun = i - lastUsed;
-                        best = (lastUsed + i) / 2;
-                    }
-                    System.out.println(i + " " + lastUsed);
-                    lastUsed = i;
-                }
-            }
-            assert(!edgeUsed[best]);
-            edgeUsed[best] = true;
-            res = edges[best];
-        }
-        if(rc.getLocation().distanceSquaredTo(res) <= 25) return scoutTarget();
+        if(initialTargets.size() > 0) {
+            res = initialTargets.get(0);
+            initialTargets.remove(0);
+        } else res = genAggroTarget(trng);
         rc.setIndicatorLine(rc.getLocation(), res, 255, 0, 255);
         return res;
     }
@@ -140,19 +77,43 @@ public abstract class Tower extends Robot {
     public void init() throws GameActionException {
         level = 0;
         kids = new ArrayList<>();
-        int j = 0;
-        for(int i = 0; i < rc.getMapWidth(); i++) {
-            edges[j++] = new MapLocation(i, 0);
+        MapLocation[] edges = {
+            new MapLocation(2, 2),
+            new MapLocation(rc.getMapWidth() / 2, 2),
+            new MapLocation(rc.getMapWidth() - 3, 2),
+            new MapLocation(rc.getMapWidth() - 3, rc.getMapHeight() / 2),
+            new MapLocation(rc.getMapWidth() - 3, rc.getMapHeight() - 3),
+            new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() - 3),
+            new MapLocation(2, rc.getMapHeight() - 3),
+            new MapLocation(2, rc.getMapHeight() / 2),
+        };
+        int closest = 0;
+        double closestDistSquared = rc.getLocation().distanceSquaredTo(edges[0]) / 1.4;
+        for(int i = 7; i > 0; i--) {
+            double distSquared = rc.getLocation().distanceSquaredTo(edges[i]);
+            if(i % 2 == 0) distSquared /= 1.4;
+            if(distSquared < closestDistSquared) {
+                closest = i;
+                closestDistSquared = rc.getLocation().distanceSquaredTo(edges[i]);
+            }
         }
-        for(int i = 1; i < rc.getMapHeight(); i++) {
-            edges[j++] = new MapLocation(rc.getMapWidth() - 1, i);
+        boolean atCentre = rc.getLocation().distanceSquaredTo(centre) < closestDistSquared;
+        initialTargets.add(centre);
+        if(closest % 2 == 1) {
+            initialTargets.add(edges[(closest + 1) % 8]);
+            initialTargets.add(edges[(closest + 7) % 8]);
+        } else {
+            initialTargets.add(edges[(closest + 2) % 8]);
+            initialTargets.add(edges[(closest + 6) % 8]);
         }
-        for(int i = rc.getMapWidth() - 2; i >= 0; i--) {
-            edges[j++] = new MapLocation(i, rc.getMapHeight() - 1);
+        if(rc.getLocation().distanceSquaredTo(initialTargets.get(1)) > rc.getLocation().distanceSquaredTo(initialTargets.get(2))) {
+            MapLocation temp = initialTargets.get(1);
+            initialTargets.set(1, initialTargets.get(2));
+            initialTargets.set(2, temp);
         }
-        for(int i = rc.getMapHeight() - 2; i >= 1; i--) {
-            edges[j++] = new MapLocation(0, i);
-        }
+        if(atCentre) initialTargets.add(edges[closest]);
+        if(!(primaryStrategy instanceof StarterPaintTowerStrategy)) initialTargets.remove(0);
+        rc.setIndicatorLine(rc.getLocation(), edges[closest], 0, 255, 255);
     }
 
     @Override

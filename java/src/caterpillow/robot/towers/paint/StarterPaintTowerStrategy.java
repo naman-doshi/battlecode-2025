@@ -33,7 +33,6 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
     public StarterPaintTowerStrategy() throws GameActionException {
         todo = 1;
         bot = (Tower) Game.bot;
-        bot.goForEnemy = true;
         rng = new Random(seed);
         strats = new ArrayList<>();
         strats.add(new UnstuckStrategy());

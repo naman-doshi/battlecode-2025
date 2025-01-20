@@ -29,19 +29,19 @@ public class ScoutStrategy extends Strategy {
     Strategy refillStrategy;
     Strategy attackTowerStrategy;
 
-    WeakAggroRoamStrategy roamStrategy;
+    ScoutRoamStrategy roamStrategy;
 
     public ScoutStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
         visitedRuins = new LinkedList<>();
         rng = new Random(seed);
-        roamStrategy = new WeakAggroRoamStrategy();
+        roamStrategy = new ScoutRoamStrategy();
         skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
     }
 
     public ScoutStrategy(MapLocation target) throws GameActionException {
         this();
-        roamStrategy = new WeakAggroRoamStrategy(target);
+        roamStrategy = new ScoutRoamStrategy(target);
     }
 
     @Override
@@ -49,11 +49,7 @@ public class ScoutStrategy extends Strategy {
         return false;
     }
 
-    @Override
-    public void runTick() throws GameActionException {
-        indicate("SCOUTING " + isInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
-        visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
-
+    public boolean tryStrats() throws GameActionException {
         if (attackTowerStrategy == null) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
@@ -61,7 +57,7 @@ public class ScoutStrategy extends Strategy {
             }
         }
 
-        if (tryStrategy(attackTowerStrategy)) return;
+        if (tryStrategy(attackTowerStrategy)) return true;
         attackTowerStrategy = null;
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
@@ -75,11 +71,11 @@ public class ScoutStrategy extends Strategy {
                 if (nearest != null) {
                     bot.refill(nearest);
                 }
-//                refillStrategy = new WeakRefillStrategy(0.2);
+                // refillStrategy = new WeakRefillStrategy(0.2);
             }
         }
 
-        if (tryStrategy(refillStrategy)) return;
+        if (tryStrategy(refillStrategy)) return true;
         refillStrategy = null;
 
         if (handleRuinStrategy == null) {
@@ -94,13 +90,20 @@ public class ScoutStrategy extends Strategy {
                 handleRuinStrategy = null;
             } else {
                 handleRuinStrategy.runTick();
-                return;
+                return true;
             }
         }
+        return false;
+    }
 
-        
+    @Override
+    public void runTick() throws GameActionException {
+        indicate("SCOUTING " + isInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
+        visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
+        if(tryStrats()) return;
         roamStrategy.runTick();
+        if(tryStrats()) return;
         if (getPaintLevel() > 0.7 && rc.senseMapInfo(rc.getLocation()).getPaint().equals(PaintType.EMPTY) && rc.canAttack(rc.getLocation())) {
             bot.checkerboardAttack(rc.getLocation());
         }
