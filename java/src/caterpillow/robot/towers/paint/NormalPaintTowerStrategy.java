@@ -48,7 +48,6 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 // trng.nextInt(0, 1) == 0 ? new RushSpawner() : new NullSpawner(),
-                
                 new LoopedSpawner(
                         SRPSpawner::new,
                         () -> new ConditionalSpawner(

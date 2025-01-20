@@ -59,6 +59,7 @@ public class SRPStrategy extends Strategy {
         towerStratCooldown = 0;
         skipCooldown = (w + h) / 2;
         roamStrategy = new ExplorationRoamStrategy();
+        CellTracker.initSRPArrays();
     }
     public SRPStrategy(MapLocation target) throws GameActionException {
         this();

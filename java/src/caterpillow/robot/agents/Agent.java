@@ -16,8 +16,7 @@ import static caterpillow.tracking.CellTracker.postMove;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Util;
-import static caterpillow.util.Util.dead;
-import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.*;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
@@ -95,7 +94,6 @@ public abstract class Agent extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
-        
         // kms so i dont bleed paint from other bots
         if (rc.getPaint() < 5) {
             ticksRanOutOfPaint++;

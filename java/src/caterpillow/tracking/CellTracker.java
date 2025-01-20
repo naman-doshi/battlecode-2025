@@ -3,6 +3,7 @@ package caterpillow.tracking;
 import battlecode.common.*;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
+import caterpillow.util.Profiler;
 
 import java.util.ArrayList;
 
@@ -35,9 +36,12 @@ public class CellTracker {
         nearbyCnt = 0;
         maxX = rc.getMapWidth();
         maxY = rc.getMapHeight();
-        CellTracker.ignoreCooldown = new int[maxX][maxY];
-        CellTracker.bad = new boolean[maxX][maxY];
-        CellTracker.processed = new int[maxX][maxY];
+    }
+
+    public static void initSRPArrays() {
+        ignoreCooldown = new int[maxX][maxY];
+        bad = new boolean[maxX][maxY];
+        processed = new int[maxX][maxY];
     }
 
     private static void lazyInit() {

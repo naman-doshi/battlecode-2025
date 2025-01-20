@@ -39,6 +39,7 @@ public abstract class Tower extends Robot {
         for (Packet packet : packets) {
             pm.send(newBot.getID(), packet);
         }
+        indicate(newBot.getID() + "");
         return newBot.getID();
     }
 

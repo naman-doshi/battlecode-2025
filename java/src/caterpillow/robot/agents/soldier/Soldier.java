@@ -46,6 +46,7 @@ public class Soldier extends Agent {
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
+        indicate("strategy packet received");
         switch (packet.strategyID) {
             case STARTER_STRAT:
                 primaryStrategy = new StarterStrategy();
