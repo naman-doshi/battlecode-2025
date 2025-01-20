@@ -1,17 +1,19 @@
 changes made:
-    - use TowerTracker, RobotTracker, etc for getNearest functions which are more specific
-    - StrongRefillStrategy now actually tries really hard to refill
-    - WeakRefillStrategy will only look or towers in vision and otherwise give up
+- splashers dont walk on stuff
 
 general:
 - fix tle
 - hill climb macro strats
+    - kinda sus of refill
 - dont make the scouts fully split up
     - group the first pair of scouts and make them split off after maybe
     - try to minimise the amount of time spent pending on coin
-- strategy logic was changed after fixing some bugs which made some things better and some things worse
-    - keep the behaviour we want, etc
-    - a big one is refill logic
+- make spawners wait TWO ticks before spawning at 1k coin
+- after optimising srp stuff, make scouts double as srp placers
 
 alex:
 - why are you using markers to communicate what tower type when you could have just started building
+
+andy:
+- fix pathfinder
+    - soldiers get stuck near the edge of the map
