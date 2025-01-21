@@ -148,7 +148,7 @@ public class SRPStrategy extends Strategy {
         }
         refillStrategy = null;
 
-        if (ticksExisted >= 1) {
+        if (CellTracker.hasInitSRP) {
             GamePredicate<MapLocation> pred = loc -> {
                 int x = loc.x;
                 int y = loc.y;

@@ -11,6 +11,7 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
+import caterpillow.tracking.CellTracker;
 
 public class Soldier extends Agent {
 

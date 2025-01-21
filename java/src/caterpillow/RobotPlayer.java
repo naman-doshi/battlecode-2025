@@ -98,8 +98,10 @@ public class RobotPlayer {
                 if(bot instanceof Splasher && ticksExisted > 3) Profiler.begin();
                 // Initialiser.upd();
                 time = rc.getRoundNum();
-                CellTracker.updateTick();
-                RobotTracker.updateTick();
+                if (ticksExisted > 0) {
+                    CellTracker.updateTick();
+                    RobotTracker.updateTick();
+                }
                 Game.upd();
                 pm.read();
                 TowerTracker.runTick();

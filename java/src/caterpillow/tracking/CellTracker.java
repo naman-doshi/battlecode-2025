@@ -32,7 +32,7 @@ public class CellTracker {
     public static int enemyPaintCnt;
     public static MapLocation[] enemyPaints;
 
-    private static boolean hasInitSRP = false;
+    public static boolean hasInitSRP = false;
 
     @SuppressWarnings("unchecked")
     public static void init() throws GameActionException {
@@ -45,7 +45,7 @@ public class CellTracker {
     }
 
     private static void lazyInit() {
-        if (ignoreCooldown == null && rc.getType() == SOLDIER && bot != null && ((Agent) bot).primaryStrategy instanceof SRPStrategy) {
+        if (ignoreCooldown == null && ticksExisted >= 1 && rc.getType() == SOLDIER && bot != null && ((Agent) bot).primaryStrategy instanceof SRPStrategy) {
             ignoreCooldown = new int[mapWidth][mapHeight];
             processed = new int[mapWidth][mapHeight];
         }

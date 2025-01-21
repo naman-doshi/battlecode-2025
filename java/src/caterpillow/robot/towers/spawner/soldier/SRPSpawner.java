@@ -20,7 +20,7 @@ public class SRPSpawner extends Spawner {
     @Override
     public boolean spawn() throws GameActionException {
         if (shouldSpawn()) {
-            MapInfo loc = getSpawnLoc(SOLDIER);
+            MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
             if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
                 MapLocation target = bot.scoutTarget();
                 bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SRP_STRAT, encodeLoc(target)));
