@@ -62,12 +62,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
             reset = false;
         }
         target = to;
-        if(leftTurnHist.containsKey(rc.getLocation()) && (stackSize == 0 || leftTurn == leftTurnHist.get(rc.getLocation()))) {
-            leftTurn = !leftTurnHist.get(rc.getLocation());
-            stackSize = 1;
-            topDir = leftTurn ? bottomDir.rotateLeft() : bottomDir.rotateRight();
-            rc.setIndicatorDot(rc.getLocation(), 255, 255, 0);
-        }
+        // if(leftTurnHist.containsKey(rc.getLocation()) && (stackSize == 0 || leftTurn == leftTurnHist.get(rc.getLocation()))) {
+        //     leftTurn = !leftTurnHist.get(rc.getLocation());
+        //     stackSize = 1;
+        //     topDir = leftTurn ? bottomDir.rotateLeft() : bottomDir.rotateRight();
+        //     rc.setIndicatorDot(rc.getLocation(), 255, 255, 0);
+        // }
         if (leftTurn) {
             if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
                 if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
@@ -209,16 +209,17 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 stackSize = 0;
                 continue;
             }
-            if (stackSize == 0 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
-                if(trng.nextInt(0, 1) == 0) {
-                    if (canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
-                    else if (canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
-                    else leftTurn = trng.nextInt(0, 1) == 1; // change later
-                } else {
-                    if (canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
-                    else if (canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
-                    else leftTurn = trng.nextInt(0, 1) == 1; // change later
-                }
+            if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
+                leftTurn = trng.nextInt(0, 1) == 0;
+                // if(trng.nextInt(0, 1) == 0) {
+                //     if (canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
+                //     else if (canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
+                //     else leftTurn = trng.nextInt(0, 1) == 1; // change later
+                // } else {
+                //     if (canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
+                //     else if (canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
+                //     else leftTurn = trng.nextInt(0, 1) == 1; // change later
+                // }
             }
             if (leftTurn) topDir = topDir.rotateLeft();
             else topDir = topDir.rotateRight();
@@ -269,10 +270,10 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     void makeMove(Direction dir, boolean lastMove) throws GameActionException {
         if (dir != null && rc.canMove(dir)) {
-            if(stackSize > 0) {
-                // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
-                leftTurnHist.put(rc.getLocation(), leftTurn);
-            }
+            // if(stackSize > 0) {
+            //     // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
+            //     leftTurnHist.put(rc.getLocation(), leftTurn);
+            // }
             if(lastMove) ((Agent) bot).lastMove(dir);
             else ((Agent) bot).move(dir);
         }

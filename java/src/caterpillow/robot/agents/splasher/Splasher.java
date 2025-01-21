@@ -26,8 +26,7 @@ public class Splasher extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        // pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy());
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Splasher) Game.bot;
     }
@@ -39,7 +38,7 @@ public class Splasher extends Agent {
     public Pair<MapLocation, Boolean> bestAttackLocation() throws GameActionException {
         MapLocation[] attackable = rc.getAllLocationsWithinRadiusSquared(rc.getLocation(), 4);
 
-        int bestScore = 12; // minimum score (exclusive)
+        int bestScore = 11; // minimum score (exclusive)
         MapLocation bestLoc = null;
         boolean bestPaint = false; // is secondary?
         for (MapLocation loc : attackable) {
@@ -71,7 +70,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -94,7 +93,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -117,7 +116,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -140,7 +139,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -163,7 +162,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -186,7 +185,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -209,7 +208,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -232,7 +231,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;
@@ -255,7 +254,7 @@ public class Splasher extends Agent {
                     break;
                 case PaintType.ENEMY_PRIMARY:
                 case PaintType.ENEMY_SECONDARY:
-                    score += 2;
+                    score += 3;
                     break;
                 }
                 if(allyTiles == 3) break;

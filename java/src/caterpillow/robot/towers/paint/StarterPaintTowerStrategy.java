@@ -15,6 +15,7 @@ import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
@@ -46,15 +47,30 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
+                // new LoopedSpawner(
+                //         () -> new LoopedSpawner(2,
+                //                 () -> new ConditionalSpawner(
+                //                         () -> Game.gameStage == GameStage.EARLY,
+                //                         new SRPSpawner(),
+                //                         new SplasherSpawner()
+                //                 )
+                //         ),
+                //         OffenceMopperSpawner::new
+                // )
                 new LoopedSpawner(
-                        () -> new LoopedSpawner(2,
-                                () -> new ConditionalSpawner(
-                                        () -> Game.gameStage == GameStage.EARLY,
-                                        new SRPSpawner(),
-                                        new SplasherSpawner()
-                                )
+                        SRPSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new SRPSpawner(),
+                                new SplasherSpawner()
                         ),
-                        OffenceMopperSpawner::new
+                        OffenceMopperSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> Game.gameStage == GameStage.EARLY,
+                                new SRPSpawner(),
+                                new SplasherSpawner()
+                        ),
+                        PassiveMopperSpawner::new
                 )
         ));
     }

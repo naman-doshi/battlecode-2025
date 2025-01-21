@@ -4,14 +4,16 @@ import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Agent;
-import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.util.Util.*;
 import caterpillow.pathfinding.*;
 import caterpillow.util.Pair;
+import caterpillow.util.Profiler;
+import static java.lang.Math.*;
 
 public class SplasherAttackTowerStrategy extends Strategy {
 
@@ -48,17 +50,31 @@ public class SplasherAttackTowerStrategy extends Strategy {
         }
     }
 
+    boolean canHitTower(MapLocation loc) {
+        return abs(loc.x - target.x) + abs(loc.y - target.y) <= 4;
+    }
+
     @Override
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER AT " + target);
         if(isInDanger(rc.getLocation())) {
             tryAttack();
             if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
-                safeSquare = getNearestCell(c -> !isInDanger(c.getMapLocation())).getMapLocation();
+                safeSquare = getNearestLocation(loc -> !isInDanger(loc));
             }
             pathfinder.makeMove(safeSquare);
-        } else if(rc.isMovementReady() && rc.isActionReady()) {
-            pathfinder.makeMove(target);
+        } else if(rc.isMovementReady()) {
+            if(downgrade(rc.senseRobotAtLocation(target).type) == UnitType.LEVEL_ONE_DEFENSE_TOWER) {
+                safeSquare = null;
+            } else {
+                if(safeSquare == null || isInDanger(safeSquare) || !canHitTower(safeSquare)) {
+                    safeSquare = getNearestLocation(loc -> canHitTower(loc) && !isInDanger(loc));
+                }
+            }
+            Direction move = safeSquare != null ? pathfinder.getMove(safeSquare) : pathfinder.getMove(target);
+            if(move != null && rc.canMove(move) && (!isInDanger(rc.getLocation().add(move)) || rc.isActionReady())) {
+                pathfinder.makeMove(move);
+            }
             tryAttack();
         }
     }

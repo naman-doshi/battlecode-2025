@@ -8,8 +8,10 @@ import caterpillow.Game;
 import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-
+import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+import caterpillow.robot.agents.splasher.SplasherAttackTowerStrategy;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
+import static caterpillow.tracking.TowerTracker.*;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.*;
 import caterpillow.util.Pair;
@@ -25,6 +27,7 @@ public class SplasherAggroStrategy extends Strategy {
     MapLocation lastSeenTower;
 
     Strategy refillStrategy;
+    Strategy attackTowerStrategy;
     Strategy roamStrategy;
 
     public SplasherAggroStrategy() throws GameActionException {
@@ -42,6 +45,7 @@ public class SplasherAggroStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
 
+        indicate("SPLASHER");
         // don't delete this, i want to test whether it should retreat to lastSeenTower or Game.origin on actual scrims
         RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType());
         if (nearest != null) {
@@ -53,6 +57,15 @@ public class SplasherAggroStrategy extends Strategy {
         }
         if (tryStrategy(refillStrategy)) return;
         refillStrategy = null;
+
+        if(attackTowerStrategy == null) {
+            RobotInfo tower = getNearestVisibleTower(info -> info.team != team);
+            if(tower != null) {
+                attackTowerStrategy = new SplasherAttackTowerStrategy(tower.getLocation());
+            }
+        }
+        if(tryStrategy(attackTowerStrategy)) return;
+        attackTowerStrategy = null;
 
         Pair<MapLocation, Boolean> res = bot.bestAttackLocation();
         MapLocation target = res.first;

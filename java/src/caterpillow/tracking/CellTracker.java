@@ -219,6 +219,82 @@ public class CellTracker {
         }
     }
 
+    public static MapLocation getNearestLocation(GamePredicate<MapLocation> pred) throws GameActionException {
+        switch (nearbyCnt) {
+        case 69: if (pred.test(nearby[68].getMapLocation())) return nearby[68].getMapLocation();
+        case 68: if (pred.test(nearby[67].getMapLocation())) return nearby[67].getMapLocation();
+        case 67: if (pred.test(nearby[66].getMapLocation())) return nearby[66].getMapLocation();
+        case 66: if (pred.test(nearby[65].getMapLocation())) return nearby[65].getMapLocation();
+        case 65: if (pred.test(nearby[64].getMapLocation())) return nearby[64].getMapLocation();
+        case 64: if (pred.test(nearby[63].getMapLocation())) return nearby[63].getMapLocation();
+        case 63: if (pred.test(nearby[62].getMapLocation())) return nearby[62].getMapLocation();
+        case 62: if (pred.test(nearby[61].getMapLocation())) return nearby[61].getMapLocation();
+        case 61: if (pred.test(nearby[60].getMapLocation())) return nearby[60].getMapLocation();
+        case 60: if (pred.test(nearby[59].getMapLocation())) return nearby[59].getMapLocation();
+        case 59: if (pred.test(nearby[58].getMapLocation())) return nearby[58].getMapLocation();
+        case 58: if (pred.test(nearby[57].getMapLocation())) return nearby[57].getMapLocation();
+        case 57: if (pred.test(nearby[56].getMapLocation())) return nearby[56].getMapLocation();
+        case 56: if (pred.test(nearby[55].getMapLocation())) return nearby[55].getMapLocation();
+        case 55: if (pred.test(nearby[54].getMapLocation())) return nearby[54].getMapLocation();
+        case 54: if (pred.test(nearby[53].getMapLocation())) return nearby[53].getMapLocation();
+        case 53: if (pred.test(nearby[52].getMapLocation())) return nearby[52].getMapLocation();
+        case 52: if (pred.test(nearby[51].getMapLocation())) return nearby[51].getMapLocation();
+        case 51: if (pred.test(nearby[50].getMapLocation())) return nearby[50].getMapLocation();
+        case 50: if (pred.test(nearby[49].getMapLocation())) return nearby[49].getMapLocation();
+        case 49: if (pred.test(nearby[48].getMapLocation())) return nearby[48].getMapLocation();
+        case 48: if (pred.test(nearby[47].getMapLocation())) return nearby[47].getMapLocation();
+        case 47: if (pred.test(nearby[46].getMapLocation())) return nearby[46].getMapLocation();
+        case 46: if (pred.test(nearby[45].getMapLocation())) return nearby[45].getMapLocation();
+        case 45: if (pred.test(nearby[44].getMapLocation())) return nearby[44].getMapLocation();
+        case 44: if (pred.test(nearby[43].getMapLocation())) return nearby[43].getMapLocation();
+        case 43: if (pred.test(nearby[42].getMapLocation())) return nearby[42].getMapLocation();
+        case 42: if (pred.test(nearby[41].getMapLocation())) return nearby[41].getMapLocation();
+        case 41: if (pred.test(nearby[40].getMapLocation())) return nearby[40].getMapLocation();
+        case 40: if (pred.test(nearby[39].getMapLocation())) return nearby[39].getMapLocation();
+        case 39: if (pred.test(nearby[38].getMapLocation())) return nearby[38].getMapLocation();
+        case 38: if (pred.test(nearby[37].getMapLocation())) return nearby[37].getMapLocation();
+        case 37: if (pred.test(nearby[36].getMapLocation())) return nearby[36].getMapLocation();
+        case 36: if (pred.test(nearby[35].getMapLocation())) return nearby[35].getMapLocation();
+        case 35: if (pred.test(nearby[34].getMapLocation())) return nearby[34].getMapLocation();
+        case 34: if (pred.test(nearby[33].getMapLocation())) return nearby[33].getMapLocation();
+        case 33: if (pred.test(nearby[32].getMapLocation())) return nearby[32].getMapLocation();
+        case 32: if (pred.test(nearby[31].getMapLocation())) return nearby[31].getMapLocation();
+        case 31: if (pred.test(nearby[30].getMapLocation())) return nearby[30].getMapLocation();
+        case 30: if (pred.test(nearby[29].getMapLocation())) return nearby[29].getMapLocation();
+        case 29: if (pred.test(nearby[28].getMapLocation())) return nearby[28].getMapLocation();
+        case 28: if (pred.test(nearby[27].getMapLocation())) return nearby[27].getMapLocation();
+        case 27: if (pred.test(nearby[26].getMapLocation())) return nearby[26].getMapLocation();
+        case 26: if (pred.test(nearby[25].getMapLocation())) return nearby[25].getMapLocation();
+        case 25: if (pred.test(nearby[24].getMapLocation())) return nearby[24].getMapLocation();
+        case 24: if (pred.test(nearby[23].getMapLocation())) return nearby[23].getMapLocation();
+        case 23: if (pred.test(nearby[22].getMapLocation())) return nearby[22].getMapLocation();
+        case 22: if (pred.test(nearby[21].getMapLocation())) return nearby[21].getMapLocation();
+        case 21: if (pred.test(nearby[20].getMapLocation())) return nearby[20].getMapLocation();
+        case 20: if (pred.test(nearby[19].getMapLocation())) return nearby[19].getMapLocation();
+        case 19: if (pred.test(nearby[18].getMapLocation())) return nearby[18].getMapLocation();
+        case 18: if (pred.test(nearby[17].getMapLocation())) return nearby[17].getMapLocation();
+        case 17: if (pred.test(nearby[16].getMapLocation())) return nearby[16].getMapLocation();
+        case 16: if (pred.test(nearby[15].getMapLocation())) return nearby[15].getMapLocation();
+        case 15: if (pred.test(nearby[14].getMapLocation())) return nearby[14].getMapLocation();
+        case 14: if (pred.test(nearby[13].getMapLocation())) return nearby[13].getMapLocation();
+        case 13: if (pred.test(nearby[12].getMapLocation())) return nearby[12].getMapLocation();
+        case 12: if (pred.test(nearby[11].getMapLocation())) return nearby[11].getMapLocation();
+        case 11: if (pred.test(nearby[10].getMapLocation())) return nearby[10].getMapLocation();
+        case 10: if (pred.test(nearby[9].getMapLocation())) return nearby[9].getMapLocation();
+        case 9:  if (pred.test(nearby[8].getMapLocation())) return nearby[8].getMapLocation();
+        case 8:  if (pred.test(nearby[7].getMapLocation())) return nearby[7].getMapLocation();
+        case 7:  if (pred.test(nearby[6].getMapLocation())) return nearby[6].getMapLocation();
+        case 6:  if (pred.test(nearby[5].getMapLocation())) return nearby[5].getMapLocation();
+        case 5:  if (pred.test(nearby[4].getMapLocation())) return nearby[4].getMapLocation();
+        case 4:  if (pred.test(nearby[3].getMapLocation())) return nearby[3].getMapLocation();
+        case 3:  if (pred.test(nearby[2].getMapLocation())) return nearby[2].getMapLocation();
+        case 2:  if (pred.test(nearby[1].getMapLocation())) return nearby[1].getMapLocation();
+        case 1:  if (pred.test(nearby[0].getMapLocation())) return nearby[0].getMapLocation();
+        case 0:  return null;
+        default: throw new IllegalArgumentException("nearbyCnt exceeds 69");
+        }
+    }
+
     public static void updateChange() throws GameActionException {
         // run at the end of every turn loop
         if (rc.getType().isRobotType()) {
