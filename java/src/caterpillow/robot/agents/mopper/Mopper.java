@@ -29,18 +29,18 @@ public class Mopper extends Agent {
 
     public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
         return getBestRobot((a, b) -> {
-            int a1 = a.getType().ordinal();
-            int b1 = b.getType().ordinal();
-            int h1 = a.getPaintAmount();
-            int h2 = b.getPaintAmount();
-            if (a1 == b1) {
-                if (h1 > h2) return b;
-                else return a;
-            } else {
-                if (a1 < b1) return a;
-                else return b;
-            }
-        }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
+                int a1 = a.getType().ordinal();
+                int b1 = b.getType().ordinal();
+                int h1 = a.getPaintAmount();
+                int h2 = b.getPaintAmount();
+                if (a1 == b1) {
+                    if (h1 > h2) return b;
+                    else return a;
+                } else {
+                    if (a1 < b1) return a;
+                    else return b;
+                }
+            }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
     }
 
     public RobotInfo getBestTarget() throws GameActionException {
@@ -62,14 +62,14 @@ public class Mopper extends Agent {
             // stupid code
             int cnt = 0;
             for (Direction related : relatedDirections(dir)) {
-                
+
                 // first layer
                 MapLocation possibleAttackLoc = rc.getLocation().add(related);
                 if (rc.canSenseLocation(possibleAttackLoc)) {
                     RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
                     if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
                 }
-                
+
                 // second layer
                 possibleAttackLoc = possibleAttackLoc.add(dir);
                 if (rc.canSenseLocation(possibleAttackLoc)) {
@@ -139,19 +139,19 @@ public class Mopper extends Agent {
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-            case DEFENCE_STRAT:
-                primaryStrategy = new MopperDefenceStrategy();
-                break;
-            case OFFENCE_STRAT:
-                primaryStrategy = new MopperOffenceStrategy();
-                break;
-            case RESPAWN_STRAT:
-                primaryStrategy = new MopperOffenceStrategy();
-                secondaryStrategy = new MopperRespawnStrategy();
-                break;
-            case PASSIVE_STRAT:
-                primaryStrategy = new MopperPassiveStrategy();
-                break;
+        case DEFENCE_STRAT:
+            primaryStrategy = new MopperDefenceStrategy();
+            break;
+        case OFFENCE_STRAT:
+            primaryStrategy = new MopperOffenceStrategy();
+            break;
+        case RESPAWN_STRAT:
+            primaryStrategy = new MopperOffenceStrategy();
+            secondaryStrategy = new MopperRespawnStrategy();
+            break;
+        case PASSIVE_STRAT:
+            primaryStrategy = new MopperPassiveStrategy();
+            break;
         }
     }
 }

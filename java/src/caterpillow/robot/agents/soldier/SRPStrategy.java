@@ -162,7 +162,7 @@ public class SRPStrategy extends Strategy {
 
             if (traverseStrategy == null || !pred.test(traverseStrategy.target)) {
                 MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));
-                if (info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0, true);
+                if (info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
                 else traverseStrategy = null;
             }
             if (traverseStrategy != null && traverseStrategy.isComplete()) {
@@ -173,6 +173,7 @@ public class SRPStrategy extends Strategy {
                 traverseStrategy = null;
             }
         }
+        bot.lastMove = true;
         if(traverseStrategy != null) {
             traverseStrategy.runTick();
         } else {

@@ -70,6 +70,7 @@ public class SplasherAggroStrategy extends Strategy {
         Pair<MapLocation, Boolean> res = bot.bestAttackLocation();
         MapLocation target = res.first;
         boolean paintType = res.second;
+        bot.lastMove = true;
         if (target != null) {
             if(rc.canAttack(target)) {
                 rc.attack(target, paintType);
@@ -77,7 +78,7 @@ public class SplasherAggroStrategy extends Strategy {
                 // target = bot.bestAttackLocation().first;
                 // if(target != null) bot.pathfinder.makeMove(target);
             } else {
-                bot.pathfinder.makeLastMove(bot.pathfinder.getMove(target));
+                bot.pathfinder.makeMove(bot.pathfinder.getMove(target));
                 if(rc.canAttack(target)) rc.attack(target, paintType);
             }
         }

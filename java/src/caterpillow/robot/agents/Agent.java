@@ -59,19 +59,17 @@ public abstract class Agent extends Robot {
         return 0;
     }
 
+    public boolean lastMove = false;
     public void move(Direction dir) throws GameActionException {
         rc.move(dir);
         Game.pos = rc.getLocation();
         postMove(dir, false);
-        RobotTracker.updateTick();
+        // we can skip updating some stuff if moving is the last thing we do in a turn
+        if(!lastMove) {
+            RobotTracker.updateTick();
+        }
     }
 
-    // we can skip updating some stuff if moving is the last thing we do in a turn
-    public void lastMove(Direction dir) throws GameActionException {
-        rc.move(dir);
-        Game.pos = rc.getLocation();
-        postMove(dir, true);
-    }
 
     public void setParent(RobotInfo parent) {
         assert parent != null;
@@ -105,6 +103,7 @@ public abstract class Agent extends Robot {
 
     @Override
     public void runTick() throws GameActionException {
+        lastMove = false;
         // kms so i dont bleed paint from other bots
         if (rc.getPaint() < 5) {
             ticksRanOutOfPaint++;

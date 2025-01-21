@@ -18,7 +18,6 @@ public class AggroRoamStrategy extends Strategy {
     Agent bot;
     MapLocation target;
     Random rng;
-    boolean lastMove;
 
     List<MapLocation> targets;
 
@@ -32,12 +31,6 @@ public class AggroRoamStrategy extends Strategy {
         }
         targets.add(Config.getEnemySpawnList(rng).getFirst()); // fk it we go into their spawn
         target = targets.getFirst();
-        lastMove = false;
-    }
-
-    public AggroRoamStrategy(boolean b) throws GameActionException {
-        this();
-        lastMove = b;
     }
 
     @Override
@@ -54,7 +47,7 @@ public class AggroRoamStrategy extends Strategy {
             }
             target = targets.getFirst();
         }
-        bot.pathfinder.makeMove(target, lastMove);
+        bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);
     }
 }

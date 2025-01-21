@@ -237,17 +237,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     @Override
     public Direction makeMove(MapLocation to) throws GameActionException {
-        return makeMove(to, false);
-    }
-
-    @Override
-    public Direction makeMove(MapLocation to, boolean lastMove) throws GameActionException {
         Direction dir = null;
         if (rc.isMovementReady()) {
             dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
                 //assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
-                makeMove(dir, lastMove);
+                makeMove(dir);
             } else {
                 // emergency!!!
                 // System.out.println("emergency!!!");
@@ -257,7 +252,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     avoid = m -> false;
                     dir = getMove(to);
                     if (dir != null && rc.canMove(dir)) {
-                        makeMove(dir, lastMove);
+                        makeMove(dir);
                     }
                     avoid = opred;
                 }
@@ -268,30 +263,20 @@ public class BugnavPathfinder extends AbstractPathfinder {
         return dir;
     }
 
-    void makeMove(Direction dir, boolean lastMove) throws GameActionException {
+    @Override
+    public void makeMove(Direction dir) throws GameActionException {
         if (dir != null && rc.canMove(dir)) {
             // if(stackSize > 0) {
             //     // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
             //     leftTurnHist.put(rc.getLocation(), leftTurn);
             // }
-            if(lastMove) ((Agent) bot).lastMove(dir);
-            else ((Agent) bot).move(dir);
+            ((Agent) bot).move(dir);
         }
         expected = rc.getLocation();
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }
         // indicate("LeftTurn: " + leftTurn);
-    }
-
-    @Override
-    public void makeMove(Direction dir) throws GameActionException {
-        makeMove(dir, false);
-    }
-
-    @Override
-    public void makeLastMove(Direction dir) throws GameActionException {
-        makeMove(dir, true);
     }
 
     @Override
