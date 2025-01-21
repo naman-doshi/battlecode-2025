@@ -1317,135 +1317,8 @@ print("}")
         int x = Game.pos.x;
         int y = Game.pos.y;
         if (rc.getType() == SOLDIER && bot != null && ((Agent) bot).primaryStrategy instanceof SRPStrategy && ticksExisted >= SRP_DELAY) {
-            switch (dir) {
-                case EAST:
-                    x += 4;
-                    if (x < mapWidth) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y -= 1;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 1;
-                    y -= 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 6;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 1;
-                    y -= 7;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    y += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 2;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    break;
-                case NORTHEAST:
-                    x += 3;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 1;
-                    y += 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    y -= 3;
-                    if (x < mapWidth) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 4;
-                    y += 4;
-                    if (y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 4;
-                    y -= 5;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 3;
-                    y += 3;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 4;
-                    y -= 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 1;
-                    y -= 5;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 2;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    break;
-                case NORTH:
+            switch (dir.ordinal()) {
+                case 0:
                     y += 4;
                     if (y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
@@ -1496,7 +1369,388 @@ print("}")
                         switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     break;
-                case NORTHWEST:
+                case 1:
+                    x += 3;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    y += 1;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y -= 3;
+                    if (x < mapWidth) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 4;
+                    y += 4;
+                    if (y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    y -= 5;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 3;
+                    y += 3;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    y -= 1;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 1;
+                    y -= 5;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 2;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 2:
+                    x += 4;
+                    if (x < mapWidth) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 1;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    y -= 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 6;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    y -= 7;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 2;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 3:
+                    x += 2;
+                    y -= 3;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 1;
+                    y += 1;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 3;
+                    y -= 2;
+                    if (y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    y += 4;
+                    if (x < mapWidth) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 5;
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 3;
+                    y += 3;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    y -= 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 5;
+                    y -= 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 4:
+                    y -= 4;
+                    if (y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 4;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 6;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 7;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 5:
+                    x -= 3;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 1;
+                    y -= 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 2;
+                    y += 3;
+                    if (x >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    y -= 4;
+                    if (y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 4;
+                    y += 5;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 3;
+                    y -= 3;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 4;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 1;
+                    y += 5;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 6:
+                    x -= 4;
+                    if (x >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 1;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 1;
+                    y += 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 6;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 1;
+                    y += 7;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 2;
+                    y -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 7:
                     x -= 2;
                     y += 3;
                     if (x >= 0 && y < mapHeight) {
@@ -1572,685 +1826,431 @@ print("}")
                         switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     break;
-                case WEST:
-                    x -= 4;
-                    if (x >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y += 1;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 1;
+            }
+        } else if (!isLast) {
+            switch (dir.ordinal()) {
+                case 0:
                     y += 4;
-                    if (x >= 0 && y < mapHeight) {
+                    if (y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y -= 6;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 1;
-                    y += 7;
-                    if (x >= 0 && y < mapHeight) {
+                    if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 2;
-                    y -= 2;
                     if (x >= 0 && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    break;
-                case SOUTHWEST:
-                    x -= 3;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 1;
+                    x += 4;
                     y -= 1;
-                    if (x >= 0 && y >= 0) {
+                    if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    x -= 6;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 7;
+                    y -= 1;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
                     }
                     x -= 2;
-                    y += 3;
-                    if (x >= 0) {
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 4;
-                    y -= 4;
-                    if (y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 4;
-                    y += 5;
                     if (x >= 0 && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
+                    x -= 2;
                     y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 3;
-                    y -= 3;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 4;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 1;
-                    y += 5;
                     if (x >= 0 && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     break;
-                case SOUTH:
-                    y -= 4;
-                    if (y >= 0) {
+                case 1:
+                    x += 3;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 1;
-                    if (x >= 0 && y >= 0) {
+                    y += 1;
+                    if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 2;
-                    if (x < mapWidth && y >= 0) {
+                    y -= 3;
+                    if (x < mapWidth) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 4;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
+                    y += 4;
+                    if (y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 6;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x -= 7;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 4;
+                    y -= 5;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 3;
+                    y += 3;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 4;
+                    y -= 1;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 1;
+                    y -= 5;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    break;
+                case 2:
+                    x += 4;
+                    if (x < mapWidth) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 1;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 1;
+                    y -= 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y += 6;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 1;
+                    y -= 7;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
                     }
                     x += 2;
                     y += 2;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    y += 2;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
                     }
                     break;
-                case SOUTHEAST:
+                case 3:
                     x += 2;
                     y -= 3;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 1;
                     y += 1;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 3;
                     y -= 2;
                     if (y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 4;
                     y += 4;
                     if (x < mapWidth) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 5;
                     y -= 4;
                     if (x >= 0 && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 2;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 3;
                     y += 3;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     y += 2;
                     if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 1;
                     y -= 4;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x -= 5;
                     y -= 1;
                     if (x >= 0 && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 4;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     x += 2;
                     y += 2;
                     if (x < mapWidth && y >= 0) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
                     }
                     y += 4;
                     if (x < mapWidth && y < mapHeight) {
                         mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                        switch (processed[x][y]) { case 0: staticCheck(x, y, mapInfos[x][y]); }
+                    }
+                    break;
+                case 4:
+                    y -= 4;
+                    if (y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 6;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 7;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    y += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    break;
+                case 5:
+                    x -= 3;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 1;
+                    y -= 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    y += 3;
+                    if (x >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 4;
+                    y -= 4;
+                    if (y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    y += 5;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 3;
+                    y -= 3;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    y += 1;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 1;
+                    y += 5;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 4;
+                    if (x < mapWidth && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    break;
+                case 6:
+                    x -= 4;
+                    if (x >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y += 1;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 1;
+                    y += 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 6;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 1;
+                    y += 7;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    y -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 2;
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    break;
+                case 7:
+                    x -= 2;
+                    y += 3;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 1;
+                    y -= 1;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 3;
+                    y += 2;
+                    if (y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    y -= 4;
+                    if (x >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 5;
+                    y += 4;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 3;
+                    y -= 3;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 2;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 1;
+                    y += 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x += 5;
+                    y += 1;
+                    if (x < mapWidth && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 4;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    x -= 2;
+                    y -= 2;
+                    if (x >= 0 && y < mapHeight) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
+                    }
+                    y -= 4;
+                    if (x >= 0 && y >= 0) {
+                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
                     }
                     break;
             }
 
-        } else if (!isLast) {
-            switch (dir) {
-                case EAST:
-                    x += 4;
-                    if (x < mapWidth) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 1;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y -= 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 6;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y -= 7;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case NORTHEAST:
-                    x += 3;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y += 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y -= 3;
-                    if (x < mapWidth) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    y += 4;
-                    if (y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    y -= 5;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 3;
-                    y += 3;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    y -= 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y -= 5;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case NORTH:
-                    y += 4;
-                    if (y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    y -= 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 6;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 7;
-                    y -= 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case NORTHWEST:
-                    x -= 2;
-                    y += 3;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y -= 1;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 3;
-                    y += 2;
-                    if (y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    y -= 4;
-                    if (x >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 5;
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 3;
-                    y -= 3;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y += 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 5;
-                    y += 1;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case WEST:
-                    x -= 4;
-                    if (x >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 1;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y += 4;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 6;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y += 7;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y -= 2;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case SOUTHWEST:
-                    x -= 3;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y -= 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 2;
-                    y += 3;
-                    if (x >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    y -= 4;
-                    if (y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    y += 5;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 3;
-                    y -= 3;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y += 5;
-                    if (x >= 0 && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case SOUTH:
-                    y -= 4;
-                    if (y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 4;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 6;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 7;
-                    y += 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y -= 2;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-                case SOUTHEAST:
-                    x += 2;
-                    y -= 3;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 1;
-                    y += 1;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 3;
-                    y -= 2;
-                    if (y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    y += 4;
-                    if (x < mapWidth) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 5;
-                    y -= 4;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 3;
-                    y += 3;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 2;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 1;
-                    y -= 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x -= 5;
-                    y -= 1;
-                    if (x >= 0 && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 4;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    x += 2;
-                    y += 2;
-                    if (x < mapWidth && y >= 0) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    y += 4;
-                    if (x < mapWidth && y < mapHeight) {
-                        mapInfos[x][y] = rc.senseMapInfo(new MapLocation(x, y));
-                    }
-                    break;
-            }
         }
         if (!isLast) {
             updateNearest();
