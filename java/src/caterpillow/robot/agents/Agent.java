@@ -8,6 +8,8 @@ import battlecode.common.UnitType;
 import caterpillow.Config;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
+
+import caterpillow.Game;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
@@ -59,14 +61,16 @@ public abstract class Agent extends Robot {
 
     public void move(Direction dir) throws GameActionException {
         rc.move(dir);
-        postMove(dir);
+        Game.pos = rc.getLocation();
+        postMove(dir, false);
         RobotTracker.updateTick();
     }
 
     // we can skip updating some stuff if moving is the last thing we do in a turn
     public void lastMove(Direction dir) throws GameActionException {
         rc.move(dir);
-        postMove(dir);
+        Game.pos = rc.getLocation();
+        postMove(dir, true);
     }
 
     public void setParent(RobotInfo parent) {

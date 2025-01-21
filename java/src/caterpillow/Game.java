@@ -14,6 +14,7 @@ public class Game {
     public static int time;
     public static int ticksExisted; // first runTick = 0
     public static RobotController rc;
+    public static MapLocation pos;
     public static PacketManager pm;
     public static Robot bot;
     public static MapLocation origin, centre;
@@ -34,6 +35,7 @@ public class Game {
     // this is called *before* the robot object is instantiated
     public static void preInit() throws GameActionException {
         Game.pm = new PacketManager();
+        Game.pos = rc.getLocation();
         trng = new Random(rc.getID() ^ time);
         symmetry = -1;
         isStarter = (time <= 10);
@@ -64,6 +66,7 @@ public class Game {
     // can change
     public static void upd() {
         int area = mapHeight * mapWidth;
+        pos = rc.getLocation();
         if (time - TowerTracker.lastTowerChange > 50 || rc.getNumberTowers() >= 4 * area / 900) {
             gameStage = GameStage.MID;
         }

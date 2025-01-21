@@ -59,7 +59,6 @@ public class SRPStrategy extends Strategy {
         towerStratCooldown = 0;
         skipCooldown = (w + h) / 2;
         roamStrategy = new ExplorationRoamStrategy();
-        CellTracker.initSRPArrays();
     }
     public SRPStrategy(MapLocation target) throws GameActionException {
         this();
@@ -76,7 +75,6 @@ public class SRPStrategy extends Strategy {
         indicate("SRP");
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
-        CellTracker.updateStates();
 
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
@@ -140,32 +138,33 @@ public class SRPStrategy extends Strategy {
             }
         }
 
-        GamePredicate<MapLocation> pred = loc -> {
-            int x = loc.x;
-            int y = loc.y;
-            if(x < 2 || y < 2 || x >= rc.getMapWidth() - 2 || y >= rc.getMapHeight() - 2) {
-                return false;
+        if (ticksExisted >= 1) {
+            GamePredicate<MapLocation> pred = loc -> {
+                int x = loc.x;
+                int y = loc.y;
+                if (x < 2 || y < 2 || x >= rc.getMapWidth() - 2 || y >= rc.getMapHeight() - 2) {
+                    return false;
+                }
+                if (CellTracker.ignoreCooldown[x][y] + CellTracker.ignoreCooldownReset >= time) return false;
+                if (rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
+                return true;
+            };
+
+            if (tryStrategy(refillStrategy)) return;
+            refillStrategy = null;
+
+            if (traverseStrategy == null || !pred.test(traverseStrategy.target)) {
+                MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));
+                if (info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
+                else traverseStrategy = null;
             }
-            if(CellTracker.bad[x][y]) return false;
-            if(CellTracker.ignoreCooldown[x][y] + CellTracker.ignoreCooldownReset >= time) return false;
-            if(rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
-            return true;
-        };
-
-        if (tryStrategy(refillStrategy)) return;
-        refillStrategy = null;
-
-        if(traverseStrategy == null || !pred.test(traverseStrategy.target)) {
-            MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));
-            if(info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
-            else traverseStrategy = null;
-        }
-        if(traverseStrategy != null && traverseStrategy.isComplete()) {
-            indicate(traverseStrategy.target.toString() + " reached");
-            rc.mark(traverseStrategy.target, false);
-            paintSRPStrategy = new PaintSRPStrategy(traverseStrategy.target);
-            paintSRPStrategy.runTick();
-            traverseStrategy = null;
+            if (traverseStrategy != null && traverseStrategy.isComplete()) {
+                indicate(traverseStrategy.target.toString() + " reached");
+                rc.mark(traverseStrategy.target, false);
+                paintSRPStrategy = new PaintSRPStrategy(traverseStrategy.target);
+                paintSRPStrategy.runTick();
+                traverseStrategy = null;
+            }
         }
         if(traverseStrategy != null) {
             traverseStrategy.runTick();

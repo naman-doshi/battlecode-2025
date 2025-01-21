@@ -25,12 +25,14 @@ public class LoopedSpawner extends Spawner {
         todo = new LinkedList<>();
         todo.addAll(Arrays.asList(stuff));
         cur = todo.peek().get();
-        loops = this.loops;
+        this.loops = loops * todo.size();
     }
 
     @Override
     public boolean spawn() throws GameActionException {
         while (cur.spawn()) {
+            loops--;
+            if (loops == 0) return true;
             todo.add(todo.peek());
             todo.remove();
             cur = todo.peek().get();

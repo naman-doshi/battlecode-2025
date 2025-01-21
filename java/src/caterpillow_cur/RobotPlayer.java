@@ -1,24 +1,24 @@
-package caterpillow;
+package caterpillow_cur;
 
 import battlecode.common.Clock;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotController;
-import static caterpillow.Game.bot;
-import static caterpillow.Game.pm;
-import static caterpillow.Game.ticksExisted;
-import static caterpillow.Game.time;
-import caterpillow.robot.agents.mopper.Mopper;
-import caterpillow.robot.agents.soldier.Soldier;
-import caterpillow.robot.agents.splasher.Splasher;
-import caterpillow.robot.towers.defence.DefenceTower;
-import caterpillow.robot.towers.money.MoneyTower;
-import caterpillow.robot.towers.paint.PaintTower;
-import caterpillow.tracking.CellTracker;
-import caterpillow.tracking.RobotTracker;
-import caterpillow.tracking.TowerTracker;
-import caterpillow.util.*;
-import static caterpillow.util.Util.*;
-import caterpillow.robot.agents.splasher.SplasherAggroStrategy;
+import static caterpillow_cur.Game.bot;
+import static caterpillow_cur.Game.pm;
+import static caterpillow_cur.Game.ticksExisted;
+import static caterpillow_cur.Game.time;
+import caterpillow_cur.robot.agents.mopper.Mopper;
+import caterpillow_cur.robot.agents.soldier.Soldier;
+import caterpillow_cur.robot.agents.splasher.Splasher;
+import caterpillow_cur.robot.towers.defence.DefenceTower;
+import caterpillow_cur.robot.towers.money.MoneyTower;
+import caterpillow_cur.robot.towers.paint.PaintTower;
+import caterpillow_cur.tracking.CellTracker;
+import caterpillow_cur.tracking.RobotTracker;
+import caterpillow_cur.tracking.TowerTracker;
+import caterpillow_cur.util.*;
+import static caterpillow_cur.util.Util.*;
+import caterpillow_cur.robot.agents.splasher.SplasherAggroStrategy;
 
 public class RobotPlayer {
 
