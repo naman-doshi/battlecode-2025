@@ -3,12 +3,12 @@ package caterpillow.robot.agents.splasher;
 import java.util.List;
 
 import battlecode.common.*;
-import caterpillow.util.Profiler;
+import caterpillow.robot.agents.roaming.AggroRoamStrategy;
 import caterpillow.Game;
 import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.*;
@@ -30,7 +30,7 @@ public class SplasherAggroStrategy extends Strategy {
     public SplasherAggroStrategy() throws GameActionException {
         bot = (Splasher) Game.bot;
         //assert (Game.origin != null) : "origin is null";
-        roamStrategy = new StrongAggroRoamStrategy(); // test\
+        roamStrategy = new AggroRoamStrategy(); // test\
         lastSeenTower = origin;
     }
 
@@ -51,9 +51,7 @@ public class SplasherAggroStrategy extends Strategy {
         if (refillStrategy == null && getPaintLevel() < 0.3) {
             refillStrategy = new WeakRefillStrategy(0.4);
         }
-        if (tryStrategy(refillStrategy)) {
-            return;
-        }
+        if (tryStrategy(refillStrategy)) return;
         refillStrategy = null;
 
         Pair<MapLocation, Boolean> res = bot.bestAttackLocation();

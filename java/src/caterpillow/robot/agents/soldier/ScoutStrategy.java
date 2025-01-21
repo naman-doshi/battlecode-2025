@@ -20,6 +20,7 @@ import caterpillow.util.Pair;
 public class ScoutStrategy extends Strategy {
 
     int skipCooldown = 0;
+    int refillCooldown;
     LinkedList<Pair<MapLocation, Integer>> visitedRuins;
 
     Soldier bot;
@@ -37,6 +38,7 @@ public class ScoutStrategy extends Strategy {
         rng = new Random(seed);
         roamStrategy = new ScoutRoamStrategy();
         skipCooldown = (mapHeight + mapWidth) / 2;
+        refillCooldown = -1000000;
     }
 
     public ScoutStrategy(MapLocation target) throws GameActionException {
@@ -60,24 +62,6 @@ public class ScoutStrategy extends Strategy {
         if (tryStrategy(attackTowerStrategy)) return true;
         attackTowerStrategy = null;
 
-        if (refillStrategy == null && getPaintLevel() < 0.8) {
-            // we need a solid amount of paint
-            if (handleRuinStrategy == null && getPaintLevel() < (RobotTracker.countNearbyFriendly(c -> isFriendly(c) && c.type == UnitType.SOLDIER) > 0 ? 0.3 : 0.6)) {
-//            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
-                refillStrategy = new StrongRefillStrategy(0.6);
-//                refillStrategy = new WeakRefillStrategy(0.4);
-            } else {
-                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
-                if (nearest != null) {
-                    bot.refill(nearest);
-                }
-                // refillStrategy = new WeakRefillStrategy(0.2);
-            }
-        }
-
-        if (tryStrategy(refillStrategy)) return true;
-        refillStrategy = null;
-
         if (handleRuinStrategy == null) {
             MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
             if (target1 != null) {
@@ -93,6 +77,28 @@ public class ScoutStrategy extends Strategy {
                 return true;
             }
         }
+
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            // we need a solid amount of paint
+            if (time - refillCooldown > 40 && handleRuinStrategy == null && getPaintLevel() < (RobotTracker.countNearbyFriendly(c -> isFriendly(c) && c.type == UnitType.SOLDIER) > 0 ? 0.3 : 0.6)) {
+//            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
+                refillStrategy = new StrongRefillStrategy(0.6);
+//                refillStrategy = new WeakRefillStrategy(0.4);
+            } else {
+                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
+                if (nearest != null) {
+                    bot.refill(nearest);
+                }
+                // refillStrategy = new WeakRefillStrategy(0.2);
+            }
+        }
+
+        if (tryStrategy(refillStrategy)) return true;
+        if (refillStrategy != null && !((StrongRefillStrategy) refillStrategy).success) {
+            refillCooldown = time;
+        }
+        refillStrategy = null;
+
         return false;
     }
 

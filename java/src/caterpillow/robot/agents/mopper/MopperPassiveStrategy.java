@@ -27,6 +27,8 @@ public class MopperPassiveStrategy extends Strategy {
 
     public List<GameSupplier<MapInfo>> suppliers;
     Strategy refillStrategy;
+    Strategy rescueStrategy;
+    Strategy teamRefillStrategy;
     Strategy roamStrategy;
 
     public MopperPassiveStrategy() throws GameActionException {
@@ -57,8 +59,6 @@ public class MopperPassiveStrategy extends Strategy {
                 return false;
             });
         });
-        // chase enemy cell
-        suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
     }
 
     @Override
@@ -71,36 +71,49 @@ public class MopperPassiveStrategy extends Strategy {
         indicate("PASSIVE MOPPER");
         // just checking and updating enemy locs:
 
-        if (refillStrategy == null && getPaintLevel() < 0.8) {
-            if (getPaintLevel() < 0.5) {
-                refillStrategy = new StrongRefillStrategy(0.8);
-            } else {
-                refillStrategy = new WeakRefillStrategy(0.2);
+        if (rescueStrategy == null) {
+            RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
+            if (nearest != null) {
+                rescueStrategy = new RescueStrategy(nearest.getLocation());
             }
         }
-        if (tryStrategy(refillStrategy)) return;
-        refillStrategy = null;
-
-        RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
-        if (nearest != null) {
-            bot.secondaryStrategy = new RescueStrategy(nearest.getLocation());
-            bot.runTick();
-            return;
-        }
-
-        // nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
-        // if (nearest != null) {
-        //     bot.secondaryStrategy = new RefillStrategy(nearest);
-        //     bot.runTick();
-        //     return;
-        // }
+        if (tryStrategy(rescueStrategy)) return;
+        rescueStrategy = null;
 
         for (GameSupplier<MapInfo> pred : suppliers) {
             MapInfo res = pred.get();
             if (res != null) {
                 // go towards, and attack if possible
-                bot.doBestAttack(res.getMapLocation());
                 bot.pathfinder.makeMove(res.getMapLocation());
+                bot.doBestAttack(res.getMapLocation());
+                return;
+            }
+        }
+
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            refillStrategy = new WeakRefillStrategy(0.2);
+        }
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
+
+        if (teamRefillStrategy == null) {
+            RobotInfo nearest = getNearestRobot(b -> isAllyAgent(b) && Config.shouldRefill(b));
+            if (nearest != null) {
+                teamRefillStrategy = new RefillStrategy(nearest);
+            }
+        }
+        if (tryStrategy(teamRefillStrategy)) return;
+        teamRefillStrategy = null;
+
+        MapInfo nearest = getNearestCell(c -> c.getPaint().isEnemy());
+        if (nearest != null) {
+            if (rc.canAttack(nearest.getMapLocation())) {
+                rc.attack(nearest.getMapLocation());
+            } else {
+                bot.pathfinder.makeMove(nearest.getMapLocation());
+                if (rc.canAttack(nearest.getMapLocation())) {
+                    rc.attack(nearest.getMapLocation());
+                }
                 return;
             }
         }

@@ -18,14 +18,24 @@ public class ExplorationRoamStrategy extends Strategy {
     Agent bot;
     public MapLocation target;
     Random rng;
+    boolean lastMove;
 
     public ExplorationRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         rng = new Random(seed);
+        lastMove = false;
+    }
+    public ExplorationRoamStrategy(boolean b) throws GameActionException {
+        this();
+        lastMove = b;
     }
     public ExplorationRoamStrategy(MapLocation target) throws GameActionException {
         this();
         this.target = target;
+    }
+    public ExplorationRoamStrategy(MapLocation target, boolean b) throws GameActionException {
+        this(target);
+        lastMove = b;
     }
 
     @Override
@@ -38,7 +48,7 @@ public class ExplorationRoamStrategy extends Strategy {
         while (target == null || rc.canSenseLocation(target)) {
             target = Config.genPassiveTarget(rng);
         }
-        bot.pathfinder.makeMove(target);
+        bot.pathfinder.makeMove(target, lastMove);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);
     }
 }

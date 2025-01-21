@@ -236,12 +236,17 @@ public class BugnavPathfinder extends AbstractPathfinder {
 
     @Override
     public Direction makeMove(MapLocation to) throws GameActionException {
+        return makeMove(to, false);
+    }
+
+    @Override
+    public Direction makeMove(MapLocation to, boolean lastMove) throws GameActionException {
         Direction dir = null;
         if (rc.isMovementReady()) {
             dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
                 //assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
-                makeMove(dir);
+                makeMove(dir, lastMove);
             } else {
                 // emergency!!!
                 // System.out.println("emergency!!!");
@@ -251,7 +256,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     avoid = m -> false;
                     dir = getMove(to);
                     if (dir != null && rc.canMove(dir)) {
-                        makeMove(dir);
+                        makeMove(dir, lastMove);
                     }
                     avoid = opred;
                 }

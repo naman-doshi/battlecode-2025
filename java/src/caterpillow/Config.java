@@ -58,6 +58,7 @@ public class Config {
 
     public static boolean shouldRefill(RobotInfo b) {
         assert rc.getType().equals(MOPPER);
+        if (b.getType() == MOPPER) return false;
         if (getPaintLevel(b) > 0.5) {
             return false;
         }

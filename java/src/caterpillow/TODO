@@ -1,18 +1,21 @@
 changes made:
-- splashers dont walk on stuff
+- gave building and spr painting priority over refills
+    - havnet done very conclusive tests, can be reverted
+- gave aggro splashers and moppers a different roam strategy
+    - havnet done very conclusive tests, can be reverted
+- minor bytecode optimisation, adding optoin to flag certain movement strategies as "lastMove" which saves some bytecodes on the trackers
+- seems to be similar to andy's previous commit
+    - will need to see how these different version perform against other bots
 
 general:
 - fix tle
 - hill climb macro strats
     - kinda sus of refill
-- dont make the scouts fully split up
-    - group the first pair of scouts and make them split off after maybe
-    - try to minimise the amount of time spent pending on coin
-- make spawners wait TWO ticks before spawning at 1k coin
 - after optimising srp stuff, make scouts double as srp placers
 - make soldiers prioritise ruin trolling even when doing other stuff like building
 - splasher tower kiting
 - add more gamestages for better macro
+- make scouts turn into srps later into the game
 
 alex:
 - why are you using markers to communicate what tower type when you could have just started building

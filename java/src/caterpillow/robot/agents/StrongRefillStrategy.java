@@ -28,6 +28,8 @@ public class StrongRefillStrategy extends Strategy {
     boolean hasRefilled;
     ArrayList<MapLocation> skipped;
 
+    public boolean success;
+
     int minPaintCapacity() {
         return (int) ((double) rc.getType().paintCapacity * minPaintCapacity);
     }
@@ -38,12 +40,15 @@ public class StrongRefillStrategy extends Strategy {
         this.minPaintCapacity = minPaintCapacity;
         hasRefilled = false;
         skipped = new ArrayList<>();
+        success = false;
     }
+
 
     @Override
     public boolean isComplete() throws GameActionException {
         if (rc.getPaint() >= minPaintCapacity()) {
             println("enough paint");
+            success = true;
             return true;
         }
 
@@ -65,6 +70,7 @@ public class StrongRefillStrategy extends Strategy {
                 if (target == null) {
                     // ff
                     println("wrap it up bud");
+                    success = false;
                     return true;
                 }
             }

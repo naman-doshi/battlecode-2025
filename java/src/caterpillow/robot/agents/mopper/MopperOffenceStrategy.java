@@ -10,7 +10,8 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
+import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameSupplier;
@@ -30,7 +31,6 @@ public class MopperOffenceStrategy extends Strategy {
     Strategy rescueStrategy;
     Strategy refillStrategy;
     Strategy roamStrategy;
-
 
     public MopperOffenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
@@ -68,7 +68,7 @@ public class MopperOffenceStrategy extends Strategy {
         //suppliers.add(() -> getNearestCell(c -> ticksExisted > 0 && c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]));
         // chase enemy cell
         suppliers.add(() -> getNearestCell(c -> c.getPaint().isEnemy()));
-        roamStrategy = new StrongAggroRoamStrategy();
+        roamStrategy = new AggroRoamStrategy();
     }
 
 

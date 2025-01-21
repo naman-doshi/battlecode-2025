@@ -23,7 +23,7 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.GamePredicate;
 import caterpillow.util.Pair;
-import caterpillow.util.Profiler;
+
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
@@ -40,6 +40,7 @@ public class SRPStrategy extends Strategy {
     LinkedList<Pair<MapLocation, Integer>> visitedRuins;
     int towerStratCooldown;
     int skipCooldown;
+    int refillCooldown;
     Random rng;
 
     Strategy roamStrategy;
@@ -58,11 +59,13 @@ public class SRPStrategy extends Strategy {
         visitedRuins = new LinkedList<>();
         towerStratCooldown = 0;
         skipCooldown = (w + h) / 2;
-        roamStrategy = new ExplorationRoamStrategy();
+        roamStrategy = new ExplorationRoamStrategy(true);
+        refillCooldown = -100000;
     }
+
     public SRPStrategy(MapLocation target) throws GameActionException {
         this();
-        roamStrategy = new ExplorationRoamStrategy(target);
+        roamStrategy = new ExplorationRoamStrategy(target, true);
     }
 
     @Override
@@ -86,23 +89,13 @@ public class SRPStrategy extends Strategy {
         if (tryStrategy(attackTowerStrategy)) return;
         attackTowerStrategy = null;
 
-        if (refillStrategy == null && getPaintLevel() < 0.8) {
-            if (handleRuinStrategy == null && getPaintLevel() < 0.5) {
-                refillStrategy = new StrongRefillStrategy(0.7);
-            } else {
-                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
-                if (nearest != null) {
-                    bot.refill(nearest);
-                }
-            }
-        }
-
         if (handleRuinStrategy == null && towerStratCooldown <= 0) {
             MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1);
             }
         }
+
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
                 visitedRuins.add(new Pair<>(handleRuinStrategy.target, time));
@@ -138,6 +131,23 @@ public class SRPStrategy extends Strategy {
             }
         }
 
+        if (refillStrategy == null && getPaintLevel() < 0.8) {
+            if (handleRuinStrategy == null && getPaintLevel() < 0.5 && time - refillCooldown > 40) {
+                refillStrategy = new StrongRefillStrategy(0.7);
+            } else {
+                RobotInfo nearest = TowerTracker.getNearestVisibleTower(b -> isFriendly(b) && rc.canTransferPaint(b.getLocation(), -1));
+                if (nearest != null) {
+                    bot.refill(nearest);
+                }
+            }
+        }
+
+        if (tryStrategy(refillStrategy)) return;
+        if (refillStrategy != null && !((StrongRefillStrategy) refillStrategy).success) {
+            refillCooldown = time;
+        }
+        refillStrategy = null;
+
         if (ticksExisted >= 1) {
             GamePredicate<MapLocation> pred = loc -> {
                 int x = loc.x;
@@ -150,12 +160,9 @@ public class SRPStrategy extends Strategy {
                 return true;
             };
 
-            if (tryStrategy(refillStrategy)) return;
-            refillStrategy = null;
-
             if (traverseStrategy == null || !pred.test(traverseStrategy.target)) {
                 MapInfo info = CellTracker.getNearestCell(c -> pred.test(c.getMapLocation()));
-                if (info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0);
+                if (info != null) traverseStrategy = new TraverseStrategy(info.getMapLocation(), 0, true);
                 else traverseStrategy = null;
             }
             if (traverseStrategy != null && traverseStrategy.isComplete()) {

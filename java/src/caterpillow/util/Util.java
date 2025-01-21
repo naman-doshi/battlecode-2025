@@ -505,7 +505,7 @@ public class Util {
     }
 
 
-    public static boolean isTowerBeingBuilt(MapLocation target) throws GameActionException {
+    public static boolean hasTowerCompletionDefinitelyBeenClaimed(MapLocation target) throws GameActionException {
         if (rc.canSenseLocation(target.add(Direction.NORTH))) {
             MapInfo info = rc.senseMapInfo(target.add(Direction.NORTH));
             return !info.getMark().equals(PaintType.EMPTY);
@@ -565,8 +565,9 @@ public class Util {
         return false;
     }
 
-    public static boolean isRuin(MapLocation loc) throws GameActionException {
-        if(!rc.senseMapInfo(loc).hasRuin()) return false;
+    public static boolean shouldBuildTowerHere(MapLocation loc) throws GameActionException {
+//        if(!rc.senseMapInfo(loc).hasRuin()) return false;
+        assert rc.senseMapInfo(loc).hasRuin();
         RobotInfo info = rc.senseRobotAtLocation(loc);
         return info == null || shouldConvertMoneyToPaint() && info.team.equals(team) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER);
     }

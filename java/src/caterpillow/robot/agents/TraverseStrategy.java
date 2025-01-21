@@ -15,11 +15,17 @@ public class TraverseStrategy extends Strategy {
     Agent bot;
     public MapLocation target;
     int distSquared;
+    boolean lastMove;
 
     public TraverseStrategy(MapLocation target, int distSquared) {
         bot = (Agent) Game.bot;
         this.target = target;
         this.distSquared = distSquared;
+        lastMove = false;
+    }
+    public TraverseStrategy(MapLocation target, int distSquared, boolean lastMove) {
+        this(target, distSquared);
+        this.lastMove = lastMove;
     }
 
     @Override
@@ -31,7 +37,7 @@ public class TraverseStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("TRAVELLING TO " + target);
         if (!rc.isMovementReady()) return;
-        bot.pathfinder.makeMove(target);
+        bot.pathfinder.makeMove(target, lastMove);
         rc.setIndicatorLine(rc.getLocation(), target, 255, 0, 0);
     }
 }
