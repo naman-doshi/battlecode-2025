@@ -5,8 +5,7 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.seed;
+import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 
 // pathfinding testing
@@ -30,7 +29,7 @@ public class WanderStrategy extends Strategy {
     public void runTick() throws GameActionException {
         if (!rc.isMovementReady()) return;
         if (target == null || rc.getLocation().equals(target)) {
-            target = new MapLocation(rng.nextInt(rc.getMapWidth()), rng.nextInt(rc.getMapHeight()));
+            target = new MapLocation(rng.nextInt(mapWidth), rng.nextInt(mapHeight));
         }
         bot.pathfinder.makeMove(target);
         rc.setIndicatorLine(rc.getLocation(), target, 0, 0, 255);

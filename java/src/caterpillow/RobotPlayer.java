@@ -16,8 +16,9 @@ import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
-import caterpillow.util.Profiler;
-import static caterpillow.util.Util.indicatorString;
+import caterpillow.util.*;
+import static caterpillow.util.Util.*;
+import caterpillow.robot.agents.splasher.SplasherAggroStrategy;
 
 public class RobotPlayer {
 
@@ -93,24 +94,27 @@ public class RobotPlayer {
         Game.postInit();
 
         while (true) {
-//            Initialiser.upd();
             try {
+                if(bot instanceof Splasher && ticksExisted > 3) Profiler.begin();
+                // Initialiser.upd();
                 time = rc.getRoundNum();
+                CellTracker.updateTick();
+                RobotTracker.updateTick();
                 Game.upd();
                 pm.read();
                 TowerTracker.runTick();
                 bot.runTick();
+                // Profiler.end("bot tick");
                 pm.flush();
                 ticksExisted++;
                 rc.setIndicatorString(indicatorString);
                 indicatorString = "";
+                Profiler.end();
                 Clock.yield();
-                CellTracker.updateTick();
-                RobotTracker.updateTick();
             } catch (Exception e) {
-                System.out.println(e);
+                e.printStackTrace();
+                Clock.yield();
             }
-            
         }
     }
 }

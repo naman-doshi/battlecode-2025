@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotController;
+import battlecode.common.*;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
 import caterpillow.tracking.TowerTracker;
@@ -26,6 +24,9 @@ public class Game {
     // this is for when we actually actually want random
     public static Random trng;
     public static int MAX_MAP_SIZE = 60;
+    public static int mapWidth;
+    public static int mapHeight;
+    public static Team team;
 
     public static int symmetry; // -1 = unknown, 0 = rotational, 1 = hor, 2 = ver
     public static Map<Integer, Integer> lastPainted;
@@ -48,7 +49,10 @@ public class Game {
 //                Game.origin = nearest.getLocation();
             }
         }
-        centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
+        mapWidth = rc.getMapWidth();
+        mapHeight = rc.getMapHeight();
+        centre = new MapLocation(mapWidth / 2, mapHeight / 2);
+        team = rc.getTeam();
         gameStage = GameStage.EARLY;
         seed = 0;
         lastPainted = new HashMap<>();
@@ -59,7 +63,7 @@ public class Game {
 
     // can change
     public static void upd() {
-        int area = rc.getMapHeight() * rc.getMapWidth();
+        int area = mapHeight * mapWidth;
         if (time - TowerTracker.lastTowerChange > 50 || rc.getNumberTowers() >= 4 * area / 900) {
             gameStage = GameStage.MID;
         }

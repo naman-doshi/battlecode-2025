@@ -24,15 +24,15 @@
 //    public static void init() throws GameActionException {
 //        switch (ticksExisted) {
 //            case 0:
-//                mapInfos = new MapInfo[rc.getMapWidth()][rc.getMapHeight()];
-//                lastUpdateTime = new int[rc.getMapWidth()][rc.getMapHeight()];
+//                mapInfos = new MapInfo[mapWidth][mapHeight];
+//                lastUpdateTime = new int[mapWidth][mapHeight];
 //                nearby = new MapInfo[69];
 //                nearbyCnt = 0;
-//                maxX = rc.getMapWidth();
-//                maxY = rc.getMapHeight();
+//                maxX = mapWidth;
+//                maxY = mapHeight;
 //                break;
 //            case 1:
-//                isNearRuin = new boolean[rc.getMapWidth()][rc.getMapHeight()];
+//                isNearRuin = new boolean[mapWidth][mapHeight];
 //        }
 //    }
 //

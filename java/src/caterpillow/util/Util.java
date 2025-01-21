@@ -81,15 +81,15 @@ public class Util {
     public final static int TOWER_COST = 1000;
 
     public static MapLocation flipHor(MapLocation loc) {
-        return new MapLocation(rc.getMapWidth() - 1 - loc.x, loc.y);
+        return new MapLocation(mapWidth - 1 - loc.x, loc.y);
     }
 
     public static MapLocation flipVer(MapLocation loc) {
-        return new MapLocation(loc.x, rc.getMapHeight() - 1 - loc.y);
+        return new MapLocation(loc.x, mapHeight - 1 - loc.y);
     }
 
     public static MapLocation rot180(MapLocation loc) {
-        return new MapLocation(rc.getMapWidth() - 1 - loc.x, rc.getMapHeight() - 1 - loc.y);
+        return new MapLocation(mapWidth - 1 - loc.x, mapHeight - 1 - loc.y);
     }
 
     // for debugging purposes
@@ -109,7 +109,7 @@ public class Util {
 
     final static int SIZE = 60;
     public static MapLocation decodeLoc(int code) {
-        // assert code < rc.getMapWidth() * SIZE : code + " is not a valid map code " + rc.getID();
+        // assert code < mapWidth * SIZE : code + " is not a valid map code " + rc.getID();
         return new MapLocation(code / SIZE, code % SIZE);
     }
 
@@ -128,8 +128,8 @@ public class Util {
     }
 
     public static Pair<Double, Double> relativeDistsToCentre(MapLocation loc) {
-        double relX = (double) loc.x / (double) rc.getMapWidth();
-        double relY = (double) loc.y / (double) rc.getMapHeight();
+        double relX = (double) loc.x / (double) mapWidth;
+        double relY = (double) loc.y / (double) mapHeight;
         return new Pair(abs(relX - 0.5), abs(relY - 0.5));
     }
 
@@ -146,8 +146,8 @@ public class Util {
 
 
         // also make the path as easy as possible between targets
-        int dist_hormiddle = Math.abs(src.x - Game.rc.getMapWidth() / 2);
-        int dist_vertmiddle = Math.abs(src.y - Game.rc.getMapHeight() / 2);
+        int dist_hormiddle = Math.abs(src.x - Game.mapWidth / 2);
+        int dist_vertmiddle = Math.abs(src.y - Game.mapHeight / 2);
         if (dist_hormiddle > dist_vertmiddle) {
             // first is hor
             enemyLocs.addLast(flipHor(src));
@@ -408,7 +408,7 @@ public class Util {
     }
 
     public static boolean isFriendly(RobotInfo info) {
-        return rc.getTeam().equals(info.getTeam());
+        return team.equals(info.getTeam());
     }
 
     public static boolean connectedByPaint(MapLocation src, MapLocation dest, boolean includeDest) throws GameActionException {
@@ -469,9 +469,6 @@ public class Util {
         dx /= magnitude;
         dy /= magnitude;
 
-        int mapWidth = rc.getMapWidth();
-        int mapHeight = rc.getMapHeight();
-
         double tMin = maxDist;
 
         if (dx < 0) {
@@ -516,7 +513,7 @@ public class Util {
     }
 
     public static MapLocation getOpposite(MapLocation cur) {
-        MapLocation centre = new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() / 2);
+        MapLocation centre = new MapLocation(mapWidth / 2, mapHeight / 2);
         int dx = centre.x - cur.x;
         int dy = centre.y - cur.y;
         return project(cur, new MapLocation(dx, dy));
@@ -571,6 +568,6 @@ public class Util {
     public static boolean isRuin(MapLocation loc) throws GameActionException {
         if(!rc.senseMapInfo(loc).hasRuin()) return false;
         RobotInfo info = rc.senseRobotAtLocation(loc);
-        return info == null || shouldConvertMoneyToPaint() && info.team.equals(rc.getTeam()) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER);
+        return info == null || shouldConvertMoneyToPaint() && info.team.equals(team) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER);
     }
 }

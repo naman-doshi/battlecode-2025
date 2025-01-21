@@ -310,7 +310,9 @@ public class BuildTowerStrategy extends QueueStrategy {
                 pathfinder.makeMove(target);
                 return;
             }
+            // Profiler.begin();
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
+            // Profiler.end("get next tile");
             if (res != null) {
                 if (rc.canAttack(res.first)) {
                     rc.attack(res.first, res.second);

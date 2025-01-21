@@ -2,8 +2,6 @@ package caterpillow.util;
 
 import battlecode.common.Clock;
 
-import java.util.ArrayList;
-
 import static caterpillow.Game.rc;
 
 public class Profiler {
@@ -36,7 +34,7 @@ public class Profiler {
         acc = 0;
     }
     public static void report(Object obj) {
-        System.out.println(obj.toString() + ": " + acc);
+        System.out.println(obj.toString() + ": " + (acc - 12) + (acc >= 17500 ? " EXCEEDED" : ""));
         acc = 0;
     }
 }

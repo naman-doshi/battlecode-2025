@@ -104,8 +104,8 @@ public class Graveyard {
 //        int nxt = nearbyCnt = infos.length;
 //        int x = rc.getLocation().x;
 //        int y = rc.getLocation().y;
-//        int maxX = rc.getMapWidth();
-//        int maxY = rc.getMapHeight();
+//        int maxX = mapWidth;
+//        int maxY = mapHeight;
 //        if (x < 4 || y < 4 || x + 4 >= maxX || y + 4 >= maxY) {
 //            nearby[--nxt] = mapInfos[x][y];
 //            if (x > 1)

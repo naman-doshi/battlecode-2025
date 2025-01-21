@@ -49,8 +49,8 @@ public class SRPStrategy extends Strategy {
     Strategy attackTowerStrategy;
     Strategy upgradeTowerStrategy;
 
-    int w = rc.getMapWidth();
-    int h = rc.getMapHeight();
+    int w = mapWidth;
+    int h = mapHeight;
 
     public SRPStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
@@ -77,7 +77,6 @@ public class SRPStrategy extends Strategy {
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
         towerStratCooldown--;
         CellTracker.updateStates();
-        Profiler.begin();
 
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));

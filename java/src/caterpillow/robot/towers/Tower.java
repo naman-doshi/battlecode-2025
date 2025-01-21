@@ -80,13 +80,13 @@ public abstract class Tower extends Robot {
         kids = new ArrayList<>();
         MapLocation[] edges = {
             new MapLocation(2, 2),
-            new MapLocation(rc.getMapWidth() / 2, 2),
-            new MapLocation(rc.getMapWidth() - 3, 2),
-            new MapLocation(rc.getMapWidth() - 3, rc.getMapHeight() / 2),
-            new MapLocation(rc.getMapWidth() - 3, rc.getMapHeight() - 3),
-            new MapLocation(rc.getMapWidth() / 2, rc.getMapHeight() - 3),
-            new MapLocation(2, rc.getMapHeight() - 3),
-            new MapLocation(2, rc.getMapHeight() / 2),
+            new MapLocation(mapWidth / 2, 2),
+            new MapLocation(mapWidth - 3, 2),
+            new MapLocation(mapWidth - 3, mapHeight / 2),
+            new MapLocation(mapWidth - 3, mapHeight - 3),
+            new MapLocation(mapWidth / 2, mapHeight - 3),
+            new MapLocation(2, mapHeight - 3),
+            new MapLocation(2, mapHeight / 2),
         };
         int closest = 0;
         double closestDistSquared = rc.getLocation().distanceSquaredTo(edges[0]) / 1.4;

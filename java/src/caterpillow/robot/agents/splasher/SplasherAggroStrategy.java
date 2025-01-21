@@ -2,10 +2,8 @@ package caterpillow.robot.agents.splasher;
 
 import java.util.List;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
+import caterpillow.util.Profiler;
 import caterpillow.Game;
 import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
@@ -14,6 +12,7 @@ import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.*;
+import caterpillow.util.Pair;
 
 public class SplasherAggroStrategy extends Strategy {
 
@@ -52,19 +51,23 @@ public class SplasherAggroStrategy extends Strategy {
         if (refillStrategy == null && getPaintLevel() < 0.3) {
             refillStrategy = new WeakRefillStrategy(0.4);
         }
-        if (tryStrategy(refillStrategy)) return;
+        if (tryStrategy(refillStrategy)) {
+            return;
+        }
         refillStrategy = null;
 
-        MapLocation target = bot.bestAttackLocation();
+        Pair<MapLocation, Boolean> res = bot.bestAttackLocation();
+        MapLocation target = res.first;
+        boolean paintType = res.second;
         if (target != null) {
             if(rc.canAttack(target)) {
-                rc.attack(target);
-                // move towards next target
-                target = bot.bestAttackLocation();
-                if(target != null) bot.pathfinder.makeMove(target);
+                rc.attack(target, paintType);
+                // move towards next target (too bytecode expensive)
+                // target = bot.bestAttackLocation().first;
+                // if(target != null) bot.pathfinder.makeMove(target);
             } else {
-                bot.pathfinder.makeMove(target);
-                if(rc.canAttack(target)) rc.attack(target);
+                bot.pathfinder.makeLastMove(bot.pathfinder.getMove(target));
+                if(rc.canAttack(target)) rc.attack(target, paintType);
             }
         }
         roamStrategy.runTick();

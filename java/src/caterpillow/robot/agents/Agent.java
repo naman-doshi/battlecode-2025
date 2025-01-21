@@ -17,6 +17,7 @@ import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Util;
 import static caterpillow.util.Util.*;
+import caterpillow.robot.agents.splasher.SplasherAggroStrategy;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;
@@ -60,6 +61,12 @@ public abstract class Agent extends Robot {
         rc.move(dir);
         postMove(dir);
         RobotTracker.updateTick();
+    }
+
+    // we can skip updating some stuff if moving is the last thing we do in a turn
+    public void lastMove(Direction dir) throws GameActionException {
+        rc.move(dir);
+        postMove(dir);
     }
 
     public void setParent(RobotInfo parent) {

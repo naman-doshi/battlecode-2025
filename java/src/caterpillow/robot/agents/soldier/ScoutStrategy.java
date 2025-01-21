@@ -36,7 +36,7 @@ public class ScoutStrategy extends Strategy {
         visitedRuins = new LinkedList<>();
         rng = new Random(seed);
         roamStrategy = new ScoutRoamStrategy();
-        skipCooldown = (rc.getMapHeight() + rc.getMapWidth()) / 2;
+        skipCooldown = (mapHeight + mapWidth) / 2;
     }
 
     public ScoutStrategy(MapLocation target) throws GameActionException {

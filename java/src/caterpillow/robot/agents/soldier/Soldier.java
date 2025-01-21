@@ -3,7 +3,7 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import static caterpillow.util.Util.*;
 
 import caterpillow.packet.packets.StrategyPacket;
@@ -22,9 +22,9 @@ public class Soldier extends Agent {
                 MapLocation loc = c.getMapLocation();
                 int res = 0;
                 if(loc.x < 4) res += 4 - loc.x;
-                if(loc.x > rc.getMapWidth() - 5) res += loc.x - (rc.getMapWidth() - 5);
+                if(loc.x > mapWidth - 5) res += loc.x - (mapWidth - 5);
                 if(loc.y < 4) res += 4 - loc.y;
-                if(loc.y > rc.getMapHeight() - 5) res += loc.y - (rc.getMapHeight() - 5);
+                if(loc.y > mapHeight - 5) res += loc.y - (mapHeight - 5);
                 return res;
         });
         primaryStrategy = new EmptyStrategy();

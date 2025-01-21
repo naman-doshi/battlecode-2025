@@ -9,10 +9,7 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.centre;
-import static caterpillow.Game.origin;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
+import static caterpillow.Game.*;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.guessEnemyLocs;
@@ -25,7 +22,7 @@ public class Config {
     // right now, we have too much paint in the endgame (when most towers are maxed)
     // we also need more chips on larger maps
     public static double targetRatio() {
-        int area = rc.getMapHeight() * rc.getMapWidth();
+        int area = mapHeight * mapWidth;
         double ratio = area < 1500 ? 0.63 : 0.7;
         if(TowerTracker.coinTowers < 4 && area >= 1500) ratio += 0.1;
         return ratio;
@@ -93,8 +90,8 @@ public class Config {
     }
 
     public static int moneyTowerThreshold() {
-        if(rc.getMapHeight() * rc.getMapWidth() <= 900) return 4;
-        if(rc.getMapHeight()* rc.getMapWidth() <= 1500) return 5;
+        if(mapHeight * mapWidth <= 900) return 4;
+        if(mapHeight * mapWidth <= 1500) return 5;
         return 6;
     }
 
@@ -116,41 +113,41 @@ public class Config {
 
     public static MapLocation genExplorationTarget(Random rng) {
         while (true) {
-            int x = rng.nextInt(0, rc.getMapWidth() - 1);
-            int y = rng.nextInt(0, rc.getMapHeight() - 1);
+            int x = rng.nextInt(0, mapWidth - 1);
+            int y = rng.nextInt(0, mapHeight - 1);
             MapLocation pivot = new MapLocation((rc.getLocation().x + origin.x) / 2, (rc.getLocation().y + origin.y) / 2);
             if (new MapLocation(x, y).distanceSquaredTo(rc.getLocation()) < 9 || new MapLocation(x, y).distanceSquaredTo(pivot) < 9) {
                 continue;
             }
             MapLocation moveDir = subtract(new MapLocation(x, y), pivot);
-            return project(pivot, moveDir, 0.7 * max(rc.getMapWidth(), rc.getMapHeight()));
+            return project(pivot, moveDir, 0.7 * max(mapWidth, mapHeight));
         }
     }
 
     public static MapLocation genAggroTarget(Random rng) {
         while (true) {
-            int x = rng.nextInt(0, rc.getMapWidth() - 1);
-            int y = rng.nextInt(0, rc.getMapHeight() - 1);
+            int x = rng.nextInt(0, mapWidth - 1);
+            int y = rng.nextInt(0, mapHeight - 1);
             MapLocation loc = new MapLocation(x, y);
             MapLocation pivot = origin;
             if (loc.distanceSquaredTo(pivot) < 9 || pivot.distanceSquaredTo(loc) < pivot.distanceSquaredTo(centre)) {
                 continue;
             }
             MapLocation moveDir = subtract(loc, pivot);
-            return project(pivot, moveDir, 0.8 * max(rc.getMapWidth(), rc.getMapHeight()));
+            return project(pivot, moveDir, 0.8 * max(mapWidth, mapHeight));
         }
     }
 
     public static MapLocation genPassiveTarget(Random rng) {
         while (true) {
-            int x = rng.nextInt(0, rc.getMapWidth() - 1);
-            int y = rng.nextInt(0, rc.getMapHeight() - 1);
+            int x = rng.nextInt(0, mapWidth - 1);
+            int y = rng.nextInt(0, mapHeight - 1);
             MapLocation pivot = rc.getLocation();
             if (new MapLocation(x, y).distanceSquaredTo(pivot) < 9) {
                 continue;
             }
             MapLocation moveDir = subtract(new MapLocation(x, y), pivot);
-            return project(pivot, moveDir, 0.5 * max(rc.getMapWidth(), rc.getMapHeight()));
+            return project(pivot, moveDir, 0.5 * max(mapWidth, mapHeight));
         }
     }
 

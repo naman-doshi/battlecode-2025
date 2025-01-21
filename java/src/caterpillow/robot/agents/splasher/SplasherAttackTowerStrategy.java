@@ -1,4 +1,4 @@
-package caterpillow.robot.agents.soldier;
+package caterpillow.robot.agents.splasher;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -9,21 +9,22 @@ import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import static caterpillow.tracking.CellTracker.getNearestCell;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInDanger;
+import static caterpillow.util.Util.*;
+import caterpillow.pathfinding.*;
+import caterpillow.util.Pair;
 
-// pathfinding testing
-public class AttackTowerStrategy extends Strategy {
+public class SplasherAttackTowerStrategy extends Strategy {
 
-    Agent bot;
+    Splasher bot;
     MapLocation target;
     MapLocation safeSquare;
     Direction lastMove;
+    AbstractPathfinder pathfinder;
 
-    public AttackTowerStrategy(MapLocation target) {
-        bot = (Agent) Game.bot;
+    public SplasherAttackTowerStrategy(MapLocation target) {
+        bot = (Splasher) Game.bot;
         this.target = target;
+        pathfinder = new BugnavPathfinder();
     }
 
     @Override
@@ -38,8 +39,11 @@ public class AttackTowerStrategy extends Strategy {
 
     public void tryAttack() throws GameActionException {
         if (rc.isActionReady()) {
-            if(rc.canAttack(target)) {
-                rc.attack(target);
+            Pair<MapLocation, Boolean> res = bot.bestAttackLocation();
+            MapLocation target = res.first;
+            boolean paintType = res.second;
+            if(target != null && rc.canAttack(target)) {
+                rc.attack(target, paintType);
             }
         }
     }
@@ -52,9 +56,9 @@ public class AttackTowerStrategy extends Strategy {
             if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
                 safeSquare = getNearestCell(c -> !isInDanger(c.getMapLocation())).getMapLocation();
             }
-            bot.pathfinder.makeMove(safeSquare);
+            pathfinder.makeMove(safeSquare);
         } else if(rc.isMovementReady() && rc.isActionReady()) {
-            bot.pathfinder.makeMove(target);
+            pathfinder.makeMove(target);
             tryAttack();
         }
     }

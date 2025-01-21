@@ -21,8 +21,8 @@ sorted_offsets = generate_sorted_offsets(max_distance)
 
 # print("int x = rc.getLocation().x;")
 # print("int y = rc.getLocation().y;")
-# print("int maxX = rc.getMapWidth();")
-# print("int maxY = rc.getMapHeight();")
+# print("int maxX = mapWidth;")
+# print("int maxY = mapHeight;")
 sorted_offsets.reverse()
 for x, y in sorted_offsets:
     x += 4

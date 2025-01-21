@@ -7,14 +7,12 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
-import static caterpillow.Game.bot;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
+import static caterpillow.Game.*;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
-
+import caterpillow.util.Profiler;
 
 public class BugnavPathfinder extends AbstractPathfinder {
     // temporary patch to make sure nothing breaks
@@ -27,7 +25,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public boolean leftTurn = false;
     public HashMap<MapLocation, Boolean> leftTurnHist = new HashMap<>();
     public int lastNonzeroStackTime = 0;
-    public GamePredicate<MapInfo> avoid;
     public GameFunction<MapInfo, Integer> cellPenalty;
     public boolean reset = false;
 
@@ -169,7 +166,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                         MapLocation loc = rc.getLocation().add(d).add(off);
                         if(!rc.onTheMap(loc)) continue;
                         RobotInfo robot = rc.senseRobotAtLocation(loc);
-                        if(robot != null && robot.team.equals(rc.getTeam())) {
+                        if(robot != null && robot.team.equals(team)) {
                             score++;
                         }
                     }
@@ -206,7 +203,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         while (!canMove(topDir))  {
             MapLocation nextLoc = rc.getLocation().add(topDir);
             // avoid following the edge of the map
-            if(nextLoc.x < 0 || nextLoc.y < 0 || nextLoc.x >= rc.getMapWidth() || nextLoc.y >= rc.getMapHeight()) {
+            if(nextLoc.x < 0 || nextLoc.y < 0 || nextLoc.x >= mapWidth || nextLoc.y >= mapHeight) {
                 leftTurn = !leftTurn;
                 topDir = bottomDir;
                 stackSize = 0;
@@ -247,6 +244,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 makeMove(dir);
             } else {
                 // emergency!!!
+                // System.out.println("emergency!!!");
                 if (avoid.test(rc.senseMapInfo(rc.getLocation()))) {
                     // super jank workaround
                     GamePredicate<MapInfo> opred = avoid;
@@ -264,21 +262,30 @@ public class BugnavPathfinder extends AbstractPathfinder {
         return dir;
     }
 
-    @Override
-    public void makeMove(Direction dir) throws GameActionException {
-        // rc.setIndicatorString("HERE " + rc.getLocation().toString() + " " + leftTurn + " " + stackSize + " " + topDir + " " + bottomDir + " " + dir);
+    void makeMove(Direction dir, boolean lastMove) throws GameActionException {
         if (dir != null && rc.canMove(dir)) {
             if(stackSize > 0) {
                 // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
                 leftTurnHist.put(rc.getLocation(), leftTurn);
             }
-            ((Agent) bot).move(dir);
+            if(lastMove) ((Agent) bot).lastMove(dir);
+            else ((Agent) bot).move(dir);
         }
         expected = rc.getLocation();
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }
         // indicate("LeftTurn: " + leftTurn);
+    }
+
+    @Override
+    public void makeMove(Direction dir) throws GameActionException {
+        makeMove(dir, false);
+    }
+
+    @Override
+    public void makeLastMove(Direction dir) throws GameActionException {
+        makeMove(dir, true);
     }
 
     @Override

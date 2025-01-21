@@ -7,7 +7,7 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -57,7 +57,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
             // donate paint to surrounding bots
             RobotInfo[] bots = rc.senseNearbyRobots();
             for (RobotInfo bot : bots) {
-                if (bot.getTeam() == rc.getTeam() && bot.getType().isRobotType()) {
+                if (bot.getTeam() == team && bot.getType().isRobotType()) {
                     int missing = bot.getType().paintCapacity - bot.getPaintAmount();
                     if (missing > 0) {
                         int amt = Math.min(rc.getPaint(), missing);
