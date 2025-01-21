@@ -30,7 +30,7 @@ public class Profiler {
         running = false;
     }
     public static void report() {
-        System.out.println(acc + (acc >= 17500 ? " EXCEEDED" : ""));
+        System.out.println((acc - 11) + (acc >= 17500 ? " EXCEEDED" : ""));
         acc = 0;
     }
     public static void report(Object obj) {

@@ -71,6 +71,8 @@ public class SplasherAttackTowerStrategy extends Strategy {
                     safeSquare = getNearestLocation(loc -> canHitTower(loc) && !isInDanger(loc));
                 }
             }
+            if(safeSquare != null) indicate("SAFE SQUARE: " + safeSquare);
+            else indicate("NO SAFE SQUARE");
             Direction move = safeSquare != null ? pathfinder.getMove(safeSquare) : pathfinder.getMove(target);
             if(move != null && rc.canMove(move) && (!isInDanger(rc.getLocation().add(move)) || rc.isActionReady())) {
                 pathfinder.makeMove(move);

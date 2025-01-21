@@ -59,19 +59,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 x--;
@@ -82,19 +82,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 y--;
@@ -105,19 +105,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 x++;
@@ -128,19 +128,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 x++;
@@ -151,19 +151,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 y++;
@@ -174,19 +174,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 y++;
@@ -197,19 +197,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 x--;
@@ -220,19 +220,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
                 x--;
@@ -243,19 +243,19 @@ public class Splasher extends Agent {
                     if(robot != null && robot.team != team) score += 1000;
                     continue;
                 }
-                switch(neigh.getPaint()) {
-                case PaintType.EMPTY:
-                    score++;
-                    break;
-                case PaintType.ALLY_PRIMARY:
-                    primaryTiles++;
-                case PaintType.ALLY_SECONDARY:
-                    allyTiles++;
-                    break;
-                case PaintType.ENEMY_PRIMARY:
-                case PaintType.ENEMY_SECONDARY:
-                    score += 3;
-                    break;
+                switch(neigh.getPaint().ordinal()) {
+                    case 0:
+                        score++;
+                        break;
+                    case 1:
+                        primaryTiles++;
+                    case 2:
+                        allyTiles++;
+                        break;
+                    case 3:
+                    case 4:
+                        score += 3;
+                        break;
                 }
                 if(allyTiles == 3) break;
             } while(false);
@@ -307,9 +307,9 @@ public class Splasher extends Agent {
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-        case AGGRO_STRAT:
-            primaryStrategy = new SplasherAggroStrategy();
-            break;
+            case AGGRO_STRAT:
+                primaryStrategy = new SplasherAggroStrategy();
+                break;
         }
     }
 
