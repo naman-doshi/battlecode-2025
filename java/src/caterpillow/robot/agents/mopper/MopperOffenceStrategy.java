@@ -95,7 +95,7 @@ public class MopperOffenceStrategy extends Strategy {
         if (tryStrategy(refillStrategy)) return;
         refillStrategy = null;
 
-        // run towards goal
+        // attack
         MapLocation target = bot.doBestAttack();
         if (target != null) {
             bot.pathfinder.makeMove(target);

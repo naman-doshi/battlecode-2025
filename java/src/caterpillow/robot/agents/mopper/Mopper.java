@@ -18,8 +18,6 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.tracking.CellTracker;
 import static caterpillow.util.Util.isEnemyAgent;
 import static caterpillow.util.Util.isInDanger;
-import static caterpillow.util.Util.orthDirections;
-import static caterpillow.util.Util.relatedDirections;
 
 public class Mopper extends Agent {
 
@@ -49,9 +47,9 @@ public class Mopper extends Agent {
 
     public List<Direction> possibleMovements() throws GameActionException {
         List<Direction> dirs = new ArrayList<>();
+        if (!rc.isMovementReady()) return dirs;
 
         // less bytecode than a loop??? idk
-        dirs.add(null);
         if (rc.canMove(Direction.NORTH)) dirs.add(Direction.NORTH);
         if (rc.canMove(Direction.SOUTH)) dirs.add(Direction.SOUTH);
         if (rc.canMove(Direction.EAST)) dirs.add(Direction.EAST);
@@ -66,8 +64,16 @@ public class Mopper extends Agent {
 
     public MapLocation doBestAttack() throws GameActionException {
         // im gonna kms
-        
+        MapLocation currentLoc = rc.getLocation();
+        List<Direction> possiblemoves = possibleMovements();
+        int currentX = currentLoc.x;
+        int currentY = currentLoc.y;
+
+        // targetloc is a good place to move to
         MapLocation targetLoc = null;
+
+        // first try steal paint from enemy
+        // greedy bc i cbb and i doubt it makes a real difference
     
         // try to steal paint from enemy
         MapInfo loc = CellTracker.getNearestCell(c -> {
@@ -78,58 +84,222 @@ public class Mopper extends Agent {
             return false;
         });
 
+        
+
         if (loc != null) {
-            if (rc.canAttack(loc.getMapLocation())) {
-                rc.attack(loc.getMapLocation());
-                return loc.getMapLocation();
+
+            MapLocation locLocation = loc.getMapLocation();
+
+            // if u can attack rn obv do that
+            if (rc.canAttack(locLocation)) {
+                rc.attack(locLocation);
+                return locLocation;
             }
-            targetLoc = loc.getMapLocation();
+
+            // move then attack if possible
+            for (Direction dir : possiblemoves) {
+                MapLocation nextLoc = currentLoc.add(dir);
+                // chucking constants to save bytecode rip
+                if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                    bot.move(dir);
+                    rc.attack(locLocation);
+                    return locLocation;
+                }
+            }
+
+            // otherwise update our target loc
+            targetLoc = locLocation;
+        }
+
+
+        // preprocess robots
+        RobotInfo[] robots = rc.senseNearbyRobots();
+        int[][] lookup = new int[9][9];
+        int x = currentX - 4;
+        int y = currentY - 4;
+        for (RobotInfo robot : robots) {
+            MapLocation robotLoc = robot.getLocation();
+            if (isEnemyAgent(robot) && !CellTracker.mapInfos[robotLoc.x][robotLoc.y].getPaint().isAlly()) {
+                int dx = robotLoc.x - x;
+                int dy = robotLoc.y - y;
+                lookup[dx][dy]++;
+            }
         }
 
         // try mop sweep
         Direction bestDirection = null;
+        Direction dirToMove = null;
         int bestCount = 0;
-        for (Direction dir : orthDirections) {
+    
 
-            // stupid code
-            int cnt = 0;
-            for (Direction related : relatedDirections(dir)) {
-
-                // first layer
-                MapLocation possibleAttackLoc = rc.getLocation().add(related);
-                if (rc.canSenseLocation(possibleAttackLoc)) {
-                    RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
-                    if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
-                }
-
-                // second layer
-                possibleAttackLoc = possibleAttackLoc.add(dir);
-                if (rc.canSenseLocation(possibleAttackLoc)) {
-                    RobotInfo robotThere = rc.senseRobotAtLocation(possibleAttackLoc);
-                    if (robotThere != null && isEnemyAgent(robotThere)) cnt++;
-                }
-            }
-
-            if (cnt > bestCount) {
-                bestCount = cnt;
-                bestDirection = dir;
-            }
+        // North
+        int northCount = 0;
+        // First layer
+        northCount += lookup[4][5]; // North
+        northCount += lookup[3][5]; // Northwest
+        northCount += lookup[5][5]; // Northeast
+        // Second layer
+        northCount += lookup[4][6]; // North + North
+        northCount += lookup[3][6]; // Northwest + North
+        northCount += lookup[5][6]; // Northeast + North
+        if (northCount > bestCount) {
+            bestCount = northCount;
+            bestDirection = Direction.NORTH;
         }
 
+        // South
+        int southCount = 0;
+        // First layer
+        southCount += lookup[4][3]; // South
+        southCount += lookup[3][3]; // Southwest
+        southCount += lookup[5][3]; // Southeast
+        // Second layer
+        southCount += lookup[4][2]; // South + South
+        southCount += lookup[3][2]; // Southwest + South
+        southCount += lookup[5][2]; // Southeast + South
+        if (southCount > bestCount) {
+            bestCount = southCount;
+            bestDirection = Direction.SOUTH;
+        }
+
+        // East
+        int eastCount = 0;
+        // First layer
+        eastCount += lookup[5][4]; // East
+        eastCount += lookup[5][5]; // Northeast
+        eastCount += lookup[5][3]; // Southeast
+        // Second layer
+        eastCount += lookup[6][4]; // East + East
+        eastCount += lookup[6][5]; // Northeast + East
+        eastCount += lookup[6][3]; // Southeast + East
+        if (eastCount > bestCount) {
+            bestCount = eastCount;
+            bestDirection = Direction.EAST;
+        }
+
+        // West
+        int westCount = 0;
+        // First layer
+        westCount += lookup[3][4]; // West
+        westCount += lookup[3][5]; // Northwest
+        westCount += lookup[3][3]; // Southwest
+        // Second layer
+        westCount += lookup[2][4]; // West + West
+        westCount += lookup[2][5]; // Northwest + West
+        westCount += lookup[2][3]; // Southwest + West
+        if (westCount > bestCount) {
+            bestCount = westCount;
+            bestDirection = Direction.WEST;
+        }
+
+        // do the same but for every loc we can move to
+        // for (Direction dir2 : possiblemoves) {
+            
+        //     MapLocation futureLoc = currentLoc.add(dir2);
+        //     int futurex = futureLoc.x;
+        //     int futurey = futureLoc.y;
+        //     int dx = futurex - currentX;
+        //     int dy = futurey - currentY;
+
+        //     northCount = 0;
+        //     // First layer
+        //     northCount += lookup[4 + dx][5 + dy]; // North
+        //     northCount += lookup[3 + dx][5 + dy]; // Northwest
+        //     northCount += lookup[5 + dx][5 + dy]; // Northeast
+        //     // Second layer
+        //     northCount += lookup[4 + dx][6 + dy]; // North + North
+        //     northCount += lookup[3 + dx][6 + dy]; // Northwest + North
+        //     northCount += lookup[5 + dx][6 + dy]; // Northeast + North
+        //     if (northCount > bestCount) {
+        //         bestCount = northCount;
+        //         bestDirection = Direction.NORTH;
+        //         dirToMove = dir2; // Verbatim assignment
+        //     }
+
+        //     // South
+        //     southCount = 0;
+        //     // First layer
+        //     southCount += lookup[4 + dx][3 + dy]; // South
+        //     southCount += lookup[3 + dx][3 + dy]; // Southwest
+        //     southCount += lookup[5 + dx][3 + dy]; // Southeast
+        //     // Second layer
+        //     southCount += lookup[4 + dx][2 + dy]; // South + South
+        //     southCount += lookup[3 + dx][2 + dy]; // Southwest + South
+        //     southCount += lookup[5 + dx][2 + dy]; // Southeast + South
+        //     if (southCount > bestCount) {
+        //         bestCount = southCount;
+        //         bestDirection = Direction.SOUTH;
+        //         dirToMove = dir2; // Verbatim assignment
+        //     }
+
+        //     // East
+        //     eastCount = 0;
+        //     // First layer
+        //     eastCount += lookup[5 + dx][4 + dy]; // East
+        //     eastCount += lookup[5 + dx][5 + dy]; // Northeast
+        //     eastCount += lookup[5 + dx][3 + dy]; // Southeast
+        //     // Second layer
+        //     eastCount += lookup[6 + dx][4 + dy]; // East + East
+        //     eastCount += lookup[6 + dx][5 + dy]; // Northeast + East
+        //     eastCount += lookup[6 + dx][3 + dy]; // Southeast + East
+        //     if (eastCount > bestCount) {
+        //         bestCount = eastCount;
+        //         bestDirection = Direction.EAST;
+        //         dirToMove = dir2; // Verbatim assignment
+        //     }
+
+        //     // West
+        //     westCount = 0;
+        //     // First layer
+        //     westCount += lookup[3 + dx][4 + dy]; // West
+        //     westCount += lookup[3 + dx][5 + dy]; // Northwest
+        //     westCount += lookup[3 + dx][3 + dy]; // Southwest
+        //     // Second layer
+        //     westCount += lookup[2 + dx][4 + dy]; // West + West
+        //     westCount += lookup[2 + dx][5 + dy]; // Northwest + West
+        //     westCount += lookup[2 + dx][3 + dy]; // Southwest + West
+        //     if (westCount > bestCount) {
+        //         bestCount = westCount;
+        //         bestDirection = Direction.WEST;
+        //         dirToMove = dir2; // Verbatim assignment
+        //     }
+
+        // }
+
         if (bestDirection != null && rc.canMopSwing(bestDirection)) {
-            rc.mopSwing(bestDirection);
-            return targetLoc;
+            if (dirToMove == null) {
+                rc.mopSwing(bestDirection);
+                return targetLoc;
+            } else if (rc.canMove(dirToMove)) {
+                bot.move(dirToMove);
+                rc.mopSwing(bestDirection);
+                return targetLoc;
+            }
         }
 
         // just paint
 
         loc = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
         if (loc != null) {
-            if (rc.canAttack(loc.getMapLocation())) {
-                rc.attack(loc.getMapLocation());
-                return loc.getMapLocation();
+
+            // not moving
+            MapLocation locLocation = loc.getMapLocation();
+            if (rc.canAttack(locLocation)) {
+                rc.attack(locLocation);
+                return targetLoc;
             }
-            targetLoc = loc.getMapLocation();
+
+            // moving?
+            for (Direction dir : possiblemoves) {
+                MapLocation nextLoc = currentLoc.add(dir);
+                if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                    bot.move(dir);
+                    rc.attack(locLocation);
+                    return targetLoc;
+                }
+            }
+
+            if (targetLoc == null) targetLoc = locLocation;
         }
 
         return targetLoc;

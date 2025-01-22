@@ -1,18 +1,10 @@
 package caterpillow.tracking;
 
-import battlecode.common.RobotInfo;
-import battlecode.common.Direction;
 import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import static caterpillow.Game.rc;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
-import caterpillow.util.Profiler;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static caterpillow.Game.*;
 
 public class RobotTracker {
 
