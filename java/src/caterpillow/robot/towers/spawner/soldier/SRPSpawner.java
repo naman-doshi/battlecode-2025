@@ -13,8 +13,11 @@ import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
 
 public class SRPSpawner extends Spawner {
+    int ticksShouldSpawn = 0;
     protected boolean shouldSpawn() {
-        return rc.getChips() >= SOLDIER.moneyCost + 1000;
+        if (rc.getChips() >= 1000) ticksShouldSpawn++;
+        else ticksShouldSpawn = 0;
+        return ticksShouldSpawn > 2 || rc.getChips() >= SOLDIER.moneyCost + 1000;
     }
 
     @Override
