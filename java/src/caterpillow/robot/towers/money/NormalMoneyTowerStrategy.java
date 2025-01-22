@@ -47,7 +47,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
-                TowerTracker.coinTowers % 2 == 0 ? new InstantScoutSpawner() : new NullSpawner(),
+                TowerTracker.coinTowers % 3 == 0 ? new InstantScoutSpawner() : new NullSpawner(),
                 // trng.nextInt(4) == 0
                 //     ? Game.gameStage == GameStage.EARLY ? new InstantScoutSpawner() : new InstantSRPSpawner()
                 //     : trng.nextInt(3) != 0
