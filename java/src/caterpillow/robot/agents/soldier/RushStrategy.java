@@ -79,7 +79,7 @@ public class RushStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        Profiler.begin();
+//        Profiler.begin();
         indicate("RUSHING TO " + todo);
 
         // become a scout once done
@@ -114,6 +114,6 @@ public class RushStrategy extends Strategy {
         if(tryStrats()) return;
         traverseStrategy.runTick();
         if(rc.isActionReady()) tryStrats();
-        Profiler.end("rush");
+//        Profiler.end("rush");
     }
 }

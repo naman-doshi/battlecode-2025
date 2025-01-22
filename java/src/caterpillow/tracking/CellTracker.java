@@ -57,6 +57,7 @@ public class CellTracker {
 
         }
     }
+
     public static MapInfo getBestCell(GameBinaryOperator<MapInfo> comp, GamePredicate<MapInfo> pred) throws GameActionException {
         MapInfo best = null;
         for (int i = nearbyCnt - 1; i >= 0; i--) {
@@ -69,6 +70,121 @@ public class CellTracker {
                 }
             }
         }
+        return best;
+    }
+
+    /*
+
+    print("MapInfo best = null;")
+print("x--;")
+print("y--;")
+dx = -1
+dy = -1
+for i in range(3):
+    for j in range(3):
+
+        if dx != 0 or dy != 0:
+            checks = []
+            if dx > 0:
+                checks.append(f"x < Game.mapWidth")
+            elif dx < 0:
+                checks.append(f"x >= 0")
+
+            if dy > 0:
+                checks.append(f"y < Game.mapHeight")
+            elif dy < 0:
+                checks.append(f"y >= 0")
+
+            print(f"if ({' && '.join(checks)}) {{")
+            print(f"\tMapInfo info = mapInfos[x][y];")
+            print("\tif (pred.test(info)) {")
+            print("\t\tif (best == null) best = info;")
+            print("\t\telse best = comp.apply(best, info);")
+            print("\t}")
+            print('}')
+
+        if j < 2:
+            if i % 2 == 0:
+                print("y++;")
+                dy += 1
+            else:
+                print("y--;")
+                dy -= 1
+        else:
+            print("x++;")
+            dx += 1
+
+     */
+
+    public static MapInfo getBestCellSquare(GameBinaryOperator<MapInfo> comp, GamePredicate<MapInfo> pred, int x, int y) throws GameActionException {
+        MapInfo best = null;
+        x--;
+        y--;
+        if (x >= 0 && y >= 0) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        y++;
+        if (x >= 0) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        y++;
+        if (x >= 0 && y < Game.mapHeight) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        x++;
+        if (y < Game.mapHeight) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        y--;
+        y--;
+        if (y >= 0) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        x++;
+        if (x < Game.mapWidth && y >= 0) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        y++;
+        if (x < Game.mapWidth) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        y++;
+        if (x < Game.mapWidth && y < Game.mapHeight) {
+            MapInfo info = mapInfos[x][y];
+            if (pred.test(info)) {
+                if (best == null) best = info;
+                else best = comp.apply(best, info);
+            }
+        }
+        x++;
         return best;
     }
 

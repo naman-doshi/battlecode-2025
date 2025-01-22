@@ -1,8 +1,12 @@
 package caterpillow.tracking;
 
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.RobotInfo;
 import static caterpillow.Game.rc;
+
+import caterpillow.Game;
+import caterpillow.robot.agents.Agent;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
 
@@ -10,6 +14,7 @@ public class RobotTracker {
 
     public static int nearbyCnt;
     public static RobotInfo[] nearby;
+    public static RobotInfo[][] exists;
 
     public static void init() {
     }
@@ -32,7 +37,7 @@ public class RobotTracker {
         lazyInit();
         nearby = rc.senseNearbyRobots();
 
-        RobotInfo[][] exists = new RobotInfo[9][9];
+        exists = new RobotInfo[9][9];
         int x = rc.getLocation().x - 4;
         int y = rc.getLocation().y - 4;
         for (int i = nearby.length - 1; i >= 0; i--) {
@@ -127,7 +132,95 @@ public class RobotTracker {
         return best;
     }
 
-    public static RobotInfo getNearestRobot(GamePredicate<RobotInfo> pred) throws GameActionException {
+    /*
+
+print("RobotInfo best = null, info;")
+print("x += 3;")
+print("y += 3;")
+dx = -1
+dy = -1
+for i in range(3):
+    for j in range(3):
+        if dx != 0 or dy != 0:
+            print(f"info = exists[x][y];")
+            print("if (info != null && pred.test(info)) {")
+            print("\tif (best == null) best = info;")
+            print("\telse best = comp.apply(best, info);")
+            print("}")
+
+        if j < 2:
+            if i % 2 == 0:
+                print("y++;")
+                dy += 1
+            else:
+                print("y--;")
+                dy -= 1
+        else:
+            print("x++;")
+            dx += 1
+
+     */
+
+    // i dont think this updates after u mmove so be careful!!!
+    public static RobotInfo getBestRobotSquare(GameBinaryOperator<RobotInfo> comp, GamePredicate<RobotInfo> pred, int x, int y) throws GameActionException {
+        assert Game.bot instanceof Agent && ((Agent) Game.bot).lastMove;
+        RobotInfo best = null, info;
+        x += 3;
+        y += 3;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        y++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        y++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        x++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        y--;
+        y--;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        x++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        y++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        y++;
+        info = exists[x][y];
+        if (info != null && pred.test(info)) {
+            if (best == null) best = info;
+            else best = comp.apply(best, info);
+        }
+        x++;
+        return best;
+    }
+
+
+        public static RobotInfo getNearestRobot(GamePredicate<RobotInfo> pred) throws GameActionException {
         switch (nearbyCnt) {
             case 69: if (pred.test(nearby[68])) return nearby[68];
             case 68: if (pred.test(nearby[67])) return nearby[67];
