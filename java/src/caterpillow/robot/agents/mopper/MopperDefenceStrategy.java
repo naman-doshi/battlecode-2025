@@ -50,7 +50,5 @@ public class MopperDefenceStrategy extends Strategy {
         }
 
         bot.doBestAttack();
-
-        
     }
 }

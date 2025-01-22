@@ -159,7 +159,7 @@ public class Mopper extends Agent {
         return best;
     }
 
-    private int priority(UnitType type) {
+    private static int priority(UnitType type) {
         switch (type.ordinal()) {
             case 0:
                 return 1;
@@ -571,41 +571,6 @@ for dx, dy, dir_str in directions:
             rc.attack(target.getLocation());
             indicate("regular attak");
             rc.setIndicatorDot(target.getLocation(), 0, 0, 255);
-            return true;
-        }
-
-        if (dbg) Profiler.begin();
-
-        // just mop :(
-        GameBinaryOperator<MapInfo> getBestCell = (c1, c2) -> {
-            if (c1 == null) return c2;
-            if (c2 == null) return c1;
-            return c1;
-        };
-
-        GamePredicate<MapInfo> cellPred = c -> c.getPaint().isEnemy();
-
-        MapInfo bestCell = null;
-        moveDir = null;
-
-        for (int i = dcnt - 1; i >= 0; i--) {
-            Direction dir = dirs[i];
-            if (dir == Direction.CENTER || rc.canMove(dir)) {
-                MapInfo tmp = CellTracker.getBestCellSquare(getBestCell, cellPred, Game.pos.x + dir.dx, Game.pos.y + dir.dy);
-                if (tmp != null || (bestCell == null || bestCell != getBestCell.apply(bestCell, tmp))) {
-                    bestCell = tmp;
-                    moveDir = dir;
-                }
-            }
-        }
-
-        if (dbg) Profiler.end("mop");
-
-        if (bestCell != null) {
-            if (moveDir != null && moveDir != Direction.CENTER) bot.move(moveDir);
-            rc.attack(bestCell.getMapLocation());
-            indicate("mop");
-            rc.setIndicatorDot(bestCell.getMapLocation(), 0, 255, 255);
             return true;
         }
         indicate("no attack :(");

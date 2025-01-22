@@ -9,10 +9,12 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameSupplier;
 import caterpillow.util.Profiler;
 
+import static caterpillow.Game.rc;
 import static caterpillow.util.Util.*;
 
 public class MopperOffenceStrategy extends Strategy {
@@ -65,10 +67,24 @@ public class MopperOffenceStrategy extends Strategy {
         boolean bruh = bot.doBestAttack();
 //        Profiler.end("bytecodes ");
 
-        Profiler.begin();
         if (!bruh) {
-            roamStrategy.runTick();
+            // just mop :(
+            MapInfo bestCell = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
+
+            if (bestCell != null) {
+                rc.setIndicatorDot(bestCell.getMapLocation(), 0, 255, 255);
+                indicate("mop");
+                if (rc.canAttack(bestCell.getMapLocation())) {
+                    rc.attack(bestCell.getMapLocation());
+                } else {
+                    bot.pathfinder.makeMove(bestCell.getMapLocation());
+                    if (rc.canAttack(bestCell.getMapLocation())) {
+                        rc.attack(bestCell.getMapLocation());
+                    }
+                }
+            } else {
+                roamStrategy.runTick();
+            }
         }
-        Profiler.end("rem");
     }
 }

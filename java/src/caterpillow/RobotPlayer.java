@@ -42,25 +42,19 @@ public class RobotPlayer {
         CellTracker.init();
         CellTracker.updateTick();
 
-        Direction dir = Direction.NORTH;
-
-
-        int x = 0, y = 0;
+        TestClass test = new TestClass();
 
 Profiler.begin();
 
-        if (rc.onTheMap(new MapLocation(x, y)));
+        test.test2();
 
 Profiler.end("method 1");
 Profiler.begin();
 
-        if (x < Game.mapWidth && y < Game.mapHeight);
+        TestClass.test1();
 
 Profiler.end("method 2");
-Profiler.begin();
 
-
-Profiler.end("method 3");
     }
 
     public static void actualRun(RobotController rc) throws GameActionException {
