@@ -6,22 +6,22 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
-
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
-
-import caterpillow.robot.towers.*;
+import caterpillow.robot.towers.Tower;
+import caterpillow.robot.towers.TowerAttackStrategy;
+import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.WaitUntilSpawner;
-import caterpillow.robot.towers.spawner.mopper.InstantOffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.*;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
+import caterpillow.robot.towers.spawner.WaitUntilSpawner;
+import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import caterpillow.world.GameStage;
-
 import static caterpillow.util.Util.indicate;
+import caterpillow.world.GameStage;
 
 public class StarterMoneyTowerStrategy extends TowerStrategy {
 
@@ -42,6 +42,11 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
+                // new ConditionalSpawner(
+                //     () -> mapHeight * mapWidth < 1300,
+                //     new RushSpawner(),
+                //     new InstantScoutSpawner()
+                // ),
                 // new ConditionalSpawner(
                 //     () -> mapHeight * mapWidth < 1300,
                 //     new RushSpawner(),

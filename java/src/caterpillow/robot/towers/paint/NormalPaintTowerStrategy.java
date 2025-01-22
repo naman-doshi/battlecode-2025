@@ -9,7 +9,6 @@ import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
-import static caterpillow.Game.trng;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -18,7 +17,6 @@ import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -61,7 +59,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                                 new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new
+                        OffenceMopperSpawner::new
                 )
         ));
         nxt = 0;

@@ -49,7 +49,7 @@ public class MopperDefenceStrategy extends Strategy {
             }
         }
 
-        bot.doBestAttack(null);
+        bot.doBestAttack();
 
         
     }

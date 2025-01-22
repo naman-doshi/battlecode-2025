@@ -12,14 +12,17 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.PassiveRoamStrategy;
-import caterpillow.util.GameSupplier;
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.*;
+import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isAllyAgent;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isInAttackRange;
 
 public class MopperPassiveStrategy extends Strategy {
 
@@ -85,7 +88,7 @@ public class MopperPassiveStrategy extends Strategy {
             if (res != null) {
                 // go towards, and attack if possible
                 bot.pathfinder.makeMove(res.getMapLocation());
-                bot.doBestAttack(res.getMapLocation());
+                bot.doBestAttack();
                 return;
             }
         }

@@ -7,7 +7,6 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -17,16 +16,12 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.mopper.PassiveMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
-import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.indicate;
-
 import caterpillow.tracking.TowerTracker;
+import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
 public class NormalMoneyTowerStrategy extends TowerStrategy {
@@ -72,7 +67,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                                 new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
-                        PassiveMopperSpawner::new
+                        OffenceMopperSpawner::new
                 )
         ));
         strats.add(new ConvertToPaintTowerStrategy());

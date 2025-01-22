@@ -1,16 +1,15 @@
 package caterpillow.robot.agents.mopper;
 
 import battlecode.common.GameActionException;
-import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
+import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.VISION_RAD;
 import static caterpillow.util.Util.downgrade;
-import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.isFriendly;
 
 // defend your home against invaders!@!!!
@@ -50,11 +49,8 @@ public class MopperRespawnStrategy extends Strategy {
                 bot.build(homeType, bot.home);
             }
         } else {
-            // fight
-            RobotInfo target = bot.getBestTarget();
-            assert target != null;
-            pathfinder.makeMove(target.getLocation());
-            bot.doBestAttack(target.getLocation());
+            //pathfinder.makeMove(target.getLocation());
+            bot.doBestAttack();
         }
     }
 }

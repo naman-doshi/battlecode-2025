@@ -4,6 +4,7 @@ import java.util.List;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
@@ -13,10 +14,8 @@ import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
-import static caterpillow.tracking.RobotTracker.getBestRobot;
-import caterpillow.util.GamePredicate;
+import caterpillow.tracking.CellTracker;
 import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isInDanger;
 import static caterpillow.util.Util.orthDirections;
 import static caterpillow.util.Util.relatedDirections;
@@ -27,38 +26,53 @@ public class Mopper extends Agent {
     List<MapLocation> enemyLocs;
     MapLocation spawnLoc;
 
-    public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
-        return getBestRobot((a, b) -> {
-                int a1 = a.getType().ordinal();
-                int b1 = b.getType().ordinal();
-                int h1 = a.getPaintAmount();
-                int h2 = b.getPaintAmount();
-                if (a1 == b1) {
-                    if (h1 > h2) return b;
-                    else return a;
-                } else {
-                    if (a1 < b1) return a;
-                    else return b;
-                }
-            }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
-    }
+    // public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
+    //     return getBestRobot((a, b) -> {
+    //             int a1 = a.getType().ordinal();
+    //             int b1 = b.getType().ordinal();
+    //             int h1 = a.getPaintAmount();
+    //             int h2 = b.getPaintAmount();
+    //             if (a1 == b1) {
+    //                 if (h1 > h2) return b;
+    //                 else return a;
+    //             } else {
+    //                 if (a1 < b1) return a;
+    //                 else return b;
+    //             }
+    //         }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
+    // }
 
-    public RobotInfo getBestTarget() throws GameActionException {
-        return getBestTarget(e -> true);
-    }
+    // public RobotInfo getBestTarget() throws GameActionException {
+    //     return getBestTarget(e -> true);
+    // }
 
-    public void doBestAttack(MapLocation target) throws GameActionException {
-        if (!rc.isActionReady()) {
-            return;
+    public MapLocation doBestAttack() throws GameActionException {
+        
+        MapLocation targetLoc = null;
+    
+
+        // try to steal paint from enemy
+        MapInfo loc = CellTracker.getNearestCell(c -> {
+            if (!c.getPaint().isEnemy()) return false;
+            RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
+            if (nearbot == null) return false;
+            if (isEnemyAgent(nearbot)) return true;
+            return false;
+        });
+
+        if (loc != null) {
+            if (rc.canAttack(loc.getMapLocation())) {
+                rc.attack(loc.getMapLocation());
+                return loc.getMapLocation();
+            }
+            targetLoc = loc.getMapLocation();
         }
 
         // try mop sweep
         Direction bestDirection = null;
-        int bestCount = 1;
+        int bestCount = 0;
         for (Direction dir : orthDirections) {
-            if (!rc.canMopSwing(dir)) {
-                continue;
-            }
+
             // stupid code
             int cnt = 0;
             for (Direction related : relatedDirections(dir)) {
@@ -84,23 +98,29 @@ public class Mopper extends Agent {
             }
         }
 
-        if (bestDirection != null) {
+        if (bestDirection != null && rc.canMopSwing(bestDirection)) {
             rc.mopSwing(bestDirection);
-            return;
+            return targetLoc;
         }
 
-        if (target != null && rc.canAttack(target)) {
-            rc.attack(target);
-        } else {
-            RobotInfo target1 = getBestTarget(e -> rc.canAttack(e.getLocation()) && rc.senseMapInfo(e.getLocation()).getPaint().isEnemy());
-            if (target1 != null && rc.canAttack(target1.getLocation())) rc.attack(target1.getLocation());
+        // just paint
+
+        loc = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
+        if (loc != null) {
+            if (rc.canAttack(loc.getMapLocation())) {
+                rc.attack(loc.getMapLocation());
+                return loc.getMapLocation();
+            }
+            targetLoc = loc.getMapLocation();
         }
+
+        return targetLoc;
     }
 
     @Override
     public void init() throws GameActionException {
         super.init();
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() && !isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
     }
