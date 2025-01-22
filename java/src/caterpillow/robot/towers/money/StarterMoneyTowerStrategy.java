@@ -43,12 +43,12 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 // new ConditionalSpawner(
-                //     () -> mapHeight * mapWidth < 1300,
+                //     () -> expectedRushDistance(rc.getLocation()) < 20,
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),
                 // new ConditionalSpawner(
-                //     () -> mapHeight * mapWidth < 1300,
+                //     () -> expectedRushDistance(rc.getLocation()) < 20,
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),

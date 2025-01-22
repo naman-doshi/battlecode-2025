@@ -14,6 +14,7 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.TraverseStrategy;
 import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
 
 // pathfinding testing
 public class RushStrategy extends Strategy {
@@ -45,11 +46,6 @@ public class RushStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("RUSHING TO " + todo);
 
-        if (primary instanceof ScoutStrategy) {
-            primary.runTick();
-            return;
-        }
-
         // become a scout once done
         if (target == null || todo.isEmpty()) {
             if (!(primary instanceof ScoutStrategy)) {
@@ -59,15 +55,14 @@ public class RushStrategy extends Strategy {
             return;
         }
 
-        // if (secondary == null) {
-        //     if (Game.rc.canSenseLocation(target)) {
-        //         RobotInfo botThere = Game.rc.senseRobotAtLocation(target);
-        //         if (botThere != null && botThere.getType().isTowerType() && !isFriendly(botThere)) {
-        //             primary = new ScoutStrategy();
-        //             return;
-        //         }
-        //     }
-        // }
+        if (secondary == null) {
+            if (Game.rc.canSenseLocation(target)) {
+                RobotInfo botThere = Game.rc.senseRobotAtLocation(target);
+                if (botThere != null && botThere.getType().isTowerType() && !isFriendly(botThere)) {
+                    secondary = new AttackTowerStrategy(target);
+                }
+            }
+        }
 
         if (secondary == null) {
             MapInfo[] neighbours = Game.rc.senseNearbyMapInfos();
@@ -84,6 +79,12 @@ public class RushStrategy extends Strategy {
         if (secondary != null) {
             if (secondary.isComplete()) {
                 indicate("SECONDARY STRATEGY COMPLETE");
+                if (secondary instanceof AttackTowerStrategy) {
+                    target = null;
+                    if (!(primary instanceof ScoutStrategy)) {
+                        primary = new ScoutStrategy();
+                    }
+                }
                 secondary = null;
             } else {
                 secondary.runTick();

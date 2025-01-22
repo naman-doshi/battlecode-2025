@@ -38,7 +38,12 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 // new ConditionalSpawner(
-                //     () -> mapHeight * mapWidth < 1300,
+                //     () -> expectedRushDistance(Game.rc.getLocation()) < 20,
+                //     new RushSpawner(),
+                //     new InstantScoutSpawner()
+                // ),
+                // new ConditionalSpawner(
+                //     () -> expectedRushDistance(Game.rc.getLocation()) < 20,
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),

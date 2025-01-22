@@ -1,5 +1,6 @@
 package caterpillow.robot.agents.mopper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import battlecode.common.Direction;
@@ -46,14 +47,31 @@ public class Mopper extends Agent {
     //     return getBestTarget(e -> true);
     // }
 
+    public List<Direction> possibleMovements() throws GameActionException {
+        List<Direction> dirs = new ArrayList<>();
+
+        // less bytecode than a loop??? idk
+        dirs.add(null);
+        if (rc.canMove(Direction.NORTH)) dirs.add(Direction.NORTH);
+        if (rc.canMove(Direction.SOUTH)) dirs.add(Direction.SOUTH);
+        if (rc.canMove(Direction.EAST)) dirs.add(Direction.EAST);
+        if (rc.canMove(Direction.WEST)) dirs.add(Direction.WEST);
+        if (rc.canMove(Direction.NORTHWEST)) dirs.add(Direction.NORTHWEST);
+        if (rc.canMove(Direction.NORTHEAST)) dirs.add(Direction.NORTHEAST);
+        if (rc.canMove(Direction.SOUTHWEST)) dirs.add(Direction.SOUTHWEST);
+        if (rc.canMove(Direction.SOUTHEAST)) dirs.add(Direction.SOUTHEAST);
+        return dirs;
+    }
+    
+
     public MapLocation doBestAttack() throws GameActionException {
+        // im gonna kms
         
         MapLocation targetLoc = null;
     
-
         // try to steal paint from enemy
         MapInfo loc = CellTracker.getNearestCell(c -> {
-            if (!c.getPaint().isEnemy()) return false;
+            if (c.getPaint().isAlly()) return false;
             RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
             if (nearbot == null) return false;
             if (isEnemyAgent(nearbot)) return true;
