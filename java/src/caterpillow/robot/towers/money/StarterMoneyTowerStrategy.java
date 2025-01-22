@@ -18,9 +18,10 @@ import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.WaitUntilSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.*;
 import caterpillow.world.GameStage;
 
 public class StarterMoneyTowerStrategy extends TowerStrategy {
@@ -43,17 +44,19 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 // new ConditionalSpawner(
-                //     () -> expectedRushDistance(rc.getLocation()) < 20,
+                //     () -> expectedRushDistance(rc.getLocation()) < 15,
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),
                 // new ConditionalSpawner(
-                //     () -> expectedRushDistance(rc.getLocation()) < 20,
+                //     () -> expectedRushDistance(rc.getLocation()) < 15,
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),
-                new InstantScoutSpawner(),
-                new InstantScoutSpawner(),
+                new RushSpawner(10),
+                new RushSpawner(10),
+                // new InstantScoutSpawner(),
+                // new InstantScoutSpawner(),
                 new WaitUntilSpawner(() -> rc.getNumberTowers() >= 3),
                 new LoopedSpawner(
                         OffenceMopperSpawner::new,

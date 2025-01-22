@@ -133,7 +133,7 @@ public class Util {
         return new Pair(abs(relX - 0.5), abs(relY - 0.5));
     }
 
-    public static List<MapLocation> guessEnemyLocs(MapLocation src) throws GameActionException {
+    public static List<MapLocation> guessEnemyLocs(MapLocation src, boolean closestFirst) throws GameActionException {
         List<MapLocation> enemyLocs = new LinkedList<>();
 
         if (src == null) {
@@ -148,6 +148,10 @@ public class Util {
         // also make the path as easy as possible between targets
         int dist_hormiddle = Math.abs(src.x - Game.mapWidth / 2);
         int dist_vertmiddle = Math.abs(src.y - Game.mapHeight / 2);
+        if(closestFirst) {
+            dist_hormiddle *= -1;
+            dist_vertmiddle *= -1;
+        }
         if (dist_hormiddle > dist_vertmiddle) {
             // first is hor
             enemyLocs.addLast(flipHor(src));
@@ -163,7 +167,8 @@ public class Util {
                 enemyLocs.addLast(rot180(src));
             }
 
-        } else if (dist_hormiddle < dist_vertmiddle) {
+        // } else if (dist_hormiddle < dist_vertmiddle) {
+        } else {
             // first is vert ref
             enemyLocs.addLast(flipVer(src));
 
@@ -178,32 +183,39 @@ public class Util {
                 enemyLocs.addLast(rot180(src));
             }
 
-        } else {
-            // first is rot 180
-            enemyLocs.addLast(rot180(src));
+        // } else {
+        //     // first is rot 180
+        //     enemyLocs.addLast(rot180(src));
 
-            int d1 = rot180(src).distanceSquaredTo(flipHor(src)) + flipHor(src).distanceSquaredTo(flipVer(src));
-            int d2 = rot180(src).distanceSquaredTo(flipVer(src)) + flipVer(src).distanceSquaredTo(flipHor(src));
+        //     int d1 = rot180(src).distanceSquaredTo(flipHor(src)) + flipHor(src).distanceSquaredTo(flipVer(src));
+        //     int d2 = rot180(src).distanceSquaredTo(flipVer(src)) + flipVer(src).distanceSquaredTo(flipHor(src));
 
-            if (d1 < d2) {
-                enemyLocs.addLast(flipHor(src));
-                enemyLocs.addLast(flipVer(src));
-            } else {
-                enemyLocs.addLast(flipVer(src));
-                enemyLocs.addLast(flipHor(src));
-            }
+        //     if (d1 < d2) {
+        //         enemyLocs.addLast(flipHor(src));
+        //         enemyLocs.addLast(flipVer(src));
+        //     } else {
+        //         enemyLocs.addLast(flipVer(src));
+        //         enemyLocs.addLast(flipHor(src));
+        //     }
         }
         return enemyLocs;
     }
+    public static List<MapLocation> guessEnemyLocs(MapLocation src) throws GameActionException {
+        return guessEnemyLocs(src, false);
+    }
 
     public static int expectedRushDistance(MapLocation src) throws GameActionException {
-        List<MapLocation> enemyLocs = guessEnemyLocs(src);
+        List<MapLocation> enemyLocs = guessEnemyLocs(src, true);
         MapLocation target = enemyLocs.get(0);
         return (int)Math.sqrt((double)src.distanceSquaredTo(target));
     }
 
     public static List<MapLocation> guessSpawnLocs() throws GameActionException {
         return guessEnemyLocs(origin);
+    }
+
+    public static int chebyshevDistance(MapLocation a, MapLocation b) {
+        return max(abs(a.x - b.x), abs(a.y - b.y));
     }
 
     public static UnitType downgrade(UnitType type) {

@@ -8,7 +8,7 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
-import static caterpillow.tracking.CellTracker.getNearestCell;
+import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isInDanger;
@@ -50,9 +50,9 @@ public class AttackTowerStrategy extends Strategy {
         if(isInDanger(rc.getLocation())) {
             tryAttack();
             if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
-                safeSquare = getNearestCell(c -> !isInDanger(c.getMapLocation())).getMapLocation();
+                safeSquare = getNearestLocation(loc -> !isInDanger(loc));
             }
-            bot.pathfinder.makeMove(safeSquare);
+            if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
         } else if(rc.isMovementReady() && rc.isActionReady()) {
             bot.pathfinder.makeMove(target);
             tryAttack();

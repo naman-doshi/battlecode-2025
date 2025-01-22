@@ -4,17 +4,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
+import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.TraverseStrategy;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
+import caterpillow.tracking.TowerTracker;
+import static caterpillow.util.Util.*;
+import caterpillow.util.Profiler;
 
 // pathfinding testing
 public class RushStrategy extends Strategy {
@@ -24,86 +22,98 @@ public class RushStrategy extends Strategy {
     List<MapLocation> todo;
     Set<MapLocation> ruinsTrolled = new HashSet<>();
 
-    Strategy primary;
-    Strategy secondary;
+    Strategy traverseStrategy;
+    AttackTowerStrategy attackTowerStrategy;
+    Strategy trollRuinStrategy;
 
-    public RushStrategy() throws GameActionException {
+    int distanceThreshold; // max chebyshev distance to rush
+    int timeThreshold = 100; // round after which we switch to scouting
+
+    public RushStrategy(int distanceThreshold) throws GameActionException {
         bot = (Agent) Game.bot;
-        todo = guessEnemyLocs(bot.home);
-        target = todo.get(0);
-        todo.remove(0);
-
-        // starting strategy. vision radius squared is 20
-        primary = new TraverseStrategy(target, 20);
+        this.distanceThreshold = distanceThreshold;
+        todo = guessEnemyLocs(origin, true);
+        while(true) {
+            if (todo.isEmpty()) {
+                // become a scout
+                target = null;
+                break;
+            }
+            target = todo.get(0);
+            todo.remove(0);
+            if(chebyshevDistance(origin, target) > distanceThreshold) continue;
+            traverseStrategy = new TraverseStrategy(target, 9);
+            break;
+        }
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        return primary instanceof ScoutStrategy && primary.isComplete();
+        return false;
     }
 
-    @Override
-    public void runTick() throws GameActionException {
-        indicate("RUSHING TO " + todo);
-
-        // become a scout once done
-        if (target == null || todo.isEmpty()) {
-            if (!(primary instanceof ScoutStrategy)) {
-                primary = new ScoutStrategy();
-            }
-            primary.runTick();
-            return;
-        }
-
-        if (secondary == null) {
-            if (Game.rc.canSenseLocation(target)) {
-                RobotInfo botThere = Game.rc.senseRobotAtLocation(target);
-                if (botThere != null && botThere.getType().isTowerType() && !isFriendly(botThere)) {
-                    secondary = new AttackTowerStrategy(target);
-                }
+    boolean tryStrats() throws GameActionException {
+        if (attackTowerStrategy == null) {
+            RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
+            if (enemyTower != null) {
+                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
             }
         }
+        if (tryStrategy(attackTowerStrategy)) return true;
+        attackTowerStrategy = null;
 
-        if (secondary == null) {
+        if (trollRuinStrategy == null) {
             MapInfo[] neighbours = Game.rc.senseNearbyMapInfos();
             for (MapInfo info : neighbours) {
                 RobotInfo botThere = Game.rc.senseRobotAtLocation(info.getMapLocation());
                 if (info.hasRuin() && botThere == null && !ruinsTrolled.contains(info.getMapLocation())) {
-                    secondary = new TrollRuinStrategy(info.getMapLocation());
+                    trollRuinStrategy = new TrollRuinStrategy(info.getMapLocation());
                     ruinsTrolled.add(info.getMapLocation());
                     break;
                 }
             }
         }
+        if(!tryStrategy(trollRuinStrategy)) trollRuinStrategy = null; // we want to "fall through" even if this strategy is not complete
+        return false;
+    }
 
-        if (secondary != null) {
-            if (secondary.isComplete()) {
-                indicate("SECONDARY STRATEGY COMPLETE");
-                if (secondary instanceof AttackTowerStrategy) {
+    @Override
+    public void runTick() throws GameActionException {
+        Profiler.begin();
+        indicate("RUSHING TO " + todo);
+
+        // become a scout once done
+        if (target == null || time > timeThreshold || rc.getHealth() <= 40) {
+            System.out.println("converting to scout");
+            bot.primaryStrategy = new ScoutStrategy();
+            bot.primaryStrategy.runTick();
+            return;
+        }
+
+        RobotInfo robot = null;
+        if(rc.canSenseLocation(target)) {
+            robot = rc.senseRobotAtLocation(target);
+        }
+        if (traverseStrategy.isComplete() || rc.canSenseLocation(target) && (robot == null || robot.team == team || !robot.type.isTowerType())) {
+            while(true) {
+                if (todo.isEmpty()) {
+                    // become a scout
                     target = null;
-                    if (!(primary instanceof ScoutStrategy)) {
-                        primary = new ScoutStrategy();
-                    }
+                    runTick();
+                    return;
                 }
-                secondary = null;
-            } else {
-                secondary.runTick();
-                return;
+                target = todo.get(0);
+                todo.remove(0);
+                if(chebyshevDistance(origin, target) > distanceThreshold) {
+                    continue;
+                }
+                traverseStrategy = new TraverseStrategy(target, 9);
+                break;
             }
         }
-
-        if (primary.isComplete()) {
-            if (todo.isEmpty()) {
-                // become a scout
-                target = null;
-                runTick();
-                return;
-            }
-            target = todo.get(0);
-            todo.remove(0);
-            primary = new TraverseStrategy(target, 20);
-        }
-        
-        primary.runTick();
+        if(tryStrats()) return;
+        traverseStrategy.runTick();
+        if(rc.isActionReady()) tryStrats();
+        Profiler.end("rush");
     }
 }

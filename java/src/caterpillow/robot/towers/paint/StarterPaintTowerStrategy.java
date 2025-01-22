@@ -16,9 +16,10 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
+import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.*;
 import caterpillow.world.GameStage;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
@@ -47,8 +48,12 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),
-                new InstantScoutSpawner(),
-                new InstantScoutSpawner(),
+
+                new RushSpawner(30),
+                new RushSpawner(30),
+
+                // new InstantScoutSpawner(),
+                // new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
                 // new LoopedSpawner(
                 //         () -> new LoopedSpawner(2,

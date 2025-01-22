@@ -59,7 +59,7 @@ public class Soldier extends Agent {
                 primaryStrategy = new ScoutStrategy(decodeLoc(packet.strategyData));
                 break;
             case RUSH_STRAT:
-                primaryStrategy = new RushStrategy();
+                primaryStrategy = new RushStrategy(packet.strategyData);
                 break;
             default:
                 assert false : "INVALID STRATEGY";
