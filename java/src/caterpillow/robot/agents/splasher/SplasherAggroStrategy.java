@@ -7,6 +7,7 @@ import caterpillow.robot.agents.roaming.AggroRoamStrategy;
 import caterpillow.Game;
 import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
 import caterpillow.robot.agents.splasher.SplasherAttackTowerStrategy;
@@ -26,7 +27,8 @@ public class SplasherAggroStrategy extends Strategy {
     public List<GameSupplier<MapInfo>> suppliers;
     MapLocation lastSeenTower;
 
-    Strategy refillStrategy;
+    Strategy strongRefillStrategy;
+    Strategy weakRefillStrategy;
     Strategy attackTowerStrategy;
     Strategy roamStrategy;
 
@@ -52,11 +54,14 @@ public class SplasherAggroStrategy extends Strategy {
             lastSeenTower = nearest.getLocation();
         }
 
-        if (refillStrategy == null && getPaintLevel() < 0.3) {
-            refillStrategy = new WeakRefillStrategy(0.4);
+        if(strongRefillStrategy == null && getPaintLevel() < 0.2) {
+            strongRefillStrategy = new StrongRefillStrategy(0.5);
         }
-        if (tryStrategy(refillStrategy)) return;
-        refillStrategy = null;
+        if (weakRefillStrategy == null && getPaintLevel() < 0.5) {
+            weakRefillStrategy = new WeakRefillStrategy(0.6);
+        }
+        if (tryStrategy(weakRefillStrategy)) return;
+        weakRefillStrategy = null;
 
         if(attackTowerStrategy == null) {
             RobotInfo tower = getNearestVisibleTower(info -> info.team != team);
