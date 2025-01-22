@@ -43,6 +43,7 @@ public class Config {
 
     public static boolean shouldRescue(RobotInfo b) {
         assert rc.getType().equals(MOPPER);
+        if (b.getType() == MOPPER) return false;
         if (b.getPaintAmount() > 5) {
             return false;
         }

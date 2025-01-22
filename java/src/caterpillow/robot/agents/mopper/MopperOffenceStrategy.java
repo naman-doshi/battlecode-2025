@@ -60,9 +60,11 @@ public class MopperOffenceStrategy extends Strategy {
 
         // attack
         System.out.println("remainnig bytecodes: " + Clock.getBytecodesLeft());
-        Profiler.begin();
+
+//        Profiler.begin();
         boolean bruh = bot.doBestAttack();
-        Profiler.end("bytecodes ");
+//        Profiler.end("bytecodes ");
+
         Profiler.begin();
         if (!bruh) {
             roamStrategy.runTick();

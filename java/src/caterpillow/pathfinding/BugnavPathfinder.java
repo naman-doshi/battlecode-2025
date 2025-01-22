@@ -8,6 +8,8 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import static caterpillow.Game.*;
+
+import caterpillow.Game;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
@@ -31,72 +33,52 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
         this.avoid = avoid;
         this.cellPenalty = m -> 0;
-        this.expected = rc.getLocation();
+        this.expected = Game.pos;
     }
     public BugnavPathfinder(GamePredicate<MapInfo> avoid, GameFunction<MapInfo, Integer> cellPenalty) {
         this.avoid = avoid;
         this.cellPenalty = cellPenalty;
-        this.expected = rc.getLocation();
+        this.expected = Game.pos;
     }
     public BugnavPathfinder() {
         this.avoid = m -> false;
-        this.expected = rc.getLocation();
+        this.expected = Game.pos;
     }
 
     public boolean canMove(Direction dir) throws GameActionException {
-        return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
+        return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(Game.pos.add(dir)));
     }
 
     @Override
     public Direction getMove(MapLocation to) throws GameActionException {
-        if (!rc.isMovementReady() || rc.getLocation().equals(to)) {
+        if (!rc.isMovementReady() || Game.pos.equals(to)) {
             return null;
         }
-        if(rc.getLocation().isAdjacentTo(to) && canMove(rc.getLocation().directionTo(to))) {
-            return rc.getLocation().directionTo(to);
+        if(Game.pos.isAdjacentTo(to) && canMove(Game.pos.directionTo(to))) {
+            return Game.pos.directionTo(to);
         }
-        if (target == null || expected != rc.getLocation() || reset) {
+        if (target == null || expected != Game.pos || reset) {
             stackSize = 0;
-            topDir = bottomDir = rc.getLocation().directionTo(to);
+            topDir = bottomDir = Game.pos.directionTo(to);
             leftTurnHist.clear();
             reset = false;
         }
         target = to;
-        // if(leftTurnHist.containsKey(rc.getLocation()) && (stackSize == 0 || leftTurn == leftTurnHist.get(rc.getLocation()))) {
-        //     leftTurn = !leftTurnHist.get(rc.getLocation());
-        //     stackSize = 1;
-        //     topDir = leftTurn ? bottomDir.rotateLeft() : bottomDir.rotateRight();
-        //     rc.setIndicatorDot(rc.getLocation(), 255, 255, 0);
-        // }
         if (leftTurn) {
-            if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
-                if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
+            if (!Game.pos.directionTo(target).equals(bottomDir)) {
+                if (Game.pos.directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateRight();
-                }
-                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
-                //     stackSize += 2;
-                //     bottomDir = bottomDir.rotateRight().rotateRight();
-                // }
-                else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
+                } else if (Game.pos.directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateLeft();
                     if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
-                }
-                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
-                //     stackSize -= 2;
-                //     bottomDir = bottomDir.rotateLeft().rotateLeft();
-                //     if (stackSize < 0) {
-                //         stackSize = 0;
-                //         topDir = bottomDir;
-                //     }
-                // }
-                else {
+                } else {
                     stackSize = 0;
-                    topDir = bottomDir = rc.getLocation().directionTo(target);
+                    topDir = bottomDir = Game.pos.directionTo(target);
                     leftTurnHist.clear();
                 }
             }
@@ -110,34 +92,20 @@ public class BugnavPathfinder extends AbstractPathfinder {
                 topDir = topDir.rotateRight();
             }
         } else {
-            if (!rc.getLocation().directionTo(target).equals(bottomDir)) {
-                if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft())) {
+            if (!Game.pos.directionTo(target).equals(bottomDir)) {
+                if (Game.pos.directionTo(target).equals(bottomDir.rotateLeft())) {
                     stackSize++;
                     bottomDir = bottomDir.rotateLeft();
-                }
-                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateLeft().rotateLeft())) {
-                //     stackSize += 2;
-                //     bottomDir = bottomDir.rotateLeft().rotateLeft();
-                // }
-                else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight())) {
+                } else if (Game.pos.directionTo(target).equals(bottomDir.rotateRight())) {
                     stackSize--;
                     bottomDir = bottomDir.rotateRight();
                     if (stackSize < 0) {
                         stackSize = 0;
                         topDir = bottomDir;
                     }
-                }
-                // else if (rc.getLocation().directionTo(target).equals(bottomDir.rotateRight().rotateRight())) {
-                //     stackSize -= 2;
-                //     bottomDir = bottomDir.rotateRight().rotateRight();
-                //     if (stackSize < 0) {
-                //         stackSize = 0;
-                //         topDir = bottomDir;
-                //     }
-                // }
-                else {
+                } else {
                     stackSize = 0;
-                    topDir = bottomDir = rc.getLocation().directionTo(target);
+                    topDir = bottomDir = Game.pos.directionTo(target);
                     leftTurnHist.clear();
                 }
             }
@@ -163,21 +131,21 @@ public class BugnavPathfinder extends AbstractPathfinder {
                     int score = 0;
                     for(Direction off : directions) {
                         if(off.equals(d.opposite())) continue;
-                        MapLocation loc = rc.getLocation().add(d).add(off);
+                        MapLocation loc = Game.pos.add(d).add(off);
                         if(!rc.onTheMap(loc)) continue;
                         RobotInfo robot = rc.senseRobotAtLocation(loc);
                         if(robot != null && robot.team.equals(team)) {
                             score++;
                         }
                     }
-                    MapInfo info = rc.senseMapInfo(rc.getLocation().add(d));
+                    MapInfo info = rc.senseMapInfo(Game.pos.add(d));
                     if(!info.getPaint().isAlly()) score++;
                     if(info.getPaint().isEnemy()) {
                         score *= 2;
                     }
                     if (cellPenalty != null) score += cellPenalty.apply(info);
                     score *= 1000000;
-                    score += rc.getLocation().add(d).distanceSquaredTo(target) * 10;
+                    score += Game.pos.add(d).distanceSquaredTo(target) * 10;
                     score += trng.nextInt(10);
                     if(score < bestScore) {
                         bestScore = score;
@@ -201,7 +169,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
         }
         int iters = 0;
         while (!canMove(topDir))  {
-            MapLocation nextLoc = rc.getLocation().add(topDir);
+            MapLocation nextLoc = Game.pos.add(topDir);
             // avoid following the edge of the map
             if(nextLoc.x < 0 || nextLoc.y < 0 || nextLoc.x >= mapWidth || nextLoc.y >= mapHeight) {
                 leftTurn = !leftTurn;
@@ -230,7 +198,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
             }
         }
         // assert canMove(topDir);
-        // rc.setIndicatorLine(rc.getLocation(), rc.getLocation().add(topDir), 0, 0, 255);
+        // rc.setIndicatorLine(Game.pos, Game.pos.add(topDir), 0, 0, 255);
         // rc.setIndicatorString(topDir + " " + bottomDir + " " + leftTurn + " " + stackSize);
         return topDir;
     }
@@ -241,12 +209,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
         if (rc.isMovementReady()) {
             dir = getMove(to);
             if (dir != null && rc.canMove(dir)) {
-                //assert !avoid.test(rc.senseMapInfo(rc.getLocation().add(dir)));
+                //assert !avoid.test(rc.senseMapInfo(Game.pos.add(dir)));
                 makeMove(dir);
             } else {
                 // emergency!!!
                 // System.out.println("emergency!!!");
-                if (avoid.test(rc.senseMapInfo(rc.getLocation()))) {
+                if (avoid.test(rc.senseMapInfo(Game.pos))) {
                     // super jank workaround
                     GamePredicate<MapInfo> opred = avoid;
                     avoid = m -> false;
@@ -259,7 +227,7 @@ public class BugnavPathfinder extends AbstractPathfinder {
             }
         }
         // rc.setIndicatorString(topDir.toString() + " " + bottomDir.toString() + " " + leftTurn + " " + stackSize);
-        rc.setIndicatorLine(rc.getLocation(), to, 0, 255, 0);
+        rc.setIndicatorLine(Game.pos, to, 0, 255, 0);
         return dir;
     }
 
@@ -267,12 +235,12 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public void makeMove(Direction dir) throws GameActionException {
         if (dir != null && rc.canMove(dir)) {
             // if(stackSize > 0) {
-            //     // indicate("LEFTTURNHIST " + rc.getLocation().toString() + " " + leftTurn);
-            //     leftTurnHist.put(rc.getLocation(), leftTurn);
+            //     // indicate("LEFTTURNHIST " + Game.pos.toString() + " " + leftTurn);
+            //     leftTurnHist.put(Game.pos, leftTurn);
             // }
             ((Agent) bot).move(dir);
         }
-        expected = rc.getLocation();
+        expected = Game.pos;
         if(stackSize > 0) {
             lastNonzeroStackTime = rc.getRoundNum();
         }

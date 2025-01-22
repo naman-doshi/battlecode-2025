@@ -1,8 +1,5 @@
 package caterpillow.robot.agents.mopper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import battlecode.common.*;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
@@ -19,44 +16,147 @@ import caterpillow.util.*;
 public class Mopper extends Agent {
 
     Mopper bot;
-    List<MapLocation> enemyLocs;
-    MapLocation spawnLoc;
+    
+    private static RobotInfo comp1(RobotInfo a, RobotInfo b) {
+        switch (a.getType().ordinal() * 3 + b.getType().ordinal()) {
+            case 1:
+                return b;
+            case 2:
+                return a;
+            case 3:
+                return a;
+            case 5:
+                return a;
+            case 6:
+                return b;
+            case 7:
+                return b;
+        }
+        if (a.getPaintAmount() >= b.getPaintAmount()) return b;
+        else return a;
+    }
+    
+    private static boolean pred1(RobotInfo e) throws GameActionException {
+        return !Util.isFriendly(e) && rc.senseMapInfo(e.getLocation()).getPaint().isEnemy() && e.getType().isRobotType() && isBotAbleToAttack(e);
+    }
+    
+    private static boolean pred2(RobotInfo e) throws GameActionException {
+        return !Util.isFriendly(e) && e.getType().isRobotType() && isBotAbleToAttack(e);
+    }
 
-    // public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
-    //     return getBestRobot((a, b) -> {
-    //             int a1 = a.getType().ordinal();
-    //             int b1 = b.getType().ordinal();
-    //             int h1 = a.getPaintAmount();
-    //             int h2 = b.getPaintAmount();
-    //             if (a1 == b1) {
-    //                 if (h1 > h2) return b;
-    //                 else return a;
-    //             } else {
-    //                 if (a1 < b1) return a;
-    //                 else return b;
-    //             }
-    //         }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
-    // }
+    // i dont think this updates after u mmove so be careful!!!
+    public static RobotInfo getBestRobotSquare1(int x, int y) throws GameActionException {
+        assert Game.bot instanceof Agent && ((Agent) Game.bot).lastMove;
+        RobotInfo best = null, info;
+        x += 3;
+        y += 3;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y--;
+        y--;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred1(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        return best;
+    }
 
-    // public RobotInfo getBestTarget() throws GameActionException {
-    //     return getBestTarget(e -> true);
-    // }
-
-    public List<Direction> possibleMovements() throws GameActionException {
-        List<Direction> dirs = new ArrayList<>();
-        if (!rc.isMovementReady()) return dirs;
-
-
-        // less bytecode than a loop??? idk
-        if (rc.canMove(Direction.NORTH)) dirs.add(Direction.NORTH);
-        if (rc.canMove(Direction.SOUTH)) dirs.add(Direction.SOUTH);
-        if (rc.canMove(Direction.EAST)) dirs.add(Direction.EAST);
-        if (rc.canMove(Direction.WEST)) dirs.add(Direction.WEST);
-        if (rc.canMove(Direction.NORTHWEST)) dirs.add(Direction.NORTHWEST);
-        if (rc.canMove(Direction.NORTHEAST)) dirs.add(Direction.NORTHEAST);
-        if (rc.canMove(Direction.SOUTHWEST)) dirs.add(Direction.SOUTHWEST);
-        if (rc.canMove(Direction.SOUTHEAST)) dirs.add(Direction.SOUTHEAST);
-        return dirs;
+    public static RobotInfo getBestRobotSquare2(int x, int y) throws GameActionException {
+        assert Game.bot instanceof Agent && ((Agent) Game.bot).lastMove;
+        RobotInfo best = null, info;
+        x += 3;
+        y += 3;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y--;
+        y--;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        y++;
+        info = RobotTracker.exists[x][y];
+        if (info != null && pred2(info)) {
+            if (best == null) best = info;
+            else best = comp1(best, info);
+        }
+        x++;
+        return best;
     }
 
     private int priority(UnitType type) {
@@ -72,7 +172,7 @@ public class Mopper extends Agent {
         }
     }
 
-    private boolean isBotAbleToAttack(RobotInfo info) {
+    private static boolean isBotAbleToAttack(RobotInfo info) {
         switch (info.getType().ordinal()) {
             case 0:
                 return info.getPaintAmount() >= 5;
@@ -106,53 +206,11 @@ directions = [
     (1, -1, "SOUTHEAST")
 ]
 
-
-
+print("Team me = rc.getTeam();")
 for x in range(7):
     for y in range(7):
-        print(f"int cell{x}{y} = 0;")
-
-print("int x = Game.pos.x - 3;")
-print("int y = Game.pos.y - 3;")
-x = -3
-y = -3
-for i in range(-3, 4):
-    for j in range(-3, 4):
-        if x != 0 or y != 0:
-            checks = []
-            if x > 0:
-                checks.append(f"x < Game.mapWidth")
-            elif x < 0:
-                checks.append(f"x >= 0")
-
-            if y > 0:
-                checks.append(f"y < Game.mapHeight")
-            elif y < 0:
-                checks.append(f"y >= 0")
-
-            print(f"if ({' && '.join(checks)}) {{")
-
-            #
-
-            print(f"\tRobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));")
-            print("\tif (info != null && info.getTeam() == rc.getTeam() && info.getType().isRobotType()) {")
-            print(f"\t\tcell{x + 3}{y + 3} = 1;")
-            print("\t}")
-
-            #
-
-            print("}")
-
-        if j < 3:
-            if i % 2 == 1:
-                print("y++;")
-                y += 1
-            else:
-                print("y--;")
-                y -= 1
-        else:
-            print("x++;")
-            x += 1
+        bot = f"RobotTracker.bot{x + 1}{y + 1}"
+        print(f"int cell{x}{y} = ({bot} != null && {bot}.getTeam() != me && {bot}.getType().isRobotType() ? 1 : 0);")
 
 print("Pair<Direction, Direction> best = null;")
 print("int bestScore = 0;")
@@ -184,492 +242,141 @@ for dx, dy, dir_str in directions:
         print("}")
     print("}")
 
-
      */
 
+    boolean dbg = false;
     public boolean doBestAttack() throws GameActionException {
         if (!rc.isActionReady()) return false;
-//        Profiler.begin();
+        if (dbg) Profiler.begin();
         indicate("try attack");
         bot.lastMove = true;
 
-        GameBinaryOperator<RobotInfo> getBest = (a, b) -> {
-            if (a == null) return b;
-            if (b == null) return a;
-            int p1 = priority(a.getType());
-            int p2 = priority(b.getType());
-            int h1 = a.getPaintAmount();
-            int h2 = b.getPaintAmount();
-            if (p1 == p2) {
-                // prioritise first argument
-                if (h1 >= h2) return b;
-                else return a;
-            } else {
-                if (h1 >= h2) return a;
-                else return b;
+        Direction[] dirs = new Direction[9];
+        int dcnt = 0;
+        for (Direction dir : Direction.values()) {
+            if (dir != Direction.CENTER && rc.canMove(dir)) {
+                dirs[dcnt++] = dir;
             }
-        };
+        }
 
         RobotInfo target = null;
         Direction moveDir = null;
 
-
-//        Profiler.begin();
-        for (Direction dir : Direction.values()) {
+//        if (dbg) Profiler.begin();
+        for (int i = dcnt - 1; i >= 0; i--) {
+            Direction dir = dirs[i];
             if (dir == Direction.CENTER || rc.canMove(dir)) {
                 // allow any move for the glorious mop + steal combo
-                MapLocation curPos = Game.pos.add(dir);
-                GamePredicate<RobotInfo> pred = e -> !Util.isFriendly(e) && e.getLocation().distanceSquaredTo(curPos) <= 2 && rc.senseMapInfo(e.getLocation()).getPaint().isEnemy() && e.getType().isRobotType() && isBotAbleToAttack(e);
-                RobotInfo tmp = RobotTracker.getBestRobotSquare(getBest, pred, dir.dx, dir.dy);
-                if (target != getBest.apply(target, tmp)) {
+                RobotInfo tmp = getBestRobotSquare1(dir.dx, dir.dy);
+                if (tmp != null && (target == null || target != comp1(target, tmp))) {
                     target = tmp;
                     moveDir = dir;
                 }
             }
         }
-//        Profiler.end("bruh moment");
+        if (dbg) Profiler.end("bruh moment");
 
         if (target != null) {
             if (moveDir != Direction.CENTER) bot.move(moveDir);
             rc.attack(target.getLocation());
+            rc.setIndicatorDot(target.getLocation(), 255, 0, 0);
             indicate("double trouble attak");
-//            Profiler.end("regular attacks");
+//            if (dbg) Profiler.end("regular attacks");
             return true;
         }
 
         // just attack a dude case
-//        Profiler.begin();
-        for (Direction dir : Direction.values()) {
+        if (dbg) Profiler.begin();
+        for (int i = dcnt - 1; i >= 0; i--) {
+            Direction dir = dirs[i];
             if (dir == Direction.CENTER || rc.canMove(dir)) {
                 // allow any move for steal combo
-                MapLocation curPos = Game.pos.add(dir);
                 // dont require enemy paint
-                GamePredicate<RobotInfo> pred = e -> !Util.isFriendly(e) && e.getLocation().distanceSquaredTo(curPos) <= 2 && e.getType().isRobotType() && isBotAbleToAttack(e);
-                RobotInfo tmp = RobotTracker.getBestRobotSquare(getBest, pred, dir.dx, dir.dy);
-                if (target != getBest.apply(target, tmp)) {
+                RobotInfo tmp = getBestRobotSquare2(dir.dx, dir.dy);
+                if (tmp != null && (target == null || target != comp1(target, tmp))) {
                     target = tmp;
                     moveDir = dir;
                 }
             }
         }
-//        Profiler.end("minor bruh moment");
+        if (dbg) Profiler.end("minor bruh moment");
 
-//        Profiler.end("regular attacks");
+//        if (dbg) Profiler.end("regular attacks");
         // begin cursed code
-//        Profiler.begin();
+        if (dbg) Profiler.begin();
 
-        int cell00 = 0;
-        int cell01 = 0;
-        int cell02 = 0;
-        int cell03 = 0;
-        int cell04 = 0;
-        int cell05 = 0;
-        int cell06 = 0;
-        int cell10 = 0;
-        int cell11 = 0;
-        int cell12 = 0;
-        int cell13 = 0;
-        int cell14 = 0;
-        int cell15 = 0;
-        int cell16 = 0;
-        int cell20 = 0;
-        int cell21 = 0;
-        int cell22 = 0;
-        int cell23 = 0;
-        int cell24 = 0;
-        int cell25 = 0;
-        int cell26 = 0;
-        int cell30 = 0;
-        int cell31 = 0;
-        int cell32 = 0;
-        int cell33 = 0;
-        int cell34 = 0;
-        int cell35 = 0;
-        int cell36 = 0;
-        int cell40 = 0;
-        int cell41 = 0;
-        int cell42 = 0;
-        int cell43 = 0;
-        int cell44 = 0;
-        int cell45 = 0;
-        int cell46 = 0;
-        int cell50 = 0;
-        int cell51 = 0;
-        int cell52 = 0;
-        int cell53 = 0;
-        int cell54 = 0;
-        int cell55 = 0;
-        int cell56 = 0;
-        int cell60 = 0;
-        int cell61 = 0;
-        int cell62 = 0;
-        int cell63 = 0;
-        int cell64 = 0;
-        int cell65 = 0;
-        int cell66 = 0;
-        int x = Game.pos.x - 3;
-        int y = Game.pos.y - 3;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell00 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell01 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell02 = 1;
-            }
-        }
-        y++;
-        if (x >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell03 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell04 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell05 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell06 = 1;
-            }
-        }
-        x++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell16 = 1;
-            }
-        }
-        y--;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell15 = 1;
-            }
-        }
-        y--;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell14 = 1;
-            }
-        }
-        y--;
-        if (x >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell13 = 1;
-            }
-        }
-        y--;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell12 = 1;
-            }
-        }
-        y--;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell11 = 1;
-            }
-        }
-        y--;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell10 = 1;
-            }
-        }
-        x++;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell20 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell21 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell22 = 1;
-            }
-        }
-        y++;
-        if (x >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell23 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell24 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell25 = 1;
-            }
-        }
-        y++;
-        if (x >= 0 && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell26 = 1;
-            }
-        }
-        x++;
-        if (y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell36 = 1;
-            }
-        }
-        y--;
-        if (y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell35 = 1;
-            }
-        }
-        y--;
-        if (y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell34 = 1;
-            }
-        }
-        y--;
-        y--;
-        if (y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell32 = 1;
-            }
-        }
-        y--;
-        if (y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell31 = 1;
-            }
-        }
-        y--;
-        if (y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell30 = 1;
-            }
-        }
-        x++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell40 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell41 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell42 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell43 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell44 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell45 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell46 = 1;
-            }
-        }
-        x++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell56 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell55 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell54 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell53 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell52 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell51 = 1;
-            }
-        }
-        y--;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell50 = 1;
-            }
-        }
-        x++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell60 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell61 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y >= 0) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell62 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell63 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell64 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell65 = 1;
-            }
-        }
-        y++;
-        if (x < Game.mapWidth && y < Game.mapHeight) {
-            RobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));
-            if (info != null && info.getTeam() != rc.getTeam() && info.getType().isRobotType()) {
-                cell66 = 1;
-            }
-        }
-        x++;
+        Team me = rc.getTeam();
+        int cell00 = (RobotTracker.bot11 != null && RobotTracker.bot11.getTeam() != me && RobotTracker.bot11.getType().isRobotType() ? 1 : 0);
+        int cell01 = (RobotTracker.bot12 != null && RobotTracker.bot12.getTeam() != me && RobotTracker.bot12.getType().isRobotType() ? 1 : 0);
+        int cell02 = (RobotTracker.bot13 != null && RobotTracker.bot13.getTeam() != me && RobotTracker.bot13.getType().isRobotType() ? 1 : 0);
+        int cell03 = (RobotTracker.bot14 != null && RobotTracker.bot14.getTeam() != me && RobotTracker.bot14.getType().isRobotType() ? 1 : 0);
+        int cell04 = (RobotTracker.bot15 != null && RobotTracker.bot15.getTeam() != me && RobotTracker.bot15.getType().isRobotType() ? 1 : 0);
+        int cell05 = (RobotTracker.bot16 != null && RobotTracker.bot16.getTeam() != me && RobotTracker.bot16.getType().isRobotType() ? 1 : 0);
+        int cell06 = (RobotTracker.bot17 != null && RobotTracker.bot17.getTeam() != me && RobotTracker.bot17.getType().isRobotType() ? 1 : 0);
+        int cell10 = (RobotTracker.bot21 != null && RobotTracker.bot21.getTeam() != me && RobotTracker.bot21.getType().isRobotType() ? 1 : 0);
+        int cell11 = (RobotTracker.bot22 != null && RobotTracker.bot22.getTeam() != me && RobotTracker.bot22.getType().isRobotType() ? 1 : 0);
+        int cell12 = (RobotTracker.bot23 != null && RobotTracker.bot23.getTeam() != me && RobotTracker.bot23.getType().isRobotType() ? 1 : 0);
+        int cell13 = (RobotTracker.bot24 != null && RobotTracker.bot24.getTeam() != me && RobotTracker.bot24.getType().isRobotType() ? 1 : 0);
+        int cell14 = (RobotTracker.bot25 != null && RobotTracker.bot25.getTeam() != me && RobotTracker.bot25.getType().isRobotType() ? 1 : 0);
+        int cell15 = (RobotTracker.bot26 != null && RobotTracker.bot26.getTeam() != me && RobotTracker.bot26.getType().isRobotType() ? 1 : 0);
+        int cell16 = (RobotTracker.bot27 != null && RobotTracker.bot27.getTeam() != me && RobotTracker.bot27.getType().isRobotType() ? 1 : 0);
+        int cell20 = (RobotTracker.bot31 != null && RobotTracker.bot31.getTeam() != me && RobotTracker.bot31.getType().isRobotType() ? 1 : 0);
+        int cell21 = (RobotTracker.bot32 != null && RobotTracker.bot32.getTeam() != me && RobotTracker.bot32.getType().isRobotType() ? 1 : 0);
+        int cell22 = (RobotTracker.bot33 != null && RobotTracker.bot33.getTeam() != me && RobotTracker.bot33.getType().isRobotType() ? 1 : 0);
+        int cell23 = (RobotTracker.bot34 != null && RobotTracker.bot34.getTeam() != me && RobotTracker.bot34.getType().isRobotType() ? 1 : 0);
+        int cell24 = (RobotTracker.bot35 != null && RobotTracker.bot35.getTeam() != me && RobotTracker.bot35.getType().isRobotType() ? 1 : 0);
+        int cell25 = (RobotTracker.bot36 != null && RobotTracker.bot36.getTeam() != me && RobotTracker.bot36.getType().isRobotType() ? 1 : 0);
+        int cell26 = (RobotTracker.bot37 != null && RobotTracker.bot37.getTeam() != me && RobotTracker.bot37.getType().isRobotType() ? 1 : 0);
+        int cell30 = (RobotTracker.bot41 != null && RobotTracker.bot41.getTeam() != me && RobotTracker.bot41.getType().isRobotType() ? 1 : 0);
+        int cell31 = (RobotTracker.bot42 != null && RobotTracker.bot42.getTeam() != me && RobotTracker.bot42.getType().isRobotType() ? 1 : 0);
+        int cell32 = (RobotTracker.bot43 != null && RobotTracker.bot43.getTeam() != me && RobotTracker.bot43.getType().isRobotType() ? 1 : 0);
+        int cell33 = (RobotTracker.bot44 != null && RobotTracker.bot44.getTeam() != me && RobotTracker.bot44.getType().isRobotType() ? 1 : 0);
+        int cell34 = (RobotTracker.bot45 != null && RobotTracker.bot45.getTeam() != me && RobotTracker.bot45.getType().isRobotType() ? 1 : 0);
+        int cell35 = (RobotTracker.bot46 != null && RobotTracker.bot46.getTeam() != me && RobotTracker.bot46.getType().isRobotType() ? 1 : 0);
+        int cell36 = (RobotTracker.bot47 != null && RobotTracker.bot47.getTeam() != me && RobotTracker.bot47.getType().isRobotType() ? 1 : 0);
+        int cell40 = (RobotTracker.bot51 != null && RobotTracker.bot51.getTeam() != me && RobotTracker.bot51.getType().isRobotType() ? 1 : 0);
+        int cell41 = (RobotTracker.bot52 != null && RobotTracker.bot52.getTeam() != me && RobotTracker.bot52.getType().isRobotType() ? 1 : 0);
+        int cell42 = (RobotTracker.bot53 != null && RobotTracker.bot53.getTeam() != me && RobotTracker.bot53.getType().isRobotType() ? 1 : 0);
+        int cell43 = (RobotTracker.bot54 != null && RobotTracker.bot54.getTeam() != me && RobotTracker.bot54.getType().isRobotType() ? 1 : 0);
+        int cell44 = (RobotTracker.bot55 != null && RobotTracker.bot55.getTeam() != me && RobotTracker.bot55.getType().isRobotType() ? 1 : 0);
+        int cell45 = (RobotTracker.bot56 != null && RobotTracker.bot56.getTeam() != me && RobotTracker.bot56.getType().isRobotType() ? 1 : 0);
+        int cell46 = (RobotTracker.bot57 != null && RobotTracker.bot57.getTeam() != me && RobotTracker.bot57.getType().isRobotType() ? 1 : 0);
+        int cell50 = (RobotTracker.bot61 != null && RobotTracker.bot61.getTeam() != me && RobotTracker.bot61.getType().isRobotType() ? 1 : 0);
+        int cell51 = (RobotTracker.bot62 != null && RobotTracker.bot62.getTeam() != me && RobotTracker.bot62.getType().isRobotType() ? 1 : 0);
+        int cell52 = (RobotTracker.bot63 != null && RobotTracker.bot63.getTeam() != me && RobotTracker.bot63.getType().isRobotType() ? 1 : 0);
+        int cell53 = (RobotTracker.bot64 != null && RobotTracker.bot64.getTeam() != me && RobotTracker.bot64.getType().isRobotType() ? 1 : 0);
+        int cell54 = (RobotTracker.bot65 != null && RobotTracker.bot65.getTeam() != me && RobotTracker.bot65.getType().isRobotType() ? 1 : 0);
+        int cell55 = (RobotTracker.bot66 != null && RobotTracker.bot66.getTeam() != me && RobotTracker.bot66.getType().isRobotType() ? 1 : 0);
+        int cell56 = (RobotTracker.bot67 != null && RobotTracker.bot67.getTeam() != me && RobotTracker.bot67.getType().isRobotType() ? 1 : 0);
+        int cell60 = (RobotTracker.bot71 != null && RobotTracker.bot71.getTeam() != me && RobotTracker.bot71.getType().isRobotType() ? 1 : 0);
+        int cell61 = (RobotTracker.bot72 != null && RobotTracker.bot72.getTeam() != me && RobotTracker.bot72.getType().isRobotType() ? 1 : 0);
+        int cell62 = (RobotTracker.bot73 != null && RobotTracker.bot73.getTeam() != me && RobotTracker.bot73.getType().isRobotType() ? 1 : 0);
+        int cell63 = (RobotTracker.bot74 != null && RobotTracker.bot74.getTeam() != me && RobotTracker.bot74.getType().isRobotType() ? 1 : 0);
+        int cell64 = (RobotTracker.bot75 != null && RobotTracker.bot75.getTeam() != me && RobotTracker.bot75.getType().isRobotType() ? 1 : 0);
+        int cell65 = (RobotTracker.bot76 != null && RobotTracker.bot76.getTeam() != me && RobotTracker.bot76.getType().isRobotType() ? 1 : 0);
+        int cell66 = (RobotTracker.bot77 != null && RobotTracker.bot77.getTeam() != me && RobotTracker.bot77.getType().isRobotType() ? 1 : 0);
         Pair<Direction, Direction> best = null;
         int bestScore = 0;
         int score = 0;
-        if (rc.canMove(Direction.CENTER)) {
-            score = cell43 + cell44 + cell42 + cell53 + cell54 + cell52;
-            if (score > bestScore) {
-                bestScore = score;
-                best = new Pair<>(Direction.CENTER, Direction.EAST);
-            }
-            score = cell34 + cell24 + cell44 + cell35 + cell25 + cell45;
-            if (score > bestScore) {
-                bestScore = score;
-                best = new Pair<>(Direction.CENTER, Direction.NORTH);
-            }
-            score = cell23 + cell22 + cell24 + cell13 + cell12 + cell14;
-            if (score > bestScore) {
-                bestScore = score;
-                best = new Pair<>(Direction.CENTER, Direction.WEST);
-            }
-            score = cell32 + cell42 + cell22 + cell31 + cell41 + cell21;
-            if (score > bestScore) {
-                bestScore = score;
-                best = new Pair<>(Direction.CENTER, Direction.SOUTH);
-            }
+        score = cell43 + cell44 + cell42 + cell53 + cell54 + cell52;
+        if (score > bestScore) {
+            bestScore = score;
+            best = new Pair<>(Direction.CENTER, Direction.EAST);
+        }
+        score = cell34 + cell24 + cell44 + cell35 + cell25 + cell45;
+        if (score > bestScore) {
+            bestScore = score;
+            best = new Pair<>(Direction.CENTER, Direction.NORTH);
+        }
+        score = cell23 + cell22 + cell24 + cell13 + cell12 + cell14;
+        if (score > bestScore) {
+            bestScore = score;
+            best = new Pair<>(Direction.CENTER, Direction.WEST);
+        }
+        score = cell32 + cell42 + cell22 + cell31 + cell41 + cell21;
+        if (score > bestScore) {
+            bestScore = score;
+            best = new Pair<>(Direction.CENTER, Direction.SOUTH);
         }
         if (rc.canMove(Direction.EAST)) {
             score = cell53 + cell54 + cell52 + cell63 + cell64 + cell62;
@@ -849,23 +556,25 @@ for dx, dy, dir_str in directions:
         }
 
         // end cursed code
-//        Profiler.end("mop swing");
+        if (dbg) Profiler.end("mop swing");
 
-        if (target == null || (bestScore >= 2 && getPaintLevel() >= 0.5)) {
+        if (target == null || (bestScore >= 3 && getPaintLevel() >= 0.5)) {
             if (best != null) {
                 if (best.first != null && best.first != Direction.CENTER) bot.move(best.first);
                 rc.mopSwing(best.second);
                 indicate("mop swing!");
+                rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
                 return true;
             }
         } else {
             if (moveDir != Direction.CENTER) bot.move(moveDir);
             rc.attack(target.getLocation());
             indicate("regular attak");
+            rc.setIndicatorDot(target.getLocation(), 0, 0, 255);
             return true;
         }
 
-//        Profiler.begin();
+        if (dbg) Profiler.begin();
 
         // just mop :(
         GameBinaryOperator<MapInfo> getBestCell = (c1, c2) -> {
@@ -879,22 +588,24 @@ for dx, dy, dir_str in directions:
         MapInfo bestCell = null;
         moveDir = null;
 
-        for (Direction dir : Direction.values()) {
+        for (int i = dcnt - 1; i >= 0; i--) {
+            Direction dir = dirs[i];
             if (dir == Direction.CENTER || rc.canMove(dir)) {
                 MapInfo tmp = CellTracker.getBestCellSquare(getBestCell, cellPred, Game.pos.x + dir.dx, Game.pos.y + dir.dy);
-                if (bestCell != getBestCell.apply(bestCell, tmp)) {
+                if (tmp != null || (bestCell == null || bestCell != getBestCell.apply(bestCell, tmp))) {
                     bestCell = tmp;
                     moveDir = dir;
                 }
             }
         }
 
-//        Profiler.end("mop");
+        if (dbg) Profiler.end("mop");
 
         if (bestCell != null) {
             if (moveDir != null && moveDir != Direction.CENTER) bot.move(moveDir);
             rc.attack(bestCell.getMapLocation());
             indicate("mop");
+            rc.setIndicatorDot(bestCell.getMapLocation(), 0, 255, 255);
             return true;
         }
         indicate("no attack :(");
