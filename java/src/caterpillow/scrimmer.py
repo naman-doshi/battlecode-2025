@@ -1,15 +1,16 @@
 import requests
+import random
 
 # The URL to send the POST requests to
 url = "https://api.battlecode.org/api/compete/bc25java/request/"
 
 # Your authorization token
-auth_token = ""
-import requests
+auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NzkyNjY3LCJpYXQiOjE3MzczNjA2NjcsImp0aSI6IjdlMTQ0ODUyNzc0YTRhOWM4NmZkNjNkNDc2ZTNlMmIzIiwidXNlcl9pZCI6MTM2NX0.D6-96c2iEyvsI7MrRJMoEbKnAcA7SU1a2l321Hm4EKE"
 
 # Configuration
 excluded_team_id = 1288  # Your team ID
 base_url = "https://api.battlecode.org/api"
+all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fossil", "gardenworld", "Gears", "Justice", "Money", "Mirage", "MoneyTower", "Racetrack", "Restart", "SaltyPepper", "SMILE", "Thirds", "UglySweater", "UnderTheSea", "catface", "memstore", "TargetPractice"]
 
 def fetch_top_teams(auth_token, excluded_team_id, count=10):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
@@ -63,7 +64,7 @@ def send_match_requests(auth_token, team_ids):
         "is_ranked": False,
         "requested_to": None,
         "player_order": "+",
-        "map_names": ["Fossil", "gardenworld", "Gears", "Justice", "Money", "Mirage", "MoneyTower", "Racetrack", "Restart", "SaltyPepper"]
+        "map_names": random.sample(all_maps, 10),
     }
 
     for team_id in team_ids:
