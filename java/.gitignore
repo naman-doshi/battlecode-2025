@@ -197,3 +197,5 @@ fabric.properties
 # src/caterpillow - Copy
 src/caterpillow_old
 src/caterpillow_cur
+
+**/auth_token.txt
