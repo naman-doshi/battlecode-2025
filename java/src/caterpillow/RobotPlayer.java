@@ -16,7 +16,7 @@ import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
-import static caterpillow.util.Util.indicatorString;
+import static caterpillow.util.Util.*;
 
 public class RobotPlayer {
 

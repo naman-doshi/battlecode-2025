@@ -2,6 +2,7 @@ package caterpillow.robot.towers.spawner;
 
 import battlecode.common.GameActionException;
 import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.tracking.TowerTracker;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ public class SpawnerStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
+        // don't spawn stuff if we have no coin towers
         while (!todo.isEmpty() && todo.peek().spawn()) {
             todo.remove();
         }

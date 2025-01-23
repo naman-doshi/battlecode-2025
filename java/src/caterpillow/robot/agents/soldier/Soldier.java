@@ -17,6 +17,7 @@ import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isInDanger;
 
 public class Soldier extends Agent {
+    public boolean syncAttacks; // whether to sync tower attacks (true for early scouts and rushers)
 
     @Override
     public void init() throws GameActionException {
@@ -32,11 +33,22 @@ public class Soldier extends Agent {
                 return res;
         });
         primaryStrategy = new EmptyStrategy();
-        secondaryStrategy = new LinkStrategy(home);
+        if(!rc.senseMapInfo(rc.getLocation()).getPaint().isEnemy()) secondaryStrategy = new LinkStrategy(home);
+        else secondaryStrategy = null;
+        syncAttacks = time < 15;
     }
 
     @Override
     public void runTick() throws GameActionException {
+        if(time < 6 && primaryStrategy instanceof EmptyStrategy) {
+            if (home != null) {
+                origin = home;
+            } else {
+                origin = rc.getLocation();
+            }
+            primaryStrategy = new RushStrategy(10);
+        }
+        if(time > 100) syncAttacks = false;
         super.runTick();
         // Profiler.end();
     }

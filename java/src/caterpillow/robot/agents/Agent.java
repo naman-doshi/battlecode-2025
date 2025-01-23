@@ -9,7 +9,7 @@ import caterpillow.Config;
 import caterpillow.Game;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
-import caterpillow.pathfinding.AbstractPathfinder;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.tracking.CellTracker;
@@ -17,11 +17,10 @@ import static caterpillow.tracking.CellTracker.postMove;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Util;
-import static caterpillow.util.Util.dead;
-import static caterpillow.util.Util.missingPaint;
+import static caterpillow.util.Util.*;
 
 public abstract class Agent extends Robot {
-    public AbstractPathfinder pathfinder;
+    public BugnavPathfinder pathfinder;
 
     public MapLocation home;
     public int homeID;

@@ -48,7 +48,7 @@ public class Mopper extends Agent {
     //     return getBestTarget(e -> true);
     // }
 
-    
+
 
     public MapLocation doBestAttack() throws GameActionException {
         // im gonna kms
@@ -71,17 +71,17 @@ public class Mopper extends Agent {
 
         // first try steal paint from enemy
         // greedy bc i cbb and i doubt it makes a real difference
-    
+
         // try to steal paint from enemy
         MapInfo loc = CellTracker.getNearestCell(c -> {
-            if (c.getPaint().isAlly()) return false;
-            RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
-            if (nearbot == null) return false;
-            if (isEnemyAgent(nearbot)) return true;
-            return false;
-        });
+                if (c.getPaint().isAlly()) return false;
+                RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
+                if (nearbot == null) return false;
+                if (isEnemyAgent(nearbot)) return true;
+                return false;
+            });
 
-        
+
 
         if (loc != null) {
 
@@ -111,7 +111,7 @@ public class Mopper extends Agent {
         }
 
 
-    
+
         Team me = rc.getTeam();
         int cell00 = (RobotTracker.bot11 != null && RobotTracker.bot11.getTeam() != me && RobotTracker.bot11.getType().isRobotType() ? 1 : 0);
         int cell01 = (RobotTracker.bot12 != null && RobotTracker.bot12.getTeam() != me && RobotTracker.bot12.getType().isRobotType() ? 1 : 0);
@@ -361,14 +361,14 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.SOUTHEAST, Direction.SOUTH);
             }
         }
-        
+
 
         if (best != null && rc.canMopSwing(best.second)) {
-                if (best.first != null && best.first != Direction.CENTER) bot.move(best.first);
-                rc.mopSwing(best.second);
-                indicate("mop swing!");
-                rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
-                return targetLoc;
+            if (best.first != null && best.first != Direction.CENTER) bot.move(best.first);
+            rc.mopSwing(best.second);
+            indicate("mop swing!");
+            rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
+            return targetLoc;
         }
 
         // just paint
@@ -410,10 +410,9 @@ public class Mopper extends Agent {
 
     @Override
     public void runTick() throws GameActionException {
-        super.runTick();
         // if spawn is surrounded by enemy paint (i.e. no messaging) spawn some moppers to clean it up
         // TODO: make this a proper fix
-        if (primaryStrategy instanceof EmptyStrategy && Game.time > 4) {
+        if (primaryStrategy instanceof EmptyStrategy) {
             if (home != null) {
                 Game.origin = home;
             } else {
@@ -421,6 +420,8 @@ public class Mopper extends Agent {
             }
             primaryStrategy = new MopperOffenceStrategy();
         }
+
+        super.runTick();
 
         // all moppers should donate. splashers 1st priority, soldiers 2nd
         RobotInfo[] bots = rc.senseNearbyRobots(2);
@@ -442,19 +443,19 @@ public class Mopper extends Agent {
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
         super.handleStrategyPacket(packet, senderID);
         switch (packet.strategyID) {
-        case DEFENCE_STRAT:
-            primaryStrategy = new MopperDefenceStrategy();
-            break;
-        case OFFENCE_STRAT:
-            primaryStrategy = new MopperOffenceStrategy();
-            break;
-        case RESPAWN_STRAT:
-            primaryStrategy = new MopperOffenceStrategy();
-            secondaryStrategy = new MopperRespawnStrategy();
-            break;
-        case PASSIVE_STRAT:
-            primaryStrategy = new MopperPassiveStrategy();
-            break;
+            case DEFENCE_STRAT:
+                primaryStrategy = new MopperDefenceStrategy();
+                break;
+            case OFFENCE_STRAT:
+                primaryStrategy = new MopperOffenceStrategy();
+                break;
+            case RESPAWN_STRAT:
+                primaryStrategy = new MopperOffenceStrategy();
+                secondaryStrategy = new MopperRespawnStrategy();
+                break;
+            case PASSIVE_STRAT:
+                primaryStrategy = new MopperPassiveStrategy();
+                break;
         }
     }
 }

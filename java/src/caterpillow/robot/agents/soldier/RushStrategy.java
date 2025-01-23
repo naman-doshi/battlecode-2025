@@ -86,6 +86,7 @@ public class RushStrategy extends Strategy {
         if (target == null || time > timeThreshold || rc.getHealth() <= 40) {
             System.out.println("converting to scout");
             bot.primaryStrategy = new ScoutStrategy();
+            ((ScoutStrategy)bot.primaryStrategy).attackTowerStrategy = attackTowerStrategy;
             bot.primaryStrategy.runTick();
             return;
         }
@@ -112,6 +113,7 @@ public class RushStrategy extends Strategy {
             }
         }
         if(tryStrats()) return;
+        indicate("TRAVERSE");
         traverseStrategy.runTick();
         if(rc.isActionReady()) tryStrats();
 //        Profiler.end("rush");

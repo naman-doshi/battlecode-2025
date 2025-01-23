@@ -105,7 +105,7 @@ public class Config {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
-            if (trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
+            if (rc.getNumberTowers() >= moneyTowerThreshold() && trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
