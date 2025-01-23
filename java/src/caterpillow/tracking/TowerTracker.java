@@ -1,7 +1,5 @@
 package caterpillow.tracking;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import java.util.ArrayList;
 
 import battlecode.common.GameActionException;
@@ -10,8 +8,13 @@ import battlecode.common.RobotInfo;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.println;
+import static java.lang.Math.*;
+
 import caterpillow.packet.packets.InitPacket;
+import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
+import caterpillow.util.Tuple;
 
 public class TowerTracker {
     public static final int MAX_TOWER_BITS = 5;
@@ -24,6 +27,7 @@ public class TowerTracker {
     public static int lastTowerChange = 0;
     public static int px = 0, x = 0; // last known coins
     public static int coinTowers = 0;
+    public static boolean hasStarterCoinDied;
     public static int processedTicks = 0;
     public static int blindTicks = 0;
     public static boolean hasReceivedInitPacket = false;
@@ -125,9 +129,9 @@ public class TowerTracker {
 
     public static void sendInitPacket(MapLocation loc) throws GameActionException {
         if (broken) {
-            pm.send(loc, new InitPacket(origin, 0, 0));
+            pm.send(loc, new InitPacket(origin, 0, 0, 0));
         } else {
-            pm.send(loc, new InitPacket(origin, srps, coinTowers));
+            pm.send(loc, new InitPacket(origin, srps, coinTowers, hasStarterCoinDied ? 1 : 0));
         }
     }
 
@@ -153,7 +157,7 @@ public class TowerTracker {
         return probablyMinCoinTowers() * 20 + probablyMinSRP() * 3;
     }
 
-    public static void runTick() {
+    public static void runTick() throws GameActionException {
         curTowers = rc.getNumberTowers();
         coinTowers = min(coinTowers, curTowers);
 
@@ -184,16 +188,39 @@ public class TowerTracker {
         }
 
         if (x - px >= probablyMinGain()) {
+            Tuple<Integer, Integer, Integer> bestSol = null;
+
+            GameBinaryOperator<Tuple<Integer, Integer, Integer>> comp = (a, b) -> {
+                if (a == null) return b;
+                int score1 = abs(a.first - coinTowers) + abs(a.second - srps) + 2 * abs(a.third - (hasStarterCoinDied ? 1 : 0));
+                int score2 = abs(b.first - coinTowers) + abs(b.second - srps) + 2 * abs(b.third - (hasStarterCoinDied ? 1 : 0));
+                if (score1 < score2) return a;
+                else return b;
+            };
+
+            if (!hasStarterCoinDied) {
+                for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
+                    int salary = 20 + 3 * potSRP;
+                    for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
+                        if (pot * salary + 10 == x - px) {
+                            bestSol = comp.apply(bestSol, new Tuple<Integer, Integer, Integer>(pot, potSRP, 0));
+                        }
+                    }
+                }
+            }
             for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
                 int salary = 20 + 3 * potSRP;
                 for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
-                    if (pot * salary + 10 == x - px) {
-                        coinTowers = pot;
-                        srps = potSRP;
-                        blindTicks = 0;
-                        return;
+                    if (pot * salary == x - px) {
+                        bestSol = comp.apply(bestSol, new Tuple<Integer, Integer, Integer>(pot, potSRP, 1));
                     }
                 }
+            }
+            if (bestSol != null) {
+                coinTowers = bestSol.first;
+                srps = bestSol.second;
+                hasStarterCoinDied = (bestSol.third == 1);
+                blindTicks = 0;
             }
         }
     }

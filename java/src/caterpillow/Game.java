@@ -47,6 +47,7 @@ public class Game {
                 Game.origin = rc.getLocation();
                 TowerTracker.coinTowers = 1;
                 TowerTracker.hasReceivedInitPacket = true;
+                TowerTracker.hasStarterCoinDied = false;
             } else {
                 // we shouldnt need this
 //                RobotInfo nearest = getNearestRobot(r -> isFriendly(r) && r.getType().isTowerType());

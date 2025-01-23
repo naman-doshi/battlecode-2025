@@ -10,10 +10,12 @@ public class InitPacket extends Packet {
     public MapLocation loc;
     public int coinTowers;
     public int srps;
-    public InitPacket(MapLocation loc, int srps, int coinTowers) {
+    public int hasStarterCoinDied;
+    public InitPacket(MapLocation loc, int srps, int coinTowers, int hasStarterCoinDied) {
         this.loc = loc;
         this.srps = srps;
         this.coinTowers = coinTowers;
+        this.hasStarterCoinDied = hasStarterCoinDied;
         assert 0 <= loc.x && loc.x < mapWidth;
         assert 0 <= loc.y && loc.y < mapHeight;
         assert 0 <= coinTowers && coinTowers < (1 << TowerTracker.MAX_TOWER_BITS);

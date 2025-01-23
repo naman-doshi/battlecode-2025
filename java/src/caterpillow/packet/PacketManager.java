@@ -54,9 +54,10 @@ public class PacketManager {
                 bot.handleStrategyPacket(strategyPacket, sender);
                 break;
             case 4:
-                int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
+                int[] res = getBits(payload, new int[]{0, ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS, 1});
                 srps = res[1];
                 coinTowers = res[2];
+                TowerTracker.hasStarterCoinDied = (res[3] == 1);
                 TowerTracker.hasReceivedInitPacket = true;
                 if (coinTowers == 0) {
                     TowerTracker.broken = true;
@@ -116,7 +117,7 @@ public class PacketManager {
             case InitPacket initPacket -> {
                 type = 4;
                 payload = 0;
-                payload = writeBits(payload, 0, new int[]{encodeLoc(initPacket.loc), initPacket.srps, initPacket.coinTowers}, new int[]{ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS});
+                payload = writeBits(payload, 0, new int[]{encodeLoc(initPacket.loc), initPacket.srps, initPacket.coinTowers, initPacket.hasStarterCoinDied}, new int[]{ENC_LOC_SIZE, TowerTracker.MAX_SRP_BITS, TowerTracker.MAX_TOWER_BITS, 1});
             }
             case null, default -> {
                 System.out.println("wtf is this packet");
