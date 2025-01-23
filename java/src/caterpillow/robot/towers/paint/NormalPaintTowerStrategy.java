@@ -65,7 +65,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                         ),
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.MID && rng.nextDouble() < 0.2,
+                                () -> Game.gameStage == GameStage.MID && rng.nextDouble() < 0.25,
                                 new PainterSpawner(),
                                 new NullSpawner()
                         )
