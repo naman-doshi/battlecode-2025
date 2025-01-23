@@ -3,7 +3,7 @@ package caterpillow.robot.agents.mopper;
 import battlecode.common.*;
 import caterpillow.Config;
 import caterpillow.Game;
-import caterpillow.pathfinding.AbstractPathfinder;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.roaming.PassiveRoamStrategy;
@@ -17,7 +17,7 @@ public class RescueStrategy extends Strategy {
 
     public Mopper bot;
     MapLocation target;
-    AbstractPathfinder pathfinder; // custom pathfinder with different rules
+    BugnavPathfinder pathfinder; // custom pathfinder with different rules
 
     public RescueStrategy(MapLocation target) throws GameActionException {
         bot = (Mopper) Game.bot;

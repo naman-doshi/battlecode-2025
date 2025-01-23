@@ -5,9 +5,9 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.soldier.Soldier;
 import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
@@ -16,13 +16,13 @@ import static caterpillow.util.Util.isInDanger;
 // pathfinding testing
 public class AttackTowerStrategy extends Strategy {
 
-    Agent bot;
+    Soldier bot;
     MapLocation target;
     MapLocation safeSquare;
     Direction lastMove;
 
     public AttackTowerStrategy(MapLocation target) {
-        bot = (Agent) Game.bot;
+        bot = (Soldier) Game.bot;
         this.target = target;
     }
 
@@ -47,15 +47,24 @@ public class AttackTowerStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER AT " + target);
+        if(safeSquare != null) indicate("SAFE SQUARE " + safeSquare.toString());
         if(isInDanger(rc.getLocation())) {
             tryAttack();
             if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
+                indicate("RESET SAFE SQUARE");
+                if(safeSquare == null) indicate("NULL");
+                else indicate(safeSquare.toString());
                 safeSquare = getNearestLocation(loc -> !isInDanger(loc));
             }
             if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
-        } else if(rc.isMovementReady() && rc.isActionReady()) {
-            bot.pathfinder.makeMove(target);
-            tryAttack();
+        } else {
+            safeSquare = rc.getLocation();
+            if(rc.isMovementReady() && rc.isActionReady() && (!bot.syncAttacks || time % 2 == 0)) {
+                bot.pathfinder.noPreference = true;
+                bot.pathfinder.makeMove(target);
+                bot.pathfinder.noPreference = false;
+                tryAttack();
+            }
         }
     }
 }

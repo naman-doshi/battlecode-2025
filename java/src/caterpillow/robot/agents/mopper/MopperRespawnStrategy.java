@@ -4,7 +4,7 @@ import battlecode.common.GameActionException;
 import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import caterpillow.pathfinding.AbstractPathfinder;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
@@ -19,7 +19,7 @@ public class MopperRespawnStrategy extends Strategy {
     public Mopper bot;
     UnitType homeType;
 
-    AbstractPathfinder pathfinder;
+    BugnavPathfinder pathfinder;
 
     public MopperRespawnStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;

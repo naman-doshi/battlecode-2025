@@ -34,7 +34,7 @@ public class BuildTowerStrategy extends QueueStrategy {
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
 
-    AbstractPathfinder pathfinder;
+    BugnavPathfinder pathfinder;
 
     Direction getOffset(UnitType type) {
         switch (type) {

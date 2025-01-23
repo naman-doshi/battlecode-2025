@@ -21,7 +21,7 @@ public class SplasherAttackTowerStrategy extends Strategy {
     MapLocation target;
     MapLocation safeSquare;
     Direction lastMove;
-    AbstractPathfinder pathfinder;
+    BugnavPathfinder pathfinder;
 
     public SplasherAttackTowerStrategy(MapLocation target) {
         bot = (Splasher) Game.bot;

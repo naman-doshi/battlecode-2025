@@ -16,7 +16,7 @@ import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
 import caterpillow.util.Profiler;
 
-public class BugnavPathfinder extends AbstractPathfinder {
+public class BugnavPathfinder {
     // temporary patch to make sure nothing breaks
     private MapLocation expected;
 
@@ -27,7 +27,9 @@ public class BugnavPathfinder extends AbstractPathfinder {
     public boolean leftTurn = false;
     public HashMap<MapLocation, Boolean> leftTurnHist = new HashMap<>();
     public int lastNonzeroStackTime = 0;
+    public GamePredicate<MapInfo> avoid;
     public GameFunction<MapInfo, Integer> cellPenalty;
+    public boolean noPreference = false;
     public boolean reset = false;
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
@@ -49,7 +51,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
         return rc.canMove(dir) && !avoid.test(rc.senseMapInfo(Game.pos.add(dir)));
     }
 
-    @Override
     public Direction getMove(MapLocation to) throws GameActionException {
         if (!rc.isMovementReady() || Game.pos.equals(to)) {
             return null;
@@ -129,24 +130,26 @@ public class BugnavPathfinder extends AbstractPathfinder {
             for(Direction d : poss) {
                 if(canMove(d)) {
                     int score = 0;
-                    for(Direction off : directions) {
-                        if(off.equals(d.opposite())) continue;
-                        MapLocation loc = Game.pos.add(d).add(off);
-                        if(!rc.onTheMap(loc)) continue;
-                        RobotInfo robot = rc.senseRobotAtLocation(loc);
-                        if(robot != null && robot.team.equals(team)) {
-                            score++;
+                    if(!noPreference) {
+                        for(Direction off : directions) {
+                            if(off.equals(d.opposite())) continue;
+                            MapLocation loc = Game.pos.add(d).add(off);
+                            if(!rc.onTheMap(loc)) continue;
+                            RobotInfo robot = rc.senseRobotAtLocation(loc);
+                            if(robot != null && robot.team.equals(team)) {
+                                score++;
+                            }
                         }
+                        MapInfo info = rc.senseMapInfo(Game.pos.add(d));
+                        if(!info.getPaint().isAlly()) score++;
+                        if(info.getPaint().isEnemy()) {
+                            score *= 2;
+                        }
+                        if (cellPenalty != null) score += cellPenalty.apply(info);
+                        score *= 1000000;
+                        score += Game.pos.add(d).distanceSquaredTo(target) * 10;
+                        score += trng.nextInt(10);
                     }
-                    MapInfo info = rc.senseMapInfo(Game.pos.add(d));
-                    if(!info.getPaint().isAlly()) score++;
-                    if(info.getPaint().isEnemy()) {
-                        score *= 2;
-                    }
-                    if (cellPenalty != null) score += cellPenalty.apply(info);
-                    score *= 1000000;
-                    score += Game.pos.add(d).distanceSquaredTo(target) * 10;
-                    score += trng.nextInt(10);
                     if(score < bestScore) {
                         bestScore = score;
                         best = d;
@@ -203,7 +206,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
         return topDir;
     }
 
-    @Override
     public Direction makeMove(MapLocation to) throws GameActionException {
         Direction dir = null;
         if (rc.isMovementReady()) {
@@ -231,7 +233,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
         return dir;
     }
 
-    @Override
     public void makeMove(Direction dir) throws GameActionException {
         if (dir != null && rc.canMove(dir)) {
             // if(stackSize > 0) {
@@ -247,7 +248,6 @@ public class BugnavPathfinder extends AbstractPathfinder {
         // indicate("LeftTurn: " + leftTurn);
     }
 
-    @Override
     public void reset() {
         reset = true;
     }
