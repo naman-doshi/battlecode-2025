@@ -1,17 +1,17 @@
 package caterpillow.tracking;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import java.util.ArrayList;
+
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.pm;
+import static caterpillow.Game.rc;
 import caterpillow.packet.packets.InitPacket;
 import caterpillow.util.GamePredicate;
-
-import java.util.ArrayList;
-
-import static caterpillow.Game.*;
-import static java.lang.Math.max;
-
-import static java.lang.Math.min;
 
 public class TowerTracker {
     public static final int MAX_TOWER_BITS = 5;
@@ -136,7 +136,7 @@ public class TowerTracker {
     }
 
     public static int minGain() {
-        return coinTowers * 20;
+        return coinTowers * 20 + 10;
     }
 
     public static int probablyMinCoinTowers() {
@@ -187,7 +187,7 @@ public class TowerTracker {
             for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
                 int salary = 20 + 3 * potSRP;
                 for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
-                    if (pot * salary == x - px) {
+                    if (pot * salary + 10 == x - px) {
                         coinTowers = pot;
                         srps = potSRP;
                         blindTicks = 0;

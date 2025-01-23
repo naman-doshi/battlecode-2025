@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotController;
+import battlecode.common.Team;
 import caterpillow.packet.PacketManager;
 import caterpillow.robot.Robot;
 import caterpillow.tracking.TowerTracker;
@@ -65,9 +68,10 @@ public class Game {
 
     // can change
     public static void upd() {
+        //TowerTracker.broken = true;
         int area = mapHeight * mapWidth;
         pos = rc.getLocation();
-        if (time - TowerTracker.lastTowerChange > 50 || rc.getNumberTowers() >= 4 * area / 900) {
+        if (time - TowerTracker.lastTowerChange > 50 || 2 * rc.getNumberTowers() >= 7 * area / 900) {
             gameStage = GameStage.MID;
         }
 

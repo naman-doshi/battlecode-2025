@@ -28,16 +28,16 @@ public class Config {
     // we also need more chips on larger maps
     public static double targetRatio() {
         int area = mapHeight * mapWidth;
-        double ratio = area < 1500 ? 0.63 : 0.7;
+        double ratio = area < 1500 ? 0.66 : 0.72;
         if(TowerTracker.coinTowers < 4 && area >= 1500) ratio += 0.1;
         return ratio;
     }
 
     public static boolean canUpgrade(int level) {
         if (level == 2) {
-            return rc.getChips() >= 3000;
+            return rc.getChips() >= 3500;
         } else if (level == 3) {
-            return rc.getChips() >= 6000;
+            return rc.getChips() >= 6500;
         }
         return false;
     }
@@ -104,12 +104,16 @@ public class Config {
 
     public static UnitType nextResourceType() {
         if (!TowerTracker.broken) {
+            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             if (rc.getNumberTowers() >= moneyTowerThreshold() && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() >= targetRatio() || rc.getChips() >= 3000) {
+                System.out.println("paint tower");
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
+                System.out.println("money tower");
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
+            System.out.println("BROKEN");
             if (rc.getNumberTowers() >= moneyTowerThreshold() && trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
