@@ -5,7 +5,9 @@ import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import static caterpillow.Game.mapHeight;
 import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
+import static caterpillow.Game.time;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
@@ -15,6 +17,7 @@ import static caterpillow.util.Util.checkerboardPaint;
 import static caterpillow.util.Util.decodeLoc;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isInDanger;
+
 
 public class Soldier extends Agent {
     public boolean syncAttacks; // whether to sync tower attacks (true for early scouts and rushers)
@@ -35,7 +38,7 @@ public class Soldier extends Agent {
         primaryStrategy = new EmptyStrategy();
         if(!rc.senseMapInfo(rc.getLocation()).getPaint().isEnemy()) secondaryStrategy = new LinkStrategy(home);
         else secondaryStrategy = null;
-        syncAttacks = time < 15;
+        //syncAttacks = time < 15;
     }
 
     @Override
@@ -46,7 +49,7 @@ public class Soldier extends Agent {
             } else {
                 origin = rc.getLocation();
             }
-            primaryStrategy = new RushStrategy(10);
+            primaryStrategy = new ScoutStrategy();
         }
         if(time > 100) syncAttacks = false;
         super.runTick();

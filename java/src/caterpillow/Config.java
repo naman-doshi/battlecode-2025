@@ -9,7 +9,12 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.*;
+import static caterpillow.Game.centre;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.guessEnemyLocs;
@@ -92,9 +97,9 @@ public class Config {
     }
 
     public static int moneyTowerThreshold() {
-        if(mapHeight * mapWidth <= 900) return 4;
-        if(mapHeight * mapWidth <= 1500) return 5;
-        return 6;
+        if(mapHeight * mapWidth <= 900) return 3;
+        if(mapHeight * mapWidth <= 1500) return 4;
+        return 5;
     }
 
     public static UnitType nextResourceType() {

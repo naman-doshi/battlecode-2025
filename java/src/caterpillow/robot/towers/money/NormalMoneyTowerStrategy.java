@@ -7,6 +7,7 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
+import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -44,6 +45,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         rng = new Random(seed);
 
         strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(

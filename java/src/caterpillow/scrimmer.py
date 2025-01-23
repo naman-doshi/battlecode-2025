@@ -5,7 +5,7 @@ import random
 url = "https://api.battlecode.org/api/compete/bc25java/request/"
 
 # Your authorization token
-auth_token = open("auth_token.txt").read().strip()
+auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NzkyNjY3LCJpYXQiOjE3MzczNjA2NjcsImp0aSI6IjdlMTQ0ODUyNzc0YTRhOWM4NmZkNjNkNDc2ZTNlMmIzIiwidXNlcl9pZCI6MTM2NX0.D6-96c2iEyvsI7MrRJMoEbKnAcA7SU1a2l321Hm4EKE"
 
 # Configuration
 excluded_team_id = 1288  # Your team ID
@@ -15,7 +15,7 @@ all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fos
             "Barcode", "Bread", "BunnyGame", "Filter", "fix", "Flower", "galaxy", "giver", "gridworld", "leavemealone", "Piglets2", "quack", "sayhi",
             "sierpinski", "Snowglobe", "windmill"]
 
-def fetch_top_teams(auth_token, excluded_team_id, count=10):
+def fetch_top_teams(auth_token, excluded_team_id, count=5):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
     headers = {
         "Authorization": f"Bearer {auth_token}",

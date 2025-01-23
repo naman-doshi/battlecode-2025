@@ -8,6 +8,7 @@ import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
+import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -17,11 +18,10 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.WaitUntilSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
 public class StarterMoneyTowerStrategy extends TowerStrategy {
@@ -40,6 +40,7 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(

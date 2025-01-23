@@ -10,8 +10,8 @@ import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.time;
 import caterpillow.packet.packets.StrategyPacket;
-import static caterpillow.util.Util.add;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
+import static caterpillow.util.Util.add;
 import static caterpillow.util.Util.getSafeSpawnLoc;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
@@ -31,6 +31,7 @@ public class RespawnStrategy extends TowerStrategy {
 
     int lastSpawnTime;
     Tower bot;
+    int moppersSpawned = 0;
 
     public boolean isEnemyPaintBlocking() throws GameActionException {
         for (int dx = -2; dx <= 2; dx++) {
@@ -63,12 +64,17 @@ public class RespawnStrategy extends TowerStrategy {
     }
 
     public void spawnMopper(MapLocation loc) throws GameActionException {
-        if (rc.getChips() < 1300) {
+        if (rc.getChips() < 1000 || (moppersSpawned == 2 && time - lastSpawnTime < 20)) {
             return;
+        }
+        if (time - lastSpawnTime >= 20) {
+            moppersSpawned = 0;
         }
         println("spawning defensive mopper");
         lastSpawnTime = time;
         bot.build(UnitType.MOPPER, loc);
+        lastSpawnTime = time;
+        moppersSpawned++;
         pm.send(loc, new StrategyPacket(1));
     }
 

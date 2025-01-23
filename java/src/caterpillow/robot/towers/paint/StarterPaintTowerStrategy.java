@@ -7,6 +7,7 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.seed;
+import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -15,7 +16,6 @@ import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.mopper.InstantOffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
@@ -36,6 +36,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
+        strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
@@ -50,11 +51,11 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new InstantScoutSpawner()
                 // ),
 
-                new RushSpawner(15),
-                new RushSpawner(15),
+                new RushSpawner(10),
+                new RushSpawner(10),
 
-                // new InstantScoutSpawner(),
-                // new InstantScoutSpawner(),
+                //new InstantScoutSpawner(),
+                //new InstantScoutSpawner(),
                 new InstantScoutSpawner(),
                 // new InstantOffenceMopperSpawner(),
                 // new LoopedSpawner(
