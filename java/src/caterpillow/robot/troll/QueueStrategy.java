@@ -29,6 +29,12 @@ public class QueueStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         assert !todo.isEmpty();
+        // allow fallthrough
         todo.peek().runTick();
+        while (todo.peek().isComplete()) {
+            todo.poll();
+            if (todo.isEmpty()) break;
+            todo.peek().runTick();
+        }
     }
 }

@@ -20,9 +20,7 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
 import static caterpillow.util.Util.*;
-
 import caterpillow.util.Util;
-
 
 public class BuildTowerStrategy extends QueueStrategy {
 
@@ -33,6 +31,17 @@ public class BuildTowerStrategy extends QueueStrategy {
     public int cellsPlaced;
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
+
+    public static final int[][] visitOrd = {
+            {2, 0},
+            {1, 1},
+            {0, 2},
+            {-1, 1},
+            {-2, 0},
+            {-1, -1},
+            {0, -2},
+            {1, -1}
+    };
 
     BugnavPathfinder pathfinder;
 
@@ -576,7 +585,11 @@ print("return true;")
         if (shouldGiveUp()) {
             println("ff");
             if (patternToFinish != null) {
-                return rc.senseMapInfo(target.add(Direction.NORTH)).getMark() != EMPTY;
+                // clean up
+                push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
+                return super.isComplete();
+//                return rc.senseMapInfo(target.add(Direction.NORTH)).getMark() == EMPTY;
             } else {
                 return true;
             }
@@ -639,13 +652,14 @@ print("return true;")
 
         // im putting this up here idc anymore
         if (patternToFinish != null) {
-            if (shouldGiveUp()) {
-                pathfinder.makeMove(target.add(Direction.NORTH));
-                if (rc.canRemoveMark(target.add(Direction.NORTH))) {
-                    rc.removeMark(target.add(Direction.NORTH));
-                }
-                return;
-            }
+            // obsolete
+//            if (shouldGiveUp()) {
+//                pathfinder.makeMove(target.add(Direction.NORTH));
+//                if (rc.canRemoveMark(target.add(Direction.NORTH))) {
+//                    rc.removeMark(target.add(Direction.NORTH));
+//                }
+//                return;
+//            }
 
             if (isInDanger()) {
                 pathfinder.makeMove(target.add(Direction.NORTH));
