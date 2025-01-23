@@ -6,10 +6,9 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
+import caterpillow.Game;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
-
-import caterpillow.Game;
 import caterpillow.pathfinding.AbstractPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
@@ -18,8 +17,8 @@ import static caterpillow.tracking.CellTracker.postMove;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Util;
-import static caterpillow.util.Util.*;
-import caterpillow.robot.agents.splasher.SplasherAggroStrategy;
+import static caterpillow.util.Util.dead;
+import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
     public AbstractPathfinder pathfinder;

@@ -1,7 +1,8 @@
 package caterpillow;
 
-import battlecode.common.*;
-
+import battlecode.common.Clock;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotController;
 import static caterpillow.Game.bot;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.ticksExisted;
@@ -15,9 +16,7 @@ import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
-import caterpillow.util.*;
-import static caterpillow.util.Util.*;
-import caterpillow.robot.agents.splasher.SplasherAggroStrategy;
+import static caterpillow.util.Util.indicatorString;
 
 public class RobotPlayer {
 
@@ -42,18 +41,18 @@ public class RobotPlayer {
         CellTracker.init();
         CellTracker.updateTick();
 
-        TestClass test = new TestClass();
+        //TestClass test = new TestClass();
 
-Profiler.begin();
+// Profiler.begin();
 
-        test.test2();
+//         test.test2();
 
-Profiler.end("method 1");
-Profiler.begin();
+// Profiler.end("method 1");
+// Profiler.begin();
 
-        TestClass.test1();
+//         //TestClass.test1();
 
-Profiler.end("method 2");
+// Profiler.end("method 2");
 
     }
 

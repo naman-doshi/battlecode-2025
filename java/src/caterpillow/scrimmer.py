@@ -10,9 +10,12 @@ auth_token = open("auth_token.txt").read().strip()
 # Configuration
 excluded_team_id = 1288  # Your team ID
 base_url = "https://api.battlecode.org/api"
-all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fossil", "gardenworld", "Gears", "Justice", "Money", "Mirage", "MoneyTower", "Racetrack", "Restart", "SaltyPepper", "SMILE", "Thirds", "UglySweater", "UnderTheSea", "catface", "memstore", "TargetPractice"]
+all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fossil", "gardenworld", "Gears", "Justice", "Money", "Mirage", "MoneyTower", 
+            "Racetrack", "Restart", "SaltyPepper", "SMILE", "Thirds", "UglySweater", "UnderTheSea", "catface", "memstore", "TargetPractice",
+            "Barcode", "Bread", "BunnyGame", "Filter", "fix", "Flower", "galaxy", "giver", "gridworld", "leavemealone", "Piglets2", "quack", "sayhi",
+            "sierpinski", "Snowglobe", "windmill"]
 
-def fetch_top_teams(auth_token, excluded_team_id, count=5):
+def fetch_top_teams(auth_token, excluded_team_id, count=10):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
     headers = {
         "Authorization": f"Bearer {auth_token}",

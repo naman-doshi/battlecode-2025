@@ -1,310 +1,117 @@
 package caterpillow.robot.agents.mopper;
 
-import battlecode.common.*;
+import java.util.List;
+
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.Team;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-import static caterpillow.util.Util.*;
-
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
-import caterpillow.util.*;
+import caterpillow.util.Pair;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isInDanger;
 
 public class Mopper extends Agent {
 
     Mopper bot;
+    List<MapLocation> enemyLocs;
+    MapLocation spawnLoc;
+
+    // public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
+    //     return getBestRobot((a, b) -> {
+    //             int a1 = a.getType().ordinal();
+    //             int b1 = b.getType().ordinal();
+    //             int h1 = a.getPaintAmount();
+    //             int h2 = b.getPaintAmount();
+    //             if (a1 == b1) {
+    //                 if (h1 > h2) return b;
+    //                 else return a;
+    //             } else {
+    //                 if (a1 < b1) return a;
+    //                 else return b;
+    //             }
+    //         }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
+    // }
+
+    // public RobotInfo getBestTarget() throws GameActionException {
+    //     return getBestTarget(e -> true);
+    // }
+
     
-    private static RobotInfo comp1(RobotInfo a, RobotInfo b) {
-        switch (a.getType().ordinal() * 3 + b.getType().ordinal()) {
-            case 1:
-                return b;
-            case 2:
-                return a;
-            case 3:
-                return a;
-            case 5:
-                return a;
-            case 6:
-                return b;
-            case 7:
-                return b;
-        }
-        if (a.getPaintAmount() >= b.getPaintAmount()) return b;
-        else return a;
-    }
-    
-    private static boolean pred1(RobotInfo e) throws GameActionException {
-        return !Util.isFriendly(e) && rc.senseMapInfo(e.getLocation()).getPaint().isEnemy() && e.getType().isRobotType() && isBotAbleToAttack(e);
-    }
-    
-    private static boolean pred2(RobotInfo e) throws GameActionException {
-        return !Util.isFriendly(e) && e.getType().isRobotType() && isBotAbleToAttack(e);
-    }
 
-    // i dont think this updates after u mmove so be careful!!!
-    public static RobotInfo getBestRobotSquare1(int x, int y) throws GameActionException {
-        assert Game.bot instanceof Agent && ((Agent) Game.bot).lastMove;
-        RobotInfo best = null, info;
-        x += 3;
-        y += 3;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y--;
-        y--;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred1(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        return best;
-    }
+    public MapLocation doBestAttack() throws GameActionException {
+        // im gonna kms
+        MapLocation currentLoc = rc.getLocation();
+        int currentX = currentLoc.x;
+        int currentY = currentLoc.y;
 
-    public static RobotInfo getBestRobotSquare2(int x, int y) throws GameActionException {
-        assert Game.bot instanceof Agent && ((Agent) Game.bot).lastMove;
-        RobotInfo best = null, info;
-        x += 3;
-        y += 3;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y--;
-        y--;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        y++;
-        info = RobotTracker.exists[x][y];
-        if (info != null && pred2(info)) {
-            if (best == null) best = info;
-            else best = comp1(best, info);
-        }
-        x++;
-        return best;
-    }
-
-    private static int priority(UnitType type) {
-        switch (type.ordinal()) {
-            case 0:
-                return 1;
-            case 1:
-                return 2;
-            case 2:
-                return 0;
-            default:
-                throw new IllegalArgumentException("Invalid unit type");
-        }
-    }
-
-    private static boolean isBotAbleToAttack(RobotInfo info) {
-        switch (info.getType().ordinal()) {
-            case 0:
-                return info.getPaintAmount() >= 5;
-            case 1:
-                return info.getPaintAmount() >= 50;
-            case 2:
-                return info.getPaintAmount() > 0;
-            default:
-                throw new IllegalArgumentException("Invalid unit type");
-        }
-    }
-
-    /*
-
-orth_directions = [
-    (1, 0, "EAST"),
-    (0, 1, "NORTH"),
-    (-1, 0, "WEST"),
-    (0, -1, "SOUTH")
-]
-
-directions = [
-    (0, 0, "CENTER"),
-    (1, 0, "EAST"),
-    (1, 1, "NORTHEAST"),
-    (0, 1, "NORTH"),
-    (-1, 1, "NORTHWEST"),
-    (-1, 0, "WEST"),
-    (-1, -1, "SOUTHWEST"),
-    (0, -1, "SOUTH"),
-    (1, -1, "SOUTHEAST")
-]
-
-print("Team me = rc.getTeam();")
-for x in range(7):
-    for y in range(7):
-        bot = f"RobotTracker.bot{x + 1}{y + 1}"
-        print(f"int cell{x}{y} = ({bot} != null && {bot}.getTeam() != me && {bot}.getType().isRobotType() ? 1 : 0);")
-
-print("Pair<Direction, Direction> best = null;")
-print("int bestScore = 0;")
-
-print("int score = 0;")
-for dx, dy, dir_str in directions:
-    print(f"if (rc.canMove(Direction.{dir_str})) {{")
-    for i in range(4):
-        dx2, dy2, dir_str2 = orth_directions[i]
-        dx3, dy3, dir_str3 = orth_directions[(i + 1) % 4] # turn left
-        dx4, dy4, dir_str4 = orth_directions[(i + 3) % 4] # turn right
-
-        cells = []
-        x = dx + dx2
-        y = dy + dy2
-        cells.append((x, y))
-        cells.append((x + dx3, y + dy3))
-        cells.append((x + dx4, y + dy4))
-        x += dx2
-        y += dy2
-        cells.append((x, y))
-        cells.append((x + dx3, y + dy3))
-        cells.append((x + dx4, y + dy4))
-
-        print(f"score = {" + ".join([f"cell{x + 3}{y + 3}" for x, y in cells])};")
-        print("if (score > bestScore) {")
-        print("\tbestScore = score;")
-        print(f"\tbest = new Pair<>(Direction.{dir_str}, Direction.{dir_str2});")
-        print("}")
-    print("}")
-
-     */
-
-    boolean dbg = false;
-    public boolean doBestAttack() throws GameActionException {
-        if (!rc.isActionReady()) return false;
-        if (dbg) Profiler.begin();
-        indicate("try attack");
         bot.lastMove = true;
 
         Direction[] dirs = new Direction[9];
         int dcnt = 0;
         for (Direction dir : Direction.values()) {
-            if (dir != Direction.CENTER && rc.canMove(dir)) {
+            if (dir == Direction.CENTER || rc.canMove(dir)) {
                 dirs[dcnt++] = dir;
             }
         }
 
-        RobotInfo target = null;
-        Direction moveDir = null;
+        // targetloc is a good place to move to
+        MapLocation targetLoc = null;
 
-//        if (dbg) Profiler.begin();
-        for (int i = dcnt - 1; i >= 0; i--) {
-            Direction dir = dirs[i];
-            if (dir == Direction.CENTER || rc.canMove(dir)) {
-                // allow any move for the glorious mop + steal combo
-                RobotInfo tmp = getBestRobotSquare1(dir.dx, dir.dy);
-                if (tmp != null && (target == null || target != comp1(target, tmp))) {
-                    target = tmp;
-                    moveDir = dir;
+        // first try steal paint from enemy
+        // greedy bc i cbb and i doubt it makes a real difference
+    
+        // try to steal paint from enemy
+        MapInfo loc = CellTracker.getNearestCell(c -> {
+            if (c.getPaint().isAlly()) return false;
+            RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
+            if (nearbot == null) return false;
+            if (isEnemyAgent(nearbot)) return true;
+            return false;
+        });
+
+        
+
+        if (loc != null) {
+
+            MapLocation locLocation = loc.getMapLocation();
+
+            // if u can attack rn obv do that
+            if (rc.canAttack(locLocation)) {
+                rc.attack(locLocation);
+                return locLocation;
+            }
+
+            for (int i = dcnt - 1; i >= 0; i--) {
+                Direction dir = dirs[i];
+                if (dir != Direction.CENTER && rc.canMove(dir)) {
+                    MapLocation nextLoc = currentLoc.add(dir);
+                    // chucking constants to save bytecode rip
+                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                        bot.move(dir);
+                        rc.attack(locLocation);
+                        return locLocation;
+                    }
                 }
             }
-        }
-        if (dbg) Profiler.end("bruh moment");
 
-        if (target != null) {
-            if (moveDir != Direction.CENTER) bot.move(moveDir);
-            rc.attack(target.getLocation());
-            rc.setIndicatorDot(target.getLocation(), 255, 0, 0);
-            indicate("double trouble attak");
-//            if (dbg) Profiler.end("regular attacks");
-            return true;
+            // otherwise update our target loc
+            targetLoc = locLocation;
         }
 
-        // just attack a dude case
-        if (dbg) Profiler.begin();
-        for (int i = dcnt - 1; i >= 0; i--) {
-            Direction dir = dirs[i];
-            if (dir == Direction.CENTER || rc.canMove(dir)) {
-                // allow any move for steal combo
-                // dont require enemy paint
-                RobotInfo tmp = getBestRobotSquare2(dir.dx, dir.dy);
-                if (tmp != null && (target == null || target != comp1(target, tmp))) {
-                    target = tmp;
-                    moveDir = dir;
-                }
-            }
-        }
-        if (dbg) Profiler.end("minor bruh moment");
 
-//        if (dbg) Profiler.end("regular attacks");
-        // begin cursed code
-        if (dbg) Profiler.begin();
-
+    
         Team me = rc.getTeam();
         int cell00 = (RobotTracker.bot11 != null && RobotTracker.bot11.getTeam() != me && RobotTracker.bot11.getType().isRobotType() ? 1 : 0);
         int cell01 = (RobotTracker.bot12 != null && RobotTracker.bot12.getTeam() != me && RobotTracker.bot12.getType().isRobotType() ? 1 : 0);
@@ -554,27 +361,43 @@ for dx, dy, dir_str in directions:
                 best = new Pair<>(Direction.SOUTHEAST, Direction.SOUTH);
             }
         }
+        
 
-        // end cursed code
-        if (dbg) Profiler.end("mop swing");
-
-        if (target == null || (bestScore >= 3 && getPaintLevel() >= 0.5)) {
-            if (best != null) {
+        if (best != null && rc.canMopSwing(best.second)) {
                 if (best.first != null && best.first != Direction.CENTER) bot.move(best.first);
                 rc.mopSwing(best.second);
                 indicate("mop swing!");
                 rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
-                return true;
-            }
-        } else {
-            if (moveDir != Direction.CENTER) bot.move(moveDir);
-            rc.attack(target.getLocation());
-            indicate("regular attak");
-            rc.setIndicatorDot(target.getLocation(), 0, 0, 255);
-            return true;
+                return targetLoc;
         }
-        indicate("no attack :(");
-        return false;
+
+        // just paint
+
+        loc = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
+        if (loc != null) {
+
+            // not moving
+            MapLocation locLocation = loc.getMapLocation();
+            if (rc.canAttack(locLocation)) {
+                rc.attack(locLocation);
+                return targetLoc;
+            }
+
+            // moving?
+            for (int i = dcnt - 1; i >= 0; i--) {
+                Direction dir = dirs[i];
+                MapLocation nextLoc = currentLoc.add(dir);
+                if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                    bot.move(dir);
+                    rc.attack(locLocation);
+                    return targetLoc;
+                }
+            }
+
+            if (targetLoc == null) targetLoc = locLocation;
+        }
+
+        return targetLoc;
     }
 
     @Override

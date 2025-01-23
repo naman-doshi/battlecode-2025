@@ -19,7 +19,7 @@ import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
@@ -49,8 +49,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new InstantScoutSpawner()
                 // ),
 
-                new RushSpawner(30),
-                new RushSpawner(30),
+                new RushSpawner(10),
+                new RushSpawner(10),
 
                 // new InstantScoutSpawner(),
                 // new InstantScoutSpawner(),
