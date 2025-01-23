@@ -51,7 +51,7 @@ public class Soldier extends Agent {
             }
             primaryStrategy = new ScoutStrategy();
         }
-        if(time > 100) syncAttacks = false;
+        // if(time > 100) syncAttacks = false;
         super.runTick();
         // Profiler.end();
     }
