@@ -17,7 +17,7 @@ public class Config {
     public static double targetRatio() {
         if(rc.getNumberTowers() < moneyTowerThreshold()) return 1;
         int area = mapHeight * mapWidth;
-        double ratio = area < 1500 ? 0.66 : 0.72;
+        double ratio = area < 1500 ? 0.67 : 0.72;
         return ratio;
     }
     public static int moneyTowerThreshold() {

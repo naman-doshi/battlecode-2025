@@ -9,7 +9,7 @@ import caterpillow.util.GamePredicate;
 
 import static battlecode.common.UnitType.SOLDIER;
 import static caterpillow.Game.*;
-import static caterpillow.util.Util.downgrade;
+import static caterpillow.util.Util.*;
 import static java.lang.Math.*;
 
 public class CellTracker {
@@ -470,7 +470,8 @@ for i in range(3):
                         continue;
                     }
 
-                    if (time - ignoreCooldown[ruin.x][ruin.y] < 10) continue;
+                    if(ignoreCooldown[ruin.x][ruin.y] == infCooldown) ignoreCooldown[ruin.x][ruin.y] = 0;
+                    if (time < ignoreCooldown[ruin.x][ruin.y]) continue;
                     int minx = max(0, ruin.x - 4);
                     int miny = max(0, ruin.y - 4);
                     int maxx = min(rc.getMapWidth() - 1, ruin.x + 4);
