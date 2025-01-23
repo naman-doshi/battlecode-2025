@@ -29,7 +29,6 @@ public class Config {
     public static double targetRatio() {
         int area = mapHeight * mapWidth;
         double ratio = area < 1500 ? 0.66 : 0.72;
-        //if(TowerTracker.coinTowers < 4 && area >= 1500) ratio += 0.1;
         return ratio;
     }
 

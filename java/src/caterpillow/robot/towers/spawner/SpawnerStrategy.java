@@ -20,7 +20,7 @@ public class SpawnerStrategy extends TowerStrategy {
     @Override
     public void runTick() throws GameActionException {
         // don't spawn stuff if we have no coin towers
-        while (!todo.isEmpty() && todo.peek().spawn()) {
+        while ((TowerTracker.broken || TowerTracker.coinTowers > 0) && !todo.isEmpty() && todo.peek().spawn()) {
             todo.remove();
         }
         assert !todo.isEmpty() : "ran out of things to spawn";
