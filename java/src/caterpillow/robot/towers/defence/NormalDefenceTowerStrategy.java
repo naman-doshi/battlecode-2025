@@ -7,7 +7,8 @@ import java.util.Random;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
@@ -53,7 +54,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     public void runTick() throws GameActionException {
         indicate("NORMAL");
 
-        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 20) {
+        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 30) {
             // donate paint to surrounding bots
             RobotInfo[] bots = rc.senseNearbyRobots();
             for (RobotInfo bot : bots) {

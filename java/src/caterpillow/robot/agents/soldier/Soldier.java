@@ -3,15 +3,18 @@ package caterpillow.robot.agents.soldier;
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
-import static caterpillow.Game.*;
-import static caterpillow.util.Util.*;
-
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.rc;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
-import caterpillow.tracking.CellTracker;
+import static caterpillow.util.Util.checkerboardPaint;
+import static caterpillow.util.Util.decodeLoc;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isInDanger;
 
 public class Soldier extends Agent {
 
@@ -42,7 +45,7 @@ public class Soldier extends Agent {
         rc.attack(loc, checkerboardPaint(loc) == PaintType.ALLY_SECONDARY);
     }
 
-    public static final int STARTER_STRAT = 0, SRP_STRAT = 1, SCOUT_STRAT = 2, RUSH_STRAT = 3;
+    public static final int STARTER_STRAT = 0, SRP_STRAT = 1, SCOUT_STRAT = 2, RUSH_STRAT = 3, PAINT_EVERYWHERE_STRAT = 4;
 
     @Override
     public void handleStrategyPacket(StrategyPacket packet, int senderID) throws GameActionException {
@@ -60,6 +63,9 @@ public class Soldier extends Agent {
                 break;
             case RUSH_STRAT:
                 primaryStrategy = new RushStrategy(packet.strategyData);
+                break;
+            case PAINT_EVERYWHERE_STRAT:
+                primaryStrategy = new PaintEverywhereStrategy();
                 break;
             default:
                 assert false : "INVALID STRATEGY";
