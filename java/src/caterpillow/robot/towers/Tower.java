@@ -6,6 +6,7 @@ import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.paint.StarterPaintTowerStrategy;
+import caterpillow.robot.towers.money.StarterMoneyTowerStrategy;
 import caterpillow.util.Profiler;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.*;

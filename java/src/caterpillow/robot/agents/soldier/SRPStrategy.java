@@ -157,6 +157,7 @@ public class SRPStrategy extends Strategy {
                     return false;
                 }
                 if (CellTracker.ignoreCooldown[x][y] + CellTracker.ignoreCooldownReset >= time) return false;
+                if(CellTracker.mapInfos[x][y].hasRuin()) return false;
                 if (rc.canSenseLocation(loc) && rc.senseMapInfo(loc).isResourcePatternCenter()) return false;
                 return true;
             };

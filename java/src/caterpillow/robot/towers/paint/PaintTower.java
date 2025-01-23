@@ -8,11 +8,11 @@ public class PaintTower extends Tower {
 
     @Override
     public void init() throws GameActionException {
-        super.init();
         if (isStarter) {
             primaryStrategy = new StarterPaintTowerStrategy();
         } else {
             primaryStrategy = new NormalPaintTowerStrategy();
         }
+        super.init();
     }
 }
