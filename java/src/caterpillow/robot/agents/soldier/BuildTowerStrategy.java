@@ -673,7 +673,7 @@ print("return true;")
                 pathfinder.makeMove(target.add(Direction.NORTH));
             }
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
-                if (patternToFinish == Config.nextResourceType() || ticksDelayed > 0) {
+                if (patternToFinish == Config.nextResourceType(true) || ticksDelayed > 0) {
                     bot.build(patternToFinish, target);
                     push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
                     push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
@@ -697,10 +697,11 @@ print("return true;")
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
-            pathfinder.makeMove(target.add(getOffset(nextTowerType())));
+            UnitType nextType = nextTowerType();
+            pathfinder.makeMove(target.add(getOffset(nextType)));
             MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
             if (nearest != null) {
-                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextTowerType()));
+                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextType));
                 cellsPlaced++;
             }
             return;

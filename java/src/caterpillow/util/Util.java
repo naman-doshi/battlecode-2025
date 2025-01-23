@@ -3,15 +3,10 @@ package caterpillow.util;
 import battlecode.common.*;
 import caterpillow.Game;
 import caterpillow.tracking.CellTracker;
-
 import static caterpillow.Config.*;
-
-import java.util.*;
-
 import static caterpillow.Game.*;
-
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
+import java.util.*;
+import static java.lang.Math.*;
 
 public class Util {
     public static final int VISION_RAD = 20;
@@ -76,6 +71,10 @@ public class Util {
 
     public static int writeBits(int bits, int data, int st) {
         return bits | (data << st);
+    }
+
+    public static boolean logisticSample(double x, double scale) {
+        return trng.nextDouble() < 1 / (1.0 + exp(-x * scale));
     }
 
     public final static int TOWER_COST = 1000;
