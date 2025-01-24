@@ -13,16 +13,23 @@ import caterpillow.Config;
 import static caterpillow.Config.nextTowerType;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
-
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
-import caterpillow.robot.troll.DequeStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
 import caterpillow.util.Util;
-
-import java.util.ArrayList;
+import static caterpillow.util.Util.VISION_RAD;
+import static caterpillow.util.Util.getCellColour;
+import static caterpillow.util.Util.hasTowerCompletionDefinitelyBeenClaimed;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.orthDirections;
+import static caterpillow.util.Util.paintLevel;
+import static caterpillow.util.Util.println;
+import static caterpillow.util.Util.shouldBuildTowerHere;
 
 public class BuildTowerStrategy extends Strategy {
 
@@ -41,7 +48,7 @@ public class BuildTowerStrategy extends Strategy {
         if (processedRuins.contains(ruin)) {
             return false;
         }
-        for (Direction dir : Util.orthDirections) {
+        for (Direction dir : orthDirections) {
             MapLocation bruh = ruin.add(dir);
             if (Game.pos.distanceSquaredTo(bruh) <= VISION_RAD) {
                 if (rc.senseMapInfo(bruh).getMark() != PaintType.EMPTY) {

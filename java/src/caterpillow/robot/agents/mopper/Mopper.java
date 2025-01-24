@@ -53,8 +53,8 @@ public class Mopper extends Agent {
         
         //indicate("bytecodes " + Clock.getBytecodeNum());
         
-        int enemyMoppers = RobotTracker.countNearbyFriendly(r -> isEnemyAgent(r) && r.getLocation().distanceSquaredTo(rc.getLocation()) <= 5 && r.getType() == UnitType.MOPPER);
-        int friendlyMoppers = RobotTracker.countNearbyFriendly(r -> isFriendly(r) && r.getType() == UnitType.MOPPER);
+        int enemyMoppers = RobotTracker.countNearbyBots(r -> isEnemyAgent(r) && r.getLocation().distanceSquaredTo(rc.getLocation()) <= 5 && r.getType() == UnitType.MOPPER);
+        int friendlyMoppers = RobotTracker.countNearbyBots(r -> isFriendly(r) && r.getType() == UnitType.MOPPER);
         if (friendlyMoppers + 2 < enemyMoppers) return null;
         
         
