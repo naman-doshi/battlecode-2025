@@ -1,54 +1,95 @@
 package caterpillow.robot.agents.mopper;
 
-import static java.lang.Math.min;
+import java.util.List;
+import java.util.Random;
 
 import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
+import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
-import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Strategy;
-import static caterpillow.tracking.RobotTracker.getNearestRobot;
+import caterpillow.robot.agents.WeakRefillStrategy;
+import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import caterpillow.tracking.RobotTracker;
+import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isAllyAgent;
+import static caterpillow.util.Util.isEnemyAgent;
+import static caterpillow.util.Util.isPaintBelowHalf;
 
 public class MopperDefenceStrategy extends Strategy {
 
     public Mopper bot;
 
-    public MopperDefenceStrategy() {
+    public List<GameSupplier<MapInfo>> suppliers;
+    Random rng;
+    public MapLocation lastSeenRuin;
+    Strategy rescueStrategy;
+    Strategy refillStrategy;
+    Strategy roamStrategy;
+    boolean goingHome = false;
+
+    public MopperDefenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
-        bot.pathfinder = new BugnavPathfinder(c -> !c.getPaint().isAlly());
+        rng = new Random();
+        roamStrategy = new AggroRoamStrategy();
     }
 
-    private boolean isInDanger() throws GameActionException {
-        return getNearestRobot(bot -> !isFriendly(bot)) != null;
-    }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        return !isInDanger();
+        return false;
     }
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("DEFENCE MOPPER");
-        RobotInfo target = getNearestRobot(bot -> !isFriendly(bot));
-        bot.pathfinder.makeMove(target.getLocation());
+        indicate("homeland security!!1!11!!");
 
-        // temporary shitty solution to dump paint in tower if u can reach it
-        if (rc.canSenseLocation(bot.home)) {
-            RobotInfo tower = rc.senseRobotAtLocation(bot.home);
-            if (tower != null) {
-                int amt = min(min(50, rc.getPaint()), tower.getType().paintCapacity - tower.getPaintAmount());
-                if (rc.canTransferPaint(bot.home, amt)) {
-                    rc.transferPaint(bot.home, amt);
-                }
-            } else {
-                // rip this guy is homeless
+        if (rescueStrategy == null) {
+            RobotInfo nearest = RobotTracker.getNearestRobot(b -> isAllyAgent(b) && Config.shouldRescue(b));
+            if (nearest != null) {
+                rescueStrategy = new RescueStrategy(nearest.getLocation());
             }
         }
 
+        if (tryStrategy(rescueStrategy)) return;
+        rescueStrategy = null;
+
+        if (refillStrategy == null && isPaintBelowHalf()) {
+            refillStrategy = new WeakRefillStrategy(0.2);
+        }
+
+        if (tryStrategy(refillStrategy)) return;
+        refillStrategy = null;
+
+        // chase enemy until you're around 7 squares away from home, then come back
         bot.doBestAttack();
+
+
+        if (Game.rc.getLocation().distanceSquaredTo(bot.home) < 20) {
+            goingHome = false;
+        }
+
+        // find nearest enemy
+        RobotInfo nearest = RobotTracker.getNearestRobot(b -> isEnemyAgent(b));
+        
+        if (nearest != null && Game.rc.getLocation().distanceSquaredTo(bot.home) <= 80) {
+            bot.pathfinder.makeMove(nearest.getLocation());
+        } else if (Game.rc.getLocation().distanceSquaredTo(bot.home) > 100 || goingHome) {
+            goingHome = true;
+            bot.pathfinder.makeMove(bot.home);
+        } else {
+            roamStrategy.runTick();
+        }
+
+        
+
+        
+
+        
+
+        
     }
 }

@@ -9,7 +9,6 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.AggroRoamStrategy;

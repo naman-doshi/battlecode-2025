@@ -6,16 +6,17 @@ import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
 import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
-import static caterpillow.util.Util.*;
-import caterpillow.util.Pair;
 import caterpillow.tracking.CellTracker;
-import caterpillow.util.Profiler;
+import caterpillow.util.Pair;
+import static caterpillow.util.Util.isInRobotAttackDanger;
 
 public class Splasher extends Agent {
 
@@ -26,7 +27,7 @@ public class Splasher extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInRobotAttackDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Splasher) Game.bot;
     }

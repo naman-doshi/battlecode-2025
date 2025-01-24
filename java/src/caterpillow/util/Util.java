@@ -576,6 +576,24 @@ public class Util {
         return false;
     }
 
+    public static boolean isInRobotAttackDanger(MapLocation loc) throws GameActionException {
+        for (RobotInfo bot : rc.senseNearbyRobots()) {
+            if (!isFriendly(bot) && bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared && (bot.getType().isTowerType() || bot.getType() == UnitType.MOPPER)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isInMopperDanger(MapLocation loc) throws GameActionException {
+        for (RobotInfo bot : rc.senseNearbyRobots()) {
+            if (!isFriendly(bot) && bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared && bot.getType() == UnitType.MOPPER) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean shouldBuildTowerHere(MapLocation loc) throws GameActionException {
 //        if(!rc.senseMapInfo(loc).hasRuin()) return false;
         assert rc.senseMapInfo(loc).hasRuin();

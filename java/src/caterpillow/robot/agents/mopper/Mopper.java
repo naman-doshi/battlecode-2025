@@ -20,7 +20,8 @@ import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isInDanger;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInRobotAttackDanger;
 
 public class Mopper extends Agent {
 
@@ -48,13 +49,17 @@ public class Mopper extends Agent {
     //     return getBestTarget(e -> true);
     // }
 
-
-
     public MapLocation doBestAttack() throws GameActionException {
+        
+        //indicate("bytecodes " + Clock.getBytecodeNum());
+        
+        int enemyMoppers = RobotTracker.countNearbyFriendly(r -> isEnemyAgent(r) && r.getLocation().distanceSquaredTo(rc.getLocation()) <= 5 && r.getType() == UnitType.MOPPER);
+        int friendlyMoppers = RobotTracker.countNearbyFriendly(r -> isFriendly(r) && r.getType() == UnitType.MOPPER);
+        if (friendlyMoppers + 2 < enemyMoppers) return null;
+        
+        
         // im gonna kms
         MapLocation currentLoc = rc.getLocation();
-        int currentX = currentLoc.x;
-        int currentY = currentLoc.y;
 
         bot.lastMove = true;
 
@@ -66,51 +71,10 @@ public class Mopper extends Agent {
             }
         }
 
+        //indicate("bytecodes0 " + Clock.getBytecodeNum());
+
         // targetloc is a good place to move to
         MapLocation targetLoc = null;
-
-        // first try steal paint from enemy
-        // greedy bc i cbb and i doubt it makes a real difference
-
-        // try to steal paint from enemy
-        MapInfo loc = CellTracker.getNearestCell(c -> {
-                if (c.getPaint().isAlly()) return false;
-                RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
-                if (nearbot == null) return false;
-                if (isEnemyAgent(nearbot)) return true;
-                return false;
-            });
-
-
-
-        if (loc != null) {
-
-            MapLocation locLocation = loc.getMapLocation();
-
-            // if u can attack rn obv do that
-            if (rc.canAttack(locLocation)) {
-                rc.attack(locLocation);
-                return locLocation;
-            }
-
-            for (int i = dcnt - 1; i >= 0; i--) {
-                Direction dir = dirs[i];
-                if (dir != Direction.CENTER && rc.canMove(dir)) {
-                    MapLocation nextLoc = currentLoc.add(dir);
-                    // chucking constants to save bytecode rip
-                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
-                        bot.move(dir);
-                        rc.attack(locLocation);
-                        return locLocation;
-                    }
-                }
-            }
-
-            // otherwise update our target loc
-            targetLoc = locLocation;
-        }
-
-
 
         Team me = rc.getTeam();
         int cell00 = (RobotTracker.bot11 != null && RobotTracker.bot11.getTeam() != me && RobotTracker.bot11.getType().isRobotType() ? 1 : 0);
@@ -363,13 +327,78 @@ public class Mopper extends Agent {
         }
 
 
-        if (best != null && rc.canMopSwing(best.second)) {
+        if (best != null && rc.canMopSwing(best.second) && bestScore >= 2 && rc.getPaint() >= 20) {
             if (best.first != null && best.first != Direction.CENTER) bot.move(best.first);
             rc.mopSwing(best.second);
             indicate("mop swing!");
             rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
             return targetLoc;
         }
+        
+        //indicate("bytecodes1 " + Clock.getBytecodeNum());
+        // try to steal paint from enemy
+        MapInfo loc = CellTracker.getNearestCell(c -> {
+                //if (c.getPaint().isAlly()) return false;
+                RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
+                if (nearbot != null && isEnemyAgent(nearbot) && nearbot.getPaintAmount() >= 10) return true;
+                return false;
+            });
+        //indicate("bytecodes2 " + Clock.getBytecodeNum());
+
+
+
+        if (loc != null) {
+
+            MapLocation locLocation = loc.getMapLocation();
+
+            // if u can attack rn obv do that
+            if (rc.canAttack(locLocation)) {
+                rc.attack(locLocation);
+                return locLocation;
+            }
+
+            for (int i = dcnt - 1; i >= 0; i--) {
+                Direction dir = dirs[i];
+                if (dir != Direction.CENTER && rc.canMove(dir)) {
+                    MapLocation nextLoc = currentLoc.add(dir);
+                    // chucking constants to save bytecode rip
+                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                        bot.move(dir);
+                        rc.attack(locLocation);
+                        return locLocation;
+                    }
+                }
+            }
+
+            // otherwise update our target loc
+            targetLoc = locLocation;
+        }
+
+
+
+        if (CellTracker.isNearRuin != null) {
+            MapInfo enemyPaintinRuinBound = CellTracker.getNearestCell(c -> c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]);
+            if (enemyPaintinRuinBound != null) {
+                indicate("enemy paint in ruin bound " + enemyPaintinRuinBound.getMapLocation());
+                MapLocation eloc = enemyPaintinRuinBound.getMapLocation();
+                if (rc.canAttack(eloc)) {
+                    rc.attack(eloc);
+                    return null;
+                } else {
+                    bot.pathfinder.makeMove(eloc);
+                    if (rc.canAttack(eloc)) {
+                        rc.attack(eloc);
+                        return null;
+                    } else {
+                        return eloc;
+                    }
+                }
+            }
+        }
+
+        //indicate("bytecodes3 " + Clock.getBytecodeNum());
+        
+
 
         // just paint
 
@@ -397,13 +426,16 @@ public class Mopper extends Agent {
             if (targetLoc == null) targetLoc = locLocation;
         }
 
+        //indicate("bytecodes4 " + Clock.getBytecodeNum());
+
         return targetLoc;
     }
 
     @Override
     public void init() throws GameActionException {
         super.init();
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
+        //pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()) || (Game.gameStage == GameStage.MID && c.getPaint()==PaintType.EMPTY));
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInRobotAttackDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
     }
@@ -425,14 +457,9 @@ public class Mopper extends Agent {
 
         // all moppers should donate. splashers 1st priority, soldiers 2nd
         RobotInfo[] bots = rc.senseNearbyRobots(2);
-        for (RobotInfo bot : bots) {
-            if (bot.getType()==UnitType.SPLASHER && bot.getPaintAmount() < bot.getType().paintCapacity) {
-                donate(bot);
-            }
-        }
-        for (RobotInfo bot : bots) {
-            if (bot.getType()==UnitType.SOLDIER && bot.getPaintAmount() < bot.getType().paintCapacity) {
-                donate(bot);
+        for (RobotInfo bot1 : bots) {
+            if (bot1.getPaintAmount() < bot1.getType().paintCapacity) {
+                donate(bot1);
             }
         }
     }

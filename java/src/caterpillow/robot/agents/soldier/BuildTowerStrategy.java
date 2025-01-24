@@ -5,22 +5,29 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
+import static battlecode.common.PaintType.EMPTY;
 import battlecode.common.UnitType;
 import caterpillow.Config;
-
-import static battlecode.common.PaintType.EMPTY;
 import static caterpillow.Config.nextTowerType;
 import caterpillow.Game;
-import caterpillow.pathfinding.*;
-
 import static caterpillow.Game.rc;
+import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
 import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
-import static caterpillow.util.Util.*;
 import caterpillow.util.Util;
+import static caterpillow.util.Util.VISION_RAD;
+import static caterpillow.util.Util.getCellColour;
+import static caterpillow.util.Util.hasTowerCompletionDefinitelyBeenClaimed;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.maxedTowers;
+import static caterpillow.util.Util.paintLevel;
+import static caterpillow.util.Util.println;
+import static caterpillow.util.Util.shouldBuildTowerHere;
 
 public class BuildTowerStrategy extends QueueStrategy {
 
@@ -591,7 +598,10 @@ print("return true;")
                 return super.isComplete();
 //                return rc.senseMapInfo(target.add(Direction.NORTH)).getMark() == EMPTY;
             } else {
-                return true;
+                UnitType t = getShownPattern();
+                if (t == null) return true;
+                push(new RemoveMarkerStrategy(target.add(getOffset(t))));
+                return super.isComplete();
             }
         }
         if (patternToFinish != null) {

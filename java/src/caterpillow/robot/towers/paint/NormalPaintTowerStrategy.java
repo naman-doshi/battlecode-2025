@@ -16,10 +16,8 @@ import caterpillow.robot.towers.TowerStrategy;
 import caterpillow.robot.towers.UnstuckStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
-import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
-import caterpillow.robot.towers.spawner.soldier.PainterSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -63,12 +61,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                                 new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
-                        OffenceMopperSpawner::new,
-                        () -> new ConditionalSpawner(
-                                () -> Game.gameStage == GameStage.MID && rng.nextDouble() < 0.25,
-                                new PainterSpawner(),
-                                new NullSpawner()
-                        )
+                        OffenceMopperSpawner::new
                 )
         ));
         nxt = 0;
