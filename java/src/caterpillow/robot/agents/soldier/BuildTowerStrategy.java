@@ -742,7 +742,7 @@ print("return true;")
             }
         } else {
             // set the pattern
-            UnitType nextType = nextTowerType();
+            UnitType nextType = nextTowerType(target);
             MapLocation markLoc = target.add(getOffset(nextType));
             if (rc.canMark(markLoc)) {
                 rc.mark(markLoc, true);
@@ -829,7 +829,7 @@ print("return true;")
 
         UnitType pattern = getShownPattern();
         if (pattern == null) {
-            UnitType nextType = nextTowerType();
+            UnitType nextType = nextTowerType(target);
             orbitPathfinder.makeMove(target.add(getOffset(nextType)));
             if (paintLevel() > 0.7) {
                 MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && isCellInTowerBounds(target, c.getMapLocation()));

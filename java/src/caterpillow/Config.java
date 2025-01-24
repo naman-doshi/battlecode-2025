@@ -1,27 +1,14 @@
 package caterpillow;
 
-import static java.lang.Math.max;
+import static java.lang.Math.*;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.centre;
-import static caterpillow.Game.mapHeight;
-import static caterpillow.Game.mapWidth;
-import static caterpillow.Game.origin;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
+import static caterpillow.Game.*;
 import caterpillow.tracking.TowerTracker;
-import static caterpillow.util.Util.getPaintLevel;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.logisticSample;
-import static caterpillow.util.Util.project;
-import static caterpillow.util.Util.subtract;
+import static caterpillow.util.Util.*;
 
 public class Config {
     // idea : dynamically update this based on coin amt
@@ -85,20 +72,23 @@ public class Config {
         return false;
     }
 
-    public static UnitType nextTowerType() {
+    public static boolean isCentral(MapLocation loc) {
+        return loc.distanceSquaredTo(centre) <= mapHeight * mapWidth / 25;
+    }
 
-       boolean enemyVisible = false;
+    public static UnitType nextTowerType(MapLocation loc) {
+        // if(isCentral(loc) && rc.getNumberTowers() > 8 && trng.nextInt(2) == 0) return UnitType.LEVEL_ONE_DEFENSE_TOWER;
 
-       for (RobotInfo r : rc.senseNearbyRobots()) {
-           if (!isFriendly(r)) {
-               enemyVisible = true;
-               break;
-           }
-       }
-
-       if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05 && rc.getNumberTowers() >= 4) {
-           return UnitType.LEVEL_ONE_DEFENSE_TOWER;
-       }
+        boolean enemyVisible = false;
+        for (RobotInfo r : rc.senseNearbyRobots()) {
+            if (!isFriendly(r)) {
+                enemyVisible = true;
+                break;
+            }
+        }
+        if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05 && rc.getNumberTowers() >= 4) {
+            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+        }
 
        return nextResourceType();
     }
