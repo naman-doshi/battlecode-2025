@@ -604,6 +604,6 @@ public class Util {
 //        if(!rc.senseMapInfo(loc).hasRuin()) return false;
         assert rc.senseMapInfo(loc).hasRuin();
         RobotInfo info = rc.senseRobotAtLocation(loc);
-        return (info == null && !maxedTowers()) || (shouldConvertMoneyToPaint() && info.team.equals(team) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER));
+        return (info == null && !maxedTowers()) || (info != null && shouldConvertMoneyToPaint() && info.team.equals(team) && downgrade(info.type).equals(UnitType.LEVEL_ONE_MONEY_TOWER));
     }
 }

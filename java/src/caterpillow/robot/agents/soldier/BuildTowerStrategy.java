@@ -57,21 +57,23 @@ public class BuildTowerStrategy extends Strategy {
                 }
             }
         }
+        double empty = 0, visible = 0;
         for (int dx = -2; dx <= 2; dx++) {
             for (int dy = -2; dy <= 2; dy++) {
                 MapLocation loc = target.translate(dx, dy);
                 if (Game.pos.distanceSquaredTo(loc) <= VISION_RAD) {
+                    visible++;
                     PaintType paint = rc.senseMapInfo(loc).getPaint();
                     if (paint.isAlly()) {
                         processedRuins.add(ruin);
                         return false;
                     } else if (paint == PaintType.EMPTY) {
-                        return true;
+                        empty++;
                     }
                 }
             }
         }
-        return false;
+        return empty <= 9 && empty / visible < 0.5 && visible - empty >= 1;
     }
 
 
@@ -835,7 +837,7 @@ print("return true;")
         UnitType pattern = getShownPattern();
         if (pattern == null) {
             UnitType nextType = nextTowerType(target);
-            orbitPathfinder.makeMove(target.add(getOffset(nextType)));
+            pathfinder.makeMove(target.add(getOffset(nextType)));
             if (paintLevel() > 0.7) {
                 MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && isCellInTowerBounds(target, c.getMapLocation()));
                 if (nearest != null) {
