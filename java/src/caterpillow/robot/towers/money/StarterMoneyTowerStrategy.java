@@ -8,11 +8,11 @@ import battlecode.common.GameActionException;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
-import caterpillow.robot.towers.RespawnStrategy;
+
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
-import caterpillow.robot.towers.UnstuckStrategy;
+import caterpillow.robot.towers.NotDefenceTowerDefenceStrategy;
 import caterpillow.robot.towers.spawner.ConditionalSpawner;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
@@ -43,8 +43,8 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
         bot = (Tower) Game.bot;
         rng = new Random(seed);
         strats = new ArrayList<>();
-        strats.add(new RespawnStrategy());
-        strats.add(new UnstuckStrategy());
+//        strats.add(new RespawnStrategy());
+        strats.add(new NotDefenceTowerDefenceStrategy());
         strats.add(new TowerAttackStrategy());
         boolean shouldRush = chebyshevDistance(rc.getLocation(), guessEnemyLocs(rc.getLocation()).get(0)) <= 10;
         strats.add(new SpawnerStrategy(

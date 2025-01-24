@@ -1,17 +1,16 @@
 changes made:
-- removed link strategy
-- new tower building code
-- unstuck spwns on any visible enemy paint
+- FIXED THE FUCKING 6000 BYTECODE .stream() ON AN EMPTY ARRAYLIST (??????????)
+- slightly changed mid-tower build ruin trolling
+- removed tower building cooldown from srp
+- towers spawn mopper on enemy paint or enemy bots
 
 general:
 - fix tle
 - hill climb macro strats
     - kinda sus of refill
 - after optimising srp stuff, make scouts double as srp placers
-- make soldiers prioritise ruin trolling even when doing other stuff like building
-- splasher tower kiting
-- add more gamestages for better macro
+    - is this even doable without infinite tle
 - make scouts turn into srps later into the game
+- make units not feed defence towers thanks
 
 alex:
-- why are you using markers to communicate what tower type when you could have just started building

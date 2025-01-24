@@ -38,7 +38,6 @@ public class SRPStrategy extends Strategy {
 
     HandleRuinStrategy handleRuinStrategy;
     LinkedList<Pair<MapLocation, Integer>> visitedRuins;
-    int towerStratCooldown;
     int skipCooldown;
     int refillCooldown;
     Random rng;
@@ -57,7 +56,6 @@ public class SRPStrategy extends Strategy {
         bot = (Soldier) Game.bot;
         rng = new Random(seed);
         visitedRuins = new LinkedList<>();
-        towerStratCooldown = 0;
         skipCooldown = (w + h) / 2;
         roamStrategy = new ExplorationRoamStrategy(true);
         refillCooldown = -100000;
@@ -66,6 +64,15 @@ public class SRPStrategy extends Strategy {
     public SRPStrategy(MapLocation target) throws GameActionException {
         this();
         roamStrategy = new ExplorationRoamStrategy(target, true);
+    }
+
+    public boolean hasVisited(MapLocation loc) {
+        for (Pair<MapLocation, Integer> vis : visitedRuins) {
+            if (vis.first.equals(loc)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -77,7 +84,6 @@ public class SRPStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("SRP");
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
-        towerStratCooldown--;
 
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
@@ -89,8 +95,8 @@ public class SRPStrategy extends Strategy {
         if (tryStrategy(attackTowerStrategy)) return;
         attackTowerStrategy = null;
 
-        if (handleRuinStrategy == null && towerStratCooldown <= 0) {
-            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
+        if (handleRuinStrategy == null) {
+            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && !hasVisited(c));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1);
             }
@@ -100,7 +106,6 @@ public class SRPStrategy extends Strategy {
             if (handleRuinStrategy.isComplete()) {
                 visitedRuins.add(new Pair<>(handleRuinStrategy.target, time));
                 handleRuinStrategy = null;
-                towerStratCooldown = 30;
             } else {
                 handleRuinStrategy.runTick();
                 return;

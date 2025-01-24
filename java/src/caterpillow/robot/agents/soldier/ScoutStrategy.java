@@ -14,6 +14,7 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
+import caterpillow.util.Profiler;
 
 public class ScoutStrategy extends Strategy {
 
@@ -39,6 +40,15 @@ public class ScoutStrategy extends Strategy {
         refillCooldown = -1000000;
     }
 
+    public boolean hasVisited(MapLocation loc) {
+        for (Pair<MapLocation, Integer> vis : visitedRuins) {
+            if (vis.first.equals(loc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ScoutStrategy(MapLocation target) throws GameActionException {
         this();
         roamStrategy = new ScoutRoamStrategy(target);
@@ -61,11 +71,12 @@ public class ScoutStrategy extends Strategy {
         attackTowerStrategy = null;
 
         if (handleRuinStrategy == null) {
-            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
+            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && !hasVisited(c));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1);
             }
         }
+
         if (handleRuinStrategy != null) {
             if (handleRuinStrategy.isComplete()) {
                 visitedRuins.add(new Pair<>(handleRuinStrategy.target, time));
