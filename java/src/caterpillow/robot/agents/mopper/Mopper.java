@@ -29,25 +29,104 @@ public class Mopper extends Agent {
     List<MapLocation> enemyLocs;
     MapLocation spawnLoc;
 
-    // public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
-    //     return getBestRobot((a, b) -> {
-    //             int a1 = a.getType().ordinal();
-    //             int b1 = b.getType().ordinal();
-    //             int h1 = a.getPaintAmount();
-    //             int h2 = b.getPaintAmount();
-    //             if (a1 == b1) {
-    //                 if (h1 > h2) return b;
-    //                 else return a;
-    //             } else {
-    //                 if (a1 < b1) return a;
-    //                 else return b;
-    //             }
-    //         }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
-    // }
+    /*
 
-    // public RobotInfo getBestTarget() throws GameActionException {
-    //     return getBestTarget(e -> true);
-    // }
+    orth_directions = [
+    (1, 0, "EAST"),
+    (0, 1, "NORTH"),
+    (-1, 0, "WEST"),
+    (0, -1, "SOUTH")
+]
+
+directions = [
+    (0, 0, "CENTER"),
+    (1, 0, "EAST"),
+    (1, 1, "NORTHEAST"),
+    (0, 1, "NORTH"),
+    (-1, 1, "NORTHWEST"),
+    (-1, 0, "WEST"),
+    (-1, -1, "SOUTHWEST"),
+    (0, -1, "SOUTH"),
+    (1, -1, "SOUTHEAST")
+]
+
+for x in range(7):
+    for y in range(7):
+        print(f"int cell{x}{y} = 0;")
+
+print("int x = Game.pos.x - 3;")
+print("int y = Game.pos.y - 3;")
+x = -3
+y = -3
+for i in range(-3, 4):
+    for j in range(-3, 4):
+        if x != 0 or y != 0:
+            checks = []
+            if x > 0:
+                checks.append(f"x < Game.mapWidth")
+            elif x < 0:
+                checks.append(f"x >= 0")
+
+            if y > 0:
+                checks.append(f"y < Game.mapHeight")
+            elif y < 0:
+                checks.append(f"y >= 0")
+
+            print(f"if ({' && '.join(checks)}) {{")
+
+            #
+
+            print(f"\tRobotInfo info = rc.senseRobotAtLocation(new MapLocation(x, y));")
+            print("\tif (info != null && info.getTeam() == rc.getTeam() && info.getType().isRobotType()) {")
+            print(f"\t\tcell{x + 3}{y + 3} = 1;")
+            print("\t}")
+
+            #
+
+            print("}")
+
+        if j < 3:
+            if i % 2 == 1:
+                print("y++;")
+                y += 1
+            else:
+                print("y--;")
+                y -= 1
+        else:
+            print("x++;")
+            x += 1
+
+print("Pair<Direction, Direction> best = null;")
+print("int bestScore = 0;")
+
+print("int score = 0;")
+for dx, dy, dir_str in directions:
+    print(f"if (rc.canMove(Direction.{dir_str})) {{")
+    for i in range(4):
+        dx2, dy2, dir_str2 = orth_directions[i]
+        dx3, dy3, dir_str3 = orth_directions[(i + 1) % 4] # turn left
+        dx4, dy4, dir_str4 = orth_directions[(i + 3) % 4] # turn right
+
+        cells = []
+        x = dx + dx2
+        y = dy + dy2
+        cells.append((x, y))
+        cells.append((x + dx3, y + dy3))
+        cells.append((x + dx4, y + dy4))
+        x += dx2
+        y += dy2
+        cells.append((x, y))
+        cells.append((x + dx3, y + dy3))
+        cells.append((x + dx4, y + dy4))
+
+        print(f"score = {" + ".join([f"cell{x + 3}{y + 3}" for x, y in cells])};")
+        print("if (score > bestScore) {")
+        print("\tbestScore = score;")
+        print(f"\tbest = new Pair<>(Direction.{dir_str}, Direction.{dir_str2});")
+        print("}")
+    print("}")
+
+     */
 
     public MapLocation doBestAttack() throws GameActionException {
         
@@ -56,7 +135,6 @@ public class Mopper extends Agent {
         int enemyMoppers = RobotTracker.countNearbyBots(r -> isEnemyAgent(r) && r.getLocation().distanceSquaredTo(rc.getLocation()) <= 5 && r.getType() == UnitType.MOPPER);
         int friendlyMoppers = RobotTracker.countNearbyBots(r -> isFriendly(r) && r.getType() == UnitType.MOPPER);
         if (friendlyMoppers + 2 < enemyMoppers) return null;
-        
         
         // im gonna kms
         MapLocation currentLoc = rc.getLocation();

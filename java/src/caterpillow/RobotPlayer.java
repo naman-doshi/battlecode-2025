@@ -16,6 +16,8 @@ import caterpillow.robot.towers.paint.PaintTower;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
+import caterpillow.util.Profiler;
+
 import static caterpillow.util.Util.*;
 
 public class RobotPlayer {
@@ -43,16 +45,19 @@ public class RobotPlayer {
 
         //TestClass test = new TestClass();
 
-// Profiler.begin();
+        int score = 0;
+        boolean isTrue = true;
 
-//         test.test2();
+ Profiler.begin();
 
-// Profiler.end("method 1");
-// Profiler.begin();
+        if (isTrue) score++;
 
-//         //TestClass.test1();
+ Profiler.end("method 1");
+ Profiler.begin();
 
-// Profiler.end("method 2");
+        score += (isTrue ? 1 : 0);
+
+ Profiler.end("method 2");
 
     }
 
