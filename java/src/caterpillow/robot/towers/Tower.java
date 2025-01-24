@@ -89,15 +89,16 @@ public abstract class Tower extends Robot {
             new MapLocation(2, mapHeight / 2),
         };
         int closest = 0;
-        int closestDist = chebyshevDistance(rc.getLocation(), edges[0]);
+        double closestDistSquared = rc.getLocation().distanceSquaredTo(edges[0]) / 1.4;
         for(int i = 7; i > 0; i--) {
-            int dist = chebyshevDistance(rc.getLocation(), edges[i]);
-            if(dist < closestDist) {
+            double distSquared = rc.getLocation().distanceSquaredTo(edges[i]);
+            if(i % 2 == 0) distSquared /= 1.4;
+            if(distSquared < closestDistSquared) {
                 closest = i;
-                closestDist = dist;
+                closestDistSquared = rc.getLocation().distanceSquaredTo(edges[i]);
             }
         }
-        boolean atCentre = chebyshevDistance(rc.getLocation(), centre) < closestDist;
+        boolean atCentre = rc.getLocation().distanceSquaredTo(centre) < closestDistSquared;
         initialTargets.add(centre);
         if(closest % 2 == 1) {
             initialTargets.add(edges[(closest + 1) % 8]);
