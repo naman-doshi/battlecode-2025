@@ -470,8 +470,7 @@ for i in range(3):
                         continue;
                     }
 
-                    if(ignoreCooldown[ruin.x][ruin.y] == infCooldown) ignoreCooldown[ruin.x][ruin.y] = 0;
-                    if (time < ignoreCooldown[ruin.x][ruin.y]) continue;
+                    if (time < processed[ruin.x][ruin.y]) continue;
                     int minx = max(0, ruin.x - 4);
                     int miny = max(0, ruin.y - 4);
                     int maxx = min(rc.getMapWidth() - 1, ruin.x + 4);
@@ -481,6 +480,7 @@ for i in range(3):
                             if (ignoreCooldown[x][y] != infCooldown) ignoreCooldown[x][y] = cooldownValue;
                         }
                     }
+                    processed[ruin.x][ruin.y] = time + trng.nextInt(15, 20);
                 }
             }
         }
