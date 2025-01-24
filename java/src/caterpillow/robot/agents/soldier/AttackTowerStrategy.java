@@ -59,7 +59,6 @@ public class AttackTowerStrategy extends Strategy {
             if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
         } else {
             safeSquare = rc.getLocation();
-            
 
             // try all directions
             boolean canGetInRange = false;
@@ -80,7 +79,7 @@ public class AttackTowerStrategy extends Strategy {
                 bot.move(goodDir);
                 //bot.pathfinder.noPreference = false;
                 tryAttack();
-            } else if (!canGetInRange){
+            } else if (!canGetInRange) {
                 bot.pathfinder.makeMove(target);
             }
         }
