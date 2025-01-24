@@ -22,11 +22,11 @@ public class PainterSpawner extends Spawner {
     @Override
     public boolean spawn() throws GameActionException {
         if (shouldSpawn()) {
-            MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
-            if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
+            MapLocation loc = getNeighbourSpawnLoc(SOLDIER);
+            if (loc != null && rc.canBuildRobot(SOLDIER, loc)) {
                 MapLocation target = bot.scoutTarget();
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.PAINT_EVERYWHERE_STRAT, encodeLoc(target)));
-                System.out.println("Spawning soldier at " + loc.getMapLocation());
+                bot.build(SOLDIER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.PAINT_EVERYWHERE_STRAT, encodeLoc(target)));
+                System.out.println("Spawning soldier at " + loc);
                 return true;
             }
         }

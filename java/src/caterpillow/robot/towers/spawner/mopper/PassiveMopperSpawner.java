@@ -1,7 +1,6 @@
 package caterpillow.robot.towers.spawner.mopper;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
+import battlecode.common.*;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.mopper.Mopper;
@@ -22,9 +21,9 @@ public class PassiveMopperSpawner extends Spawner {
         if (shouldSpawn()) ticksShouldSpawn++;
         else ticksShouldSpawn = 0;
         if (ticksShouldSpawn > 2) { // wait 2 ticks
-            MapInfo loc = getSpawnLoc(MOPPER);
-            if (loc != null && rc.canBuildRobot(MOPPER, loc.getMapLocation())) {
-                bot.build(MOPPER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Mopper.PASSIVE_STRAT));
+            MapLocation loc = getSpawnLoc(MOPPER);
+            if (loc != null && rc.canBuildRobot(MOPPER, loc)) {
+                bot.build(MOPPER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Mopper.PASSIVE_STRAT));
                 return true;
             }
         }

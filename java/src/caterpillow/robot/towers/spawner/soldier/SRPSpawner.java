@@ -23,10 +23,10 @@ public class SRPSpawner extends Spawner {
     @Override
     public boolean spawn() throws GameActionException {
         if (shouldSpawn()) {
-            MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
-            if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
+            MapLocation loc = getNeighbourSpawnLoc(SOLDIER);
+            if (loc != null && rc.canBuildRobot(SOLDIER, loc)) {
                 MapLocation target = bot.scoutTarget();
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SRP_STRAT, encodeLoc(target)));
+                bot.build(SOLDIER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SRP_STRAT, encodeLoc(target)));
                 return true;
             }
         }

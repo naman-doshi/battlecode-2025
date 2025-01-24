@@ -13,5 +13,6 @@ public class MoneyTower extends Tower {
         } else {
             primaryStrategy = new NormalMoneyTowerStrategy();
         }
+        initScoutTargets();
     }
 }

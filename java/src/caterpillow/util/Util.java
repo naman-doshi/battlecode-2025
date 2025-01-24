@@ -331,8 +331,8 @@ public class Util {
         return 0;
     }
 
-    public static MapInfo getSpawnLoc(UnitType type) throws GameActionException {
-        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
+    public static MapLocation getSpawnLoc(UnitType type) throws GameActionException {
+        MapInfo cell = CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {
@@ -347,14 +347,16 @@ public class Util {
             }, c -> {
                 return rc.canBuildRobot(type, c.getMapLocation());
             });
+        if(cell == null) return null;
+        return cell.getMapLocation();
     }
 
     public static boolean maxedTowers() {
         return rc.getNumberTowers() == 25;
     }
 
-    public static MapInfo getSafeSpawnLoc(UnitType type) throws GameActionException {
-        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
+    public static MapLocation getSafeSpawnLoc(UnitType type) throws GameActionException {
+        MapInfo cell = CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {
@@ -369,6 +371,8 @@ public class Util {
             }, c -> {
                 return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy();
             });
+        if(cell == null) return null;
+        return cell.getMapLocation();
     }
 
     public static void println(Object obj) {
@@ -549,8 +553,8 @@ public class Util {
         }
     }
 
-    public static MapInfo getNeighbourSpawnLoc(UnitType type) throws GameActionException {
-        return CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
+    public static MapLocation getNeighbourSpawnLoc(UnitType type) throws GameActionException {
+        MapInfo cell = CellTracker.getBestCell((MapInfo c1, MapInfo c2) -> {
                 int p1 = paintPriority(c1.getPaint());
                 int p2 = paintPriority(c2.getPaint());
                 if (p1 != p2) {
@@ -565,6 +569,8 @@ public class Util {
             }, c -> {
                 return rc.canBuildRobot(type, c.getMapLocation()) && !c.getPaint().isEnemy() && c.getMapLocation().distanceSquaredTo(rc.getLocation()) == 1;
             });
+        if(cell == null) return null;
+        return cell.getMapLocation();
     }
 
     public static boolean isInDanger(MapLocation loc) throws GameActionException {

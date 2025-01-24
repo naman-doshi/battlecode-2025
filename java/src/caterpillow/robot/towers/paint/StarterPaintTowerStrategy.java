@@ -44,7 +44,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
-        boolean shouldRush = chebyshevDistance(rc.getLocation(), guessEnemyLocs(rc.getLocation()).get(0)) <= 10;
+        boolean shouldRush = chebyshevDistance(rc.getLocation(), guessEnemyLocs(rc.getLocation(), true).get(0)) <= 10;
         strats.add(new SpawnerStrategy(
                 // new ConditionalSpawner(
                 //     () -> expectedRushDistance(Game.rc.getLocation()) < 20,
@@ -57,8 +57,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new InstantScoutSpawner()
                 // ),
 
-                new RushSpawner(10),
-                new RushSpawner(10),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),

@@ -14,6 +14,6 @@ public class PaintTower extends Tower {
         } else {
             primaryStrategy = new NormalPaintTowerStrategy();
         }
-        
+        initScoutTargets();
     }
 }

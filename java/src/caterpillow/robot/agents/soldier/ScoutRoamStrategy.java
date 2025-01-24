@@ -43,7 +43,7 @@ public class ScoutRoamStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         // reset if we run into the other starter tower
-        if(time <= 8 && getNearestVisibleTower(info -> info.team.equals(team) && !info.location.equals(origin) && rc.getLocation().distanceSquaredTo(info.location) <= 16) != null) {
+        if(time <= 8 && getNearestVisibleTower(info -> info.team.equals(team) && !info.location.equals(origin) && rc.getLocation().distanceSquaredTo(info.location) < 16) != null) {
             target = null;
         }
         while (target == null || rc.getLocation().distanceSquaredTo(target) <= 8) {
