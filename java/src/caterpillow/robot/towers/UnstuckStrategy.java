@@ -5,8 +5,7 @@ import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.UnitType;
 import caterpillow.Game;
-import static caterpillow.Game.centre;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import caterpillow.tracking.RobotTracker;
 import static caterpillow.util.Util.getClosestNeighbourTo;
 import static caterpillow.util.Util.isFriendly;
@@ -22,6 +21,7 @@ public class UnstuckStrategy extends TowerStrategy {
 
     @Override
     public void runTick() throws GameActionException {
+        if(time <= 3) return;
         if (RobotTracker.countNearbyBots(c -> isFriendly(c) && c.type == UnitType.MOPPER) == 0) {
             MapInfo nearest = getClosestNeighbourTo(centre, c -> !c.getPaint().isEnemy());
             if (nearest == null && moppersSpawned < 2) {
