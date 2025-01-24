@@ -6,6 +6,7 @@ import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.paint.StarterPaintTowerStrategy;
+import caterpillow.robot.towers.money.NormalMoneyTowerStrategy;
 import caterpillow.robot.towers.money.StarterMoneyTowerStrategy;
 import caterpillow.util.Profiler;
 import caterpillow.tracking.TowerTracker;
@@ -75,10 +76,8 @@ public abstract class Tower extends Robot {
         return res;
     }
 
-    @Override
-    public void init() throws GameActionException {
-        level = 0;
-        kids = new ArrayList<>();
+    public void initScoutTargets() throws GameActionException {
+        if(primaryStrategy instanceof NormalMoneyTowerStrategy) return;
         MapLocation[] edges = {
             new MapLocation(2, 2),
             new MapLocation(mapWidth / 2, 2),
@@ -90,16 +89,15 @@ public abstract class Tower extends Robot {
             new MapLocation(2, mapHeight / 2),
         };
         int closest = 0;
-        double closestDistSquared = rc.getLocation().distanceSquaredTo(edges[0]) / 1.4;
+        int closestDist = chebyshevDistance(rc.getLocation(), edges[0]);
         for(int i = 7; i > 0; i--) {
-            double distSquared = rc.getLocation().distanceSquaredTo(edges[i]);
-            if(i % 2 == 0) distSquared /= 1.4;
-            if(distSquared < closestDistSquared) {
+            int dist = chebyshevDistance(rc.getLocation(), edges[i]);
+            if(dist < closestDist) {
                 closest = i;
-                closestDistSquared = rc.getLocation().distanceSquaredTo(edges[i]);
+                closestDist = dist;
             }
         }
-        boolean atCentre = rc.getLocation().distanceSquaredTo(centre) < closestDistSquared;
+        boolean atCentre = chebyshevDistance(rc.getLocation(), centre) < closestDist;
         initialTargets.add(centre);
         if(closest % 2 == 1) {
             initialTargets.add(edges[(closest + 1) % 8]);
@@ -116,6 +114,12 @@ public abstract class Tower extends Robot {
         if(atCentre) initialTargets.add(edges[closest]);
         if(!(primaryStrategy instanceof StarterPaintTowerStrategy)) initialTargets.remove(0);
         rc.setIndicatorLine(rc.getLocation(), edges[closest], 0, 255, 255);
+    }
+
+    @Override
+    public void init() throws GameActionException {
+        level = 0;
+        kids = new ArrayList<>();
     }
 
     @Override

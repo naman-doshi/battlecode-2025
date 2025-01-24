@@ -8,6 +8,8 @@ import static caterpillow.Game.mapWidth;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.time;
+
+import caterpillow.Game;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
@@ -36,14 +38,10 @@ public class Soldier extends Agent {
                 return res;
         });
         primaryStrategy = new EmptyStrategy();
-        if(!rc.senseMapInfo(rc.getLocation()).getPaint().isEnemy()) secondaryStrategy = new LinkStrategy(home);
-        else secondaryStrategy = null;
+        secondaryStrategy = null;
+        if (rc.senseMapInfo(Game.pos).getPaint() == PaintType.EMPTY) checkerboardAttack(Game.pos);
         syncAttacks = time < 15;
-    }
-
-    @Override
-    public void runTick() throws GameActionException {
-        if(time < 6 && primaryStrategy instanceof EmptyStrategy) {
+        if (rc.senseMapInfo(Game.pos).getPaint().isEnemy()) {
             if (home != null) {
                 origin = home;
             } else {
@@ -51,9 +49,12 @@ public class Soldier extends Agent {
             }
             primaryStrategy = new ScoutStrategy();
         }
-        // if(time > 100) syncAttacks = false;
+    }
+
+    @Override
+    public void runTick() throws GameActionException {
+        if(time > 100) syncAttacks = false;
         super.runTick();
-        // Profiler.end();
     }
 
     public void checkerboardAttack(MapLocation loc) throws GameActionException {

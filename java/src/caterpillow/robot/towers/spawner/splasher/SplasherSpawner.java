@@ -1,7 +1,6 @@
 package caterpillow.robot.towers.spawner.splasher;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
+import battlecode.common.*;
 import caterpillow.packet.packets.SeedPacket;
 import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.agents.splasher.Splasher;
@@ -22,9 +21,9 @@ public class SplasherSpawner extends Spawner {
         if (shouldSpawn()) ticksShouldSpawn++;
         else ticksShouldSpawn = 0;
         if (ticksShouldSpawn > 2) { // wait 2 ticks
-            MapInfo loc = getSpawnLoc(SPLASHER);
-            if (loc != null && rc.canBuildRobot(SPLASHER, loc.getMapLocation())) {
-                bot.build(SPLASHER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Splasher.AGGRO_STRAT));
+            MapLocation loc = getSpawnLoc(SPLASHER);
+            if (loc != null && rc.canBuildRobot(SPLASHER, loc)) {
+                bot.build(SPLASHER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Splasher.AGGRO_STRAT));
                 return true;
             }
         }

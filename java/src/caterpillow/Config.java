@@ -1,27 +1,14 @@
 package caterpillow;
 
-import static java.lang.Math.max;
+import static java.lang.Math.*;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.centre;
-import static caterpillow.Game.mapHeight;
-import static caterpillow.Game.mapWidth;
-import static caterpillow.Game.origin;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.trng;
+import static caterpillow.Game.*;
 import caterpillow.tracking.TowerTracker;
-import static caterpillow.util.Util.getPaintLevel;
-import static caterpillow.util.Util.guessEnemyLocs;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.logisticSample;
-import static caterpillow.util.Util.project;
-import static caterpillow.util.Util.subtract;
+import static caterpillow.util.Util.*;
 
 public class Config {
     // idea : dynamically update this based on coin amt
@@ -85,38 +72,41 @@ public class Config {
         return false;
     }
 
-    public static UnitType nextTowerType() {
+    public static boolean isCentral(MapLocation loc) {
+        return loc.distanceSquaredTo(centre) <= mapHeight * mapWidth / 25;
+    }
 
-       boolean enemyVisible = false;
+    public static UnitType nextTowerType(MapLocation loc) {
+        // if(isCentral(loc) && rc.getNumberTowers() > 8 && trng.nextInt(2) == 0) return UnitType.LEVEL_ONE_DEFENSE_TOWER;
 
-       for (RobotInfo r : rc.senseNearbyRobots()) {
-           if (!isFriendly(r)) {
-               enemyVisible = true;
-               break;
-           }
-       }
-
-       if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05 && rc.getNumberTowers() >= 4) {
-           return UnitType.LEVEL_ONE_DEFENSE_TOWER;
-       }
+        boolean enemyVisible = false;
+        for (RobotInfo r : rc.senseNearbyRobots()) {
+            if (!isFriendly(r)) {
+                enemyVisible = true;
+                break;
+            }
+        }
+        if (enemyVisible && rc.getChips() >= 1500 && (double) TowerTracker.coinTowers / (double) rc.getNumberTowers() < targetRatio() + 0.05 && rc.getNumberTowers() >= 4) {
+            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+        }
 
        return nextResourceType();
     }
 
     public static UnitType nextResourceType(boolean deterministic) {
         if (!TowerTracker.broken) {
-            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
+//            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             double currentRatio = (double) TowerTracker.coinTowers / (double) rc.getNumberTowers();
             if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || rc.getChips() >= 3000) {
-                System.out.println("paint tower");
+//                System.out.println("paint tower");
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
-                System.out.println("money tower");
+//                System.out.println("money tower");
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
-            System.out.println("BROKEN");
-            if (trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
+//            System.out.println("BROKEN");
+            if (new Random(Game.seed ^ ((Game.time / 10) * 69L)).nextDouble() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;

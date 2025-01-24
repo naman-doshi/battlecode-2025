@@ -17,14 +17,16 @@ public class TrollRuinStrategy extends Strategy {
     MapLocation target;
     boolean done = false;
 
-    boolean isInView() {
-        for (int dx = -2; dx <= 2; dx++) {
-            for (int dy = -2; dy <= 2; dy++) {
-                if (!rc.canSenseLocation(new MapLocation(target.x + dx, target.y + dy))) {
-                    return false;
-                }
-            }
-        }
+    public boolean isInView() {
+        int x = target.x - 2;
+        int y = target.y - 2;
+        if (Game.pos.distanceSquaredTo(new MapLocation(x, y)) > VISION_RAD) return false;
+        y += 4;
+        if (Game.pos.distanceSquaredTo(new MapLocation(x, y)) > VISION_RAD) return false;
+        x += 4;
+        if (Game.pos.distanceSquaredTo(new MapLocation(x, y)) > VISION_RAD) return false;
+        y -= 4;
+        if (Game.pos.distanceSquaredTo(new MapLocation(x, y)) > VISION_RAD) return false;
         return true;
     }
 

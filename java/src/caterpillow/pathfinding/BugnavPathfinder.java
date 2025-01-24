@@ -15,6 +15,7 @@ import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
 import caterpillow.util.Profiler;
+import static caterpillow.tracking.CellTracker.*;
 
 public class BugnavPathfinder {
     // temporary patch to make sure nothing breaks
@@ -30,6 +31,7 @@ public class BugnavPathfinder {
     public GamePredicate<MapInfo> avoid;
     public GameFunction<MapInfo, Integer> cellPenalty;
     public boolean noPreference = false;
+    public boolean alwaysLeftTurn = false;
     public boolean reset = false;
 
     public BugnavPathfinder(GamePredicate<MapInfo> avoid) {
@@ -128,6 +130,7 @@ public class BugnavPathfinder {
             Direction best = null;
             int bestScore = 1000000000;
             for(Direction d : poss) {
+                if(alwaysLeftTurn && d.equals(topDir.rotateRight())) continue;
                 if(canMove(d)) {
                     int score = 0;
                     if(!noPreference) {
@@ -170,6 +173,11 @@ public class BugnavPathfinder {
                 return best;
             }
         }
+        if(alwaysLeftTurn && leftTurn == false) {
+            stackSize = 0;
+            topDir = bottomDir;
+            leftTurn = true;
+        }
         int iters = 0;
         while (!canMove(topDir))  {
             MapLocation nextLoc = Game.pos.add(topDir);
@@ -182,6 +190,8 @@ public class BugnavPathfinder {
             }
             if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
                 leftTurn = trng.nextInt(0, 1) == 0;
+                stackSize = 0;
+                topDir = bottomDir;
                 // if(trng.nextInt(0, 1) == 0) {
                 //     if (canMove(topDir.rotateRight().rotateRight())) leftTurn = false;
                 //     else if (canMove(topDir.rotateLeft().rotateLeft())) leftTurn = true;
@@ -192,6 +202,7 @@ public class BugnavPathfinder {
                 //     else leftTurn = trng.nextInt(0, 1) == 1; // change later
                 // }
             }
+            if(alwaysLeftTurn) leftTurn = true;
             if (leftTurn) topDir = topDir.rotateLeft();
             else topDir = topDir.rotateRight();
             stackSize++;
@@ -206,25 +217,35 @@ public class BugnavPathfinder {
         return topDir;
     }
 
+    public void emergencyMove(MapLocation to) throws GameActionException {
+        // super jank workaround
+        GamePredicate<MapInfo> opred = avoid;
+        avoid = m -> false;
+        Direction dir = getMove(to);
+        if (dir != null && rc.canMove(dir)) {
+            makeMove(dir);
+        }
+        avoid = opred;
+    }
+
     public Direction makeMove(MapLocation to) throws GameActionException {
         Direction dir = null;
         if (rc.isMovementReady()) {
-            dir = getMove(to);
-            if (dir != null && rc.canMove(dir)) {
-                //assert !avoid.test(rc.senseMapInfo(Game.pos.add(dir)));
-                makeMove(dir);
+            boolean hasMove = false;
+            for(Direction poss : directions) {
+                MapLocation loc = rc.getLocation().add(poss);
+                if(rc.canMove(poss) && !avoid.test(mapInfos[loc.x][loc.y])) {
+                    hasMove = true;
+                    break;
+                }
+            }
+            if(hasMove) {
+                makeMove(getMove(to));
             } else {
                 // emergency!!!
                 // System.out.println("emergency!!!");
                 if (avoid.test(rc.senseMapInfo(Game.pos))) {
-                    // super jank workaround
-                    GamePredicate<MapInfo> opred = avoid;
-                    avoid = m -> false;
-                    dir = getMove(to);
-                    if (dir != null && rc.canMove(dir)) {
-                        makeMove(dir);
-                    }
-                    avoid = opred;
+                    emergencyMove(to);
                 }
             }
         }

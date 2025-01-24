@@ -87,9 +87,9 @@ public class RespawnStrategy extends TowerStrategy {
         if (isInDanger()) {
             indicate("DANGER");
             if (shouldSpawnNewMopper()) {
-                MapInfo spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
+                MapLocation spawnLoc = getSafeSpawnLoc(UnitType.MOPPER);
                 if (spawnLoc != null) {
-                    spawnMopper(spawnLoc.getMapLocation());
+                    spawnMopper(spawnLoc);
                 }
             }
         }

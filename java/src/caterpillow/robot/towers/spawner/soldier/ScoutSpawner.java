@@ -12,6 +12,7 @@ import caterpillow.util.Profiler;
 import static battlecode.common.UnitType.SOLDIER;
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
+import static caterpillow.tracking.CellTracker.*;
 
 public class ScoutSpawner extends Spawner {
     int ticksShouldSpawn = 0;
@@ -24,10 +25,11 @@ public class ScoutSpawner extends Spawner {
     @Override
     public boolean spawn() throws GameActionException {
         if (shouldSpawn()) {
-            MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
-            if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
+            MapLocation loc = getNeighbourSpawnLoc(SOLDIER);
+            if(time < 4 && loc == null) loc = getNearestLocation(loc2 -> rc.canBuildRobot(SOLDIER, loc2));
+            if (loc != null && rc.canBuildRobot(SOLDIER, loc)) {
                 MapLocation target = bot.scoutTarget();
-                bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT, encodeLoc(target)));
+                bot.build(SOLDIER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.SCOUT_STRAT, encodeLoc(target)));
                 return true;
             }
         }

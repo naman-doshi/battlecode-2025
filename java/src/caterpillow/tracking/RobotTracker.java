@@ -104,7 +104,7 @@ public class RobotTracker {
 
     }
 
-    public static int countNearbyFriendly(GamePredicate<RobotInfo> pred) throws GameActionException {
+    public static int countNearbyBots(GamePredicate<RobotInfo> pred) throws GameActionException {
         int cnt = 0;
         for (int i = nearbyCnt - 1; i >= 0; i--) {
             if (pred.test(nearby[i])) {

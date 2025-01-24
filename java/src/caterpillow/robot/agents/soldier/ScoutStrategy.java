@@ -10,8 +10,6 @@ import static caterpillow.util.Util.*;
 
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
-import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
@@ -80,7 +78,8 @@ public class ScoutStrategy extends Strategy {
 
         if (refillStrategy == null && getPaintLevel() < 0.8) {
             // we need a solid amount of paint
-            if (time - refillCooldown > 40 && handleRuinStrategy == null && getPaintLevel() < (RobotTracker.countNearbyFriendly(c -> isFriendly(c) && c.type == UnitType.SOLDIER) > 0 ? 0.3 : 0.6)) {
+            // if (time - refillCooldown > 40 && handleRuinStrategy == null && getPaintLevel() < (RobotTracker.countNearbyBots(c -> isFriendly(c) && c.type == UnitType.SOLDIER) > 0 ? 0.3 : 0.6)) {
+            if (time - refillCooldown > 40 && handleRuinStrategy == null && getPaintLevel() < 0.3) {
 //            if (handleRuinStrategy == null && getPaintLevel() < 0.4) {
                 refillStrategy = new StrongRefillStrategy(0.6);
 //                refillStrategy = new WeakRefillStrategy(0.4);
