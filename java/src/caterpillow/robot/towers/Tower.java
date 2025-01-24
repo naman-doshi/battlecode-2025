@@ -6,6 +6,7 @@ import caterpillow.packet.packets.*;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.paint.StarterPaintTowerStrategy;
+import caterpillow.robot.towers.money.NormalMoneyTowerStrategy;
 import caterpillow.robot.towers.money.StarterMoneyTowerStrategy;
 import caterpillow.util.Profiler;
 import caterpillow.tracking.TowerTracker;
@@ -75,10 +76,8 @@ public abstract class Tower extends Robot {
         return res;
     }
 
-    @Override
-    public void init() throws GameActionException {
-        level = 0;
-        kids = new ArrayList<>();
+    public void initScoutTargets() throws GameActionException {
+        if(primaryStrategy instanceof NormalMoneyTowerStrategy) return;
         MapLocation[] edges = {
             new MapLocation(2, 2),
             new MapLocation(mapWidth / 2, 2),
@@ -116,6 +115,12 @@ public abstract class Tower extends Robot {
         if(atCentre) initialTargets.add(edges[closest]);
         if(!(primaryStrategy instanceof StarterPaintTowerStrategy)) initialTargets.remove(0);
         rc.setIndicatorLine(rc.getLocation(), edges[closest], 0, 255, 255);
+    }
+
+    @Override
+    public void init() throws GameActionException {
+        level = 0;
+        kids = new ArrayList<>();
     }
 
     @Override

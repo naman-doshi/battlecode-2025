@@ -1,8 +1,6 @@
 package caterpillow.robot.troll;
 
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.UnitType;
+import battlecode.common.*;
 import caterpillow.packet.Packet;
 import caterpillow.util.GameSupplier;
 
@@ -23,9 +21,9 @@ public class BotBlueprint {
 
     public BotBlueprint(UnitType type, GameSupplier<Packet[]> packetSupplier) {
         this(type, () -> {
-            MapInfo res = getSafeSpawnLoc(UnitType.SOLDIER);
-            if (res == null) return null;
-            else return res.getMapLocation();
+            MapLocation loc = getSafeSpawnLoc(UnitType.SOLDIER);
+            if (loc == null) return null;
+            return loc;
         }, packetSupplier);
     }
 }

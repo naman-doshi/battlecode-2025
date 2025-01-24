@@ -1,7 +1,6 @@
 package caterpillow.robot.towers.spawner.soldier;
 
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
+import battlecode.common.*;
 import static battlecode.common.UnitType.SOLDIER;
 import static caterpillow.Game.*;
 import caterpillow.packet.packets.SeedPacket;
@@ -23,10 +22,10 @@ public class RushSpawner extends Spawner {
 
     @Override
     public boolean spawn() throws GameActionException {
-        MapInfo loc = getNeighbourSpawnLoc(SOLDIER);
-        if(time < 4 && loc == null) loc = getNearestCell(c -> rc.canBuildRobot(SOLDIER, c.getMapLocation()));
-        if (loc != null && rc.canBuildRobot(SOLDIER, loc.getMapLocation())) {
-            bot.build(SOLDIER, loc.getMapLocation(), new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.RUSH_STRAT, distanceThreshold));
+        MapLocation loc = getNeighbourSpawnLoc(SOLDIER);
+        if(time < 4 && loc == null) loc = getNearestLocation(loc2 -> rc.canBuildRobot(SOLDIER, loc2));
+        if (loc != null && rc.canBuildRobot(SOLDIER, loc)) {
+            bot.build(SOLDIER, loc, new SeedPacket(trng.nextInt()), new StrategyPacket(Soldier.RUSH_STRAT, distanceThreshold));
             return true;
         }
         return false;

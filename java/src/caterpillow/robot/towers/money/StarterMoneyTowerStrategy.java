@@ -18,6 +18,7 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.WaitUntilSpawner;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
@@ -57,8 +58,8 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                 //     new RushSpawner(),
                 //     new InstantScoutSpawner()
                 // ),
-                new RushSpawner(10),
-                new RushSpawner(10),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
                 // new InstantScoutSpawner(),
                 // new InstantScoutSpawner(),
                 new WaitUntilSpawner(() -> rc.getNumberTowers() >= 3),

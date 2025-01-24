@@ -57,8 +57,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new InstantScoutSpawner()
                 // ),
 
-                new RushSpawner(10),
-                new RushSpawner(10),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
+                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
