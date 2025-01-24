@@ -1,28 +1,24 @@
-package caterpillow.robot.agents.soldier;
+package caterpillow.robot.agents;
 
-import battlecode.common.Direction;
-import battlecode.common.GameActionException;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.time;
+import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
-import static caterpillow.tracking.CellTracker.getNearestLocation;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInDanger;
+import static caterpillow.tracking.CellTracker.*;
+import static caterpillow.tracking.RobotTracker.*;
+import static caterpillow.util.Util.*;
+import caterpillow.pathfinding.BugnavPathfinder;
+import caterpillow.robot.agents.soldier.Soldier;
 
-// pathfinding testing
-public class AttackTowerStrategy extends Strategy {
+public abstract class AbstractAttackTowerStrategy extends Strategy {
+    public Agent bot;
+    public MapLocation target;
+    public MapLocation safeSquare;
+    public BugnavPathfinder normalPathfinder = new BugnavPathfinder();
+    public BugnavPathfinder safePathfinder = new BugnavPathfinder(c -> isInDanger(c.getMapLocation()));
 
-    Soldier bot;
-    MapLocation target;
-    MapLocation safeSquare;
-    Direction lastMove;
-
-    public AttackTowerStrategy(MapLocation target) {
-        bot = (Soldier) Game.bot;
+    public AbstractAttackTowerStrategy(MapLocation target) {
+        bot = (Agent) Game.bot;
         this.target = target;
     }
 
@@ -36,13 +32,8 @@ public class AttackTowerStrategy extends Strategy {
         return true;
     }
 
-    public void tryAttack() throws GameActionException {
-        if (rc.isActionReady()) {
-            if(rc.canAttack(target)) {
-                rc.attack(target);
-            }
-        }
-    }
+    public abstract boolean canHitTower(MapLocation loc) throws GameActionException;
+    public abstract void tryAttack() throws GameActionException;
 
     @Override
     public void runTick() throws GameActionException {
@@ -66,7 +57,7 @@ public class AttackTowerStrategy extends Strategy {
             for (Direction dir : Direction.values()) {
                 if (rc.canMove(dir)) {
                     MapLocation loc = rc.getLocation().add(dir);
-                    if (loc.distanceSquaredTo(target) <= 9) {
+                    if (canHitTower(loc)) {
                         canGetInRange = true;
                         goodDir = dir;
                         break;
@@ -74,13 +65,18 @@ public class AttackTowerStrategy extends Strategy {
                 }
             }
 
-            if(canGetInRange && rc.isMovementReady() && rc.isActionReady() && (!bot.syncAttacks || time % 2 == 0)) {
-                //bot.pathfinder.noPreference = true;
+            boolean syncWait = bot instanceof Soldier && ((Soldier)bot).syncAttacks && time % 2 == 1;
+            if(syncWait) {
+                if(getNearestRobot(b -> b.getType() == UnitType.MOPPER && !isFriendly(b)) != null) syncWait = false;
+            }
+            if(canGetInRange && rc.isMovementReady() && rc.isActionReady() && !syncWait) {
                 bot.move(goodDir);
-                //bot.pathfinder.noPreference = false;
                 tryAttack();
             } else if (!canGetInRange) {
-                bot.pathfinder.makeMove(target);
+                indicate(":(");
+                indicate(rc.getLocation().toString());
+                indicate(isInDanger(new MapLocation(40, 7)) + "");
+                safePathfinder.makeMove(target);
             }
         }
     }

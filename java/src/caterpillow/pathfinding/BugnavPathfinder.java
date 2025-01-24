@@ -13,7 +13,7 @@ import caterpillow.Game;
 import caterpillow.robot.agents.Agent;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
-import static caterpillow.util.Util.directions;
+import static caterpillow.util.Util.*;
 import caterpillow.util.Profiler;
 import static caterpillow.tracking.CellTracker.*;
 
@@ -162,6 +162,7 @@ public class BugnavPathfinder {
             }
             // if(best != null) indicate(best.toString());
             if(best != null) {
+                indicate("HERE");
                 if(best.equals(topDir.rotateRight())) {
                     leftTurn = false;
                     stackSize = 1;

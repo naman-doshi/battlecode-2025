@@ -6,7 +6,7 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
-import caterpillow.robot.agents.soldier.AttackTowerStrategy;
+import caterpillow.robot.agents.soldier.SoldierAttackTowerStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.tracking.RobotTracker;
 
@@ -58,7 +58,7 @@ public class ShitRushStrategy extends Strategy {
         if (secondary == null) {
             RobotInfo nearest = RobotTracker.getNearestRobot(b -> !isFriendly(b) && b.getType().isTowerType());
             if (nearest != null) {
-                secondary = new AttackTowerStrategy(nearest.getLocation());
+                secondary = new SoldierAttackTowerStrategy(nearest.getLocation());
             }
         }
 

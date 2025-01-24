@@ -23,7 +23,7 @@ public class RushStrategy extends Strategy {
     Set<MapLocation> ruinsTrolled = new HashSet<>();
 
     Strategy traverseStrategy;
-    AttackTowerStrategy attackTowerStrategy;
+    SoldierAttackTowerStrategy attackTowerStrategy;
     Strategy trollRuinStrategy;
 
     int distanceThreshold; // max chebyshev distance to rush
@@ -56,7 +56,7 @@ public class RushStrategy extends Strategy {
         if (attackTowerStrategy == null) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                attackTowerStrategy = new SoldierAttackTowerStrategy(enemyTower.getLocation());
             }
         }
         if (tryStrategy(attackTowerStrategy)) return true;

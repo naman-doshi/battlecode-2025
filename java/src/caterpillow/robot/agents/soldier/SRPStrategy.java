@@ -1,34 +1,20 @@
 package caterpillow.robot.agents.soldier;
 
 import static caterpillow.Game.*;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-import java.util.LinkedList;
-import java.util.Random;
-
-import battlecode.common.GameActionException;
-import battlecode.common.MapInfo;
-import battlecode.common.MapLocation;
-import battlecode.common.RobotInfo;
-import static caterpillow.Config.canUpgrade;
+import java.util.*;
+import battlecode.common.*;
+import static caterpillow.Config.*;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.roaming.ExplorationRoamStrategy;
-import caterpillow.tracking.CellTracker;
-import caterpillow.tracking.TowerTracker;
+import caterpillow.tracking.*;
 import caterpillow.util.GamePredicate;
 import caterpillow.util.Pair;
-
-import static caterpillow.util.Util.getPaintLevel;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isOccupied;
-import  static caterpillow.world.GameStage.MID;
+import static caterpillow.util.Util.*;
+import static caterpillow.world.GameStage.MID;
 
 public class SRPStrategy extends Strategy {
 
@@ -82,7 +68,7 @@ public class SRPStrategy extends Strategy {
         if (gameStage.equals(MID)) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                attackTowerStrategy = new SoldierAttackTowerStrategy(enemyTower.getLocation());
             }
         }
 

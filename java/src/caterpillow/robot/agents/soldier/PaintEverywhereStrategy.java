@@ -24,7 +24,7 @@ public class PaintEverywhereStrategy extends Strategy {
     Agent bot;
 
     Strategy roamStrategy;
-    AttackTowerStrategy attackTowerStrategy;
+    SoldierAttackTowerStrategy attackTowerStrategy;
     Strategy trollRuinStrategy;
     Set<MapLocation> ruinsTrolled = new HashSet<>();
     public PaintEverywhereStrategy() throws GameActionException {
@@ -41,7 +41,7 @@ public class PaintEverywhereStrategy extends Strategy {
         if (attackTowerStrategy == null) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                attackTowerStrategy = new SoldierAttackTowerStrategy(enemyTower.getLocation());
             }
         }
         if (tryStrategy(attackTowerStrategy)) return true;

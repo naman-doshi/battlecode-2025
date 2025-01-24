@@ -6,7 +6,7 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
-import caterpillow.robot.agents.soldier.AttackTowerStrategy;
+import caterpillow.robot.agents.soldier.SoldierAttackTowerStrategy;
 import caterpillow.robot.agents.HomeStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.util.Pair;
@@ -68,7 +68,7 @@ public class SnipeStrategy extends Strategy {
                 RobotInfo info = rc.senseRobotAtLocation(target);
                 if (info != null && !isFriendly(info) && info.getType().isTowerType()) {
                     // found target
-                    secondary = new AttackTowerStrategy(info.getLocation());
+                    secondary = new SoldierAttackTowerStrategy(info.getLocation());
                     secondary.runTick();
                     return;
                 }

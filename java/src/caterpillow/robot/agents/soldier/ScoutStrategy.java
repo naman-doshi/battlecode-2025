@@ -10,9 +10,7 @@ import static caterpillow.util.Util.*;
 
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
-import caterpillow.tracking.CellTracker;
-import caterpillow.tracking.RobotTracker;
-import caterpillow.tracking.TowerTracker;
+import caterpillow.tracking.*;
 import caterpillow.util.Pair;
 
 public class ScoutStrategy extends Strategy {
@@ -53,7 +51,7 @@ public class ScoutStrategy extends Strategy {
         if (attackTowerStrategy == null) {
             RobotInfo enemyTower = TowerTracker.getNearestVisibleTower(b -> !isFriendly(b));
             if (enemyTower != null) {
-                attackTowerStrategy = new AttackTowerStrategy(enemyTower.getLocation());
+                attackTowerStrategy = new SoldierAttackTowerStrategy(enemyTower.getLocation());
             }
         }
 

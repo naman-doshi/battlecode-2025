@@ -22,7 +22,7 @@ import static caterpillow.util.Util.isInDanger;
 
 
 public class Soldier extends Agent {
-    public boolean syncAttacks; // whether to sync tower attacks (true for early scouts and rushers)
+    public boolean syncAttacks = false; // whether to sync tower attacks (true for early scouts and rushers)
 
     @Override
     public void init() throws GameActionException {

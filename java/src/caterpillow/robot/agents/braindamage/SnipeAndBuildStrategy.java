@@ -8,7 +8,7 @@ import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.BuildTowerStrategyWrapper;
-import caterpillow.robot.agents.soldier.AttackTowerStrategy;
+import caterpillow.robot.agents.soldier.SoldierAttackTowerStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.soldier.BuildTowerStrategy;
 import caterpillow.util.Pair;
@@ -70,7 +70,7 @@ public class SnipeAndBuildStrategy extends Strategy {
                 RobotInfo info = rc.senseRobotAtLocation(target);
                 if (info != null && !isFriendly(info) && info.getType().isTowerType()) {
                     // found target
-                    secondary = new AttackTowerStrategy(info.getLocation());
+                    secondary = new SoldierAttackTowerStrategy(info.getLocation());
                     secondary.runTick();
                     return;
                 }

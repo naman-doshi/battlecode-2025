@@ -6,7 +6,7 @@ import battlecode.common.RobotInfo;
 import caterpillow.Game;
 import caterpillow.robot.agents.UpgradeTowerStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.soldier.AttackTowerStrategy;
+import caterpillow.robot.agents.soldier.SoldierAttackTowerStrategy;
 import caterpillow.robot.agents.soldier.Soldier;
 import caterpillow.tracking.RobotTracker;
 
@@ -43,7 +43,7 @@ public class ExampleStrategy extends StackableStrategy {
 //        if (gameStage.equals(MID)) {
 //            RobotInfo enemyTower = RobotTracker.getNearestRobot(b -> b.getType().isTowerType() && !isFriendly(b));
 //            if (enemyTower != null) {
-//                if (tryStrategy(new AttackTowerStrategy(enemyTower.getLocation()))) return;
+//                if (tryStrategy(new SoldierAttackTowerStrategy(enemyTower.getLocation()))) return;
 //            }
 //        }
 //
