@@ -4,11 +4,24 @@ import static java.lang.Math.max;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.*;
+import static caterpillow.Game.centre;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
 import caterpillow.tracking.TowerTracker;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.logisticSample;
+import static caterpillow.util.Util.project;
+import static caterpillow.util.Util.subtract;
 
 public class Config {
     // idea : dynamically update this based on coin amt
@@ -16,6 +29,7 @@ public class Config {
     // we also need more chips on larger maps
     public static double targetRatio() {
         if(rc.getNumberTowers() < moneyTowerThreshold()) return 1;
+        //if (rc.getNumberTowers() == moneyTowerThreshold()) return 0;
         int area = mapHeight * mapWidth;
         double ratio = area < 1500 ? 0.67 : 0.72;
         return ratio;

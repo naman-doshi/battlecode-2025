@@ -72,7 +72,7 @@ public class Game {
         //TowerTracker.broken = true;
         int area = mapHeight * mapWidth;
         pos = rc.getLocation();
-        if (time - TowerTracker.lastTowerChange > 30 * area / 900 || 2 * rc.getNumberTowers() >= 6 * area / 900) {
+        if (time - TowerTracker.lastTowerChange > 30 * area / 900 || 2 * rc.getNumberTowers() >= 5 * area / 900) {
             gameStage = GameStage.MID;
         }
 

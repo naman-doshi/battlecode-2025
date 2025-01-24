@@ -5,10 +5,10 @@ import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.soldier.Soldier;
-import static caterpillow.tracking.CellTracker.*;
+import static caterpillow.tracking.CellTracker.getNearestLocation;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isInDanger;
@@ -54,16 +54,34 @@ public class AttackTowerStrategy extends Strategy {
                 indicate("RESET SAFE SQUARE");
                 if(safeSquare == null) indicate("NULL");
                 else indicate(safeSquare.toString());
-                safeSquare = getNearestLocation(loc -> !isInDanger(loc));
+                safeSquare = getNearestLocation(loc -> !isInDanger(loc) && !rc.senseMapInfo(loc).isWall());
             }
             if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
         } else {
             safeSquare = rc.getLocation();
-            if(rc.isMovementReady() && rc.isActionReady() && (!bot.syncAttacks || time % 2 == 0)) {
-                bot.pathfinder.noPreference = true;
-                bot.pathfinder.makeMove(target);
-                bot.pathfinder.noPreference = false;
+            
+
+            // try all directions
+            boolean canGetInRange = false;
+            Direction goodDir = null;
+            for (Direction dir : Direction.values()) {
+                if (rc.canMove(dir)) {
+                    MapLocation loc = rc.getLocation().add(dir);
+                    if (loc.distanceSquaredTo(target) <= 9) {
+                        canGetInRange = true;
+                        goodDir = dir;
+                        break;
+                    }
+                }
+            }
+
+            if(canGetInRange && rc.isMovementReady() && rc.isActionReady() && (!bot.syncAttacks || time % 2 == 0)) {
+                //bot.pathfinder.noPreference = true;
+                bot.move(goodDir);
+                //bot.pathfinder.noPreference = false;
                 tryAttack();
+            } else if (!canGetInRange){
+                bot.pathfinder.makeMove(target);
             }
         }
     }

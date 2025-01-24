@@ -6,7 +6,8 @@ import java.util.Random;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
@@ -22,7 +23,9 @@ import caterpillow.robot.towers.spawner.soldier.PainterSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.chebyshevDistance;
+import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
@@ -54,8 +57,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //     new InstantScoutSpawner()
                 // ),
 
-                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
-                shouldRush ? new RushSpawner(10) : new InstantScoutSpawner(),
+                new RushSpawner(10),
+                new RushSpawner(10),
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
