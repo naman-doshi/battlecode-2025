@@ -30,8 +30,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     TowerAttackStrategy atkstrat;
 
     // we can *maybe* turn this into a special class if it gets too repetitive
-    // ill just hardcode for now to make sure it works 
-    //
+    // ill just hardcode for now to make sure it works
     List<TowerStrategy> strats;
 
     public NormalDefenceTowerStrategy() throws GameActionException {
