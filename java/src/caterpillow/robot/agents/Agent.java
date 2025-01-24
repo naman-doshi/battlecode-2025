@@ -86,7 +86,7 @@ public abstract class Agent extends Robot {
             // tiny edge case where your spawning tower dies at the same time you spawn
             MapLocation ruin = CellTracker.getNearestRuin(c -> true);
             assert ruin != null;
-            UnitType type = Config.nextTowerType();
+            UnitType type = Config.nextTowerType(ruin);
             if (rc.canCompleteTowerPattern(type, ruin)) {
                 rc.completeTowerPattern(type, ruin);
                 assert rc.senseRobotAtLocation(ruin) != null;

@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.GameActionException;
-import battlecode.common.RobotInfo;
+import battlecode.common.*;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
-import static caterpillow.Game.team;
+import static caterpillow.Game.*;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
@@ -19,8 +17,8 @@ import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.*;
+import static caterpillow.Config.*;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {
 
@@ -56,7 +54,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
     public void runTick() throws GameActionException {
         indicate("NORMAL");
 
-        if (getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 30) {
+        if (!isCentral(rc.getLocation()) && getNearestCell(c -> c.getPaint().isEnemy()) == null && getNearestRobot(b -> !isFriendly(b)) == null && rc.getChips() > 2000 && Game.time - atkstrat.lastAttack > 30) {
             // donate paint to surrounding bots
             RobotInfo[] bots = rc.senseNearbyRobots();
             for (RobotInfo bot : bots) {
@@ -71,7 +69,6 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
                     }
                 }
             }
-            
             rc.disintegrate();
             return;
         }

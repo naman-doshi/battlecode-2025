@@ -15,7 +15,7 @@ all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fos
             "Barcode", "Bread", "BunnyGame", "Filter", "fix", "Flower", "galaxy", "giver", "gridworld", "leavemealone", "Piglets2", "quack", "sayhi",
             "sierpinski", "Snowglobe", "windmill"]
 
-def fetch_top_teams(auth_token, excluded_team_id, count=5):
+def fetch_top_teams(auth_token, excluded_team_id, count=10):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
     headers = {
         "Authorization": f"Bearer {auth_token}",
