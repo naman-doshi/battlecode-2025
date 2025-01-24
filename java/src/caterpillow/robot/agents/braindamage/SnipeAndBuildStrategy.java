@@ -7,6 +7,7 @@ import battlecode.common.UnitType;
 import caterpillow.Game;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.Agent;
+import caterpillow.robot.agents.BuildTowerStrategyWrapper;
 import caterpillow.robot.agents.soldier.AttackTowerStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
 import caterpillow.robot.agents.soldier.BuildTowerStrategy;
@@ -80,7 +81,7 @@ public class SnipeAndBuildStrategy extends Strategy {
             if (secondary.isComplete()) {
                 println("\ntime to build a tower!\n");
                 secondary = null;
-                primary = new BuildTowerStrategy(target);
+                primary = new BuildTowerStrategyWrapper(target);
                 runTick();
             } else {
                 secondary.runTick();
