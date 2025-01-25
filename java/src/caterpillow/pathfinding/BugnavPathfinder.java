@@ -20,6 +20,8 @@ import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
+import caterpillow.util.Profiler;
+import static caterpillow.tracking.CellTracker.*;
 
 public class BugnavPathfinder {
     // temporary patch to make sure nothing breaks
@@ -1118,6 +1120,7 @@ print("}")
             // end
 
             if(best != null) {
+                indicate("HERE");
                 if(best.equals(topDir.rotateRight())) {
                     leftTurn = false;
                     stackSize = 1;
