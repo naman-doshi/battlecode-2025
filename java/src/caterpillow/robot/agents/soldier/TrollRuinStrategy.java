@@ -68,12 +68,20 @@ public class TrollRuinStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("TROLLING RUIN AT " + target);
-        bot.pathfinder.makeMove(target);
         MapInfo cell = getPlaceCell();
-        if (cell == null) return;
-        if (rc.canAttack(cell.getMapLocation())) {
-            bot.checkerboardAttack(cell.getMapLocation());
-            done = true;
+        if (cell == null) {
+            bot.pathfinder.makeMove(target);
+            cell = getPlaceCell();
+            if (cell == null) return;
+            if (rc.canAttack(cell.getMapLocation())) {
+                bot.checkerboardAttack(cell.getMapLocation());
+                done = true;
+            }
+        } else {
+            if (rc.canAttack(cell.getMapLocation())) {
+                bot.checkerboardAttack(cell.getMapLocation());
+                done = true;
+            }
         }
     }
 }

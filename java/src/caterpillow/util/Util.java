@@ -74,7 +74,7 @@ public class Util {
     }
 
     public static boolean logisticSample(double x, double scale) {
-        return trng.nextDouble() < 1 / (1.0 + exp(-x * scale));
+        return new Random(Game.seed ^ ((Game.time / 10) * 69L)).nextDouble() < 1 / (1.0 + exp(-x * scale));
     }
 
     public final static int TOWER_COST = 1000;

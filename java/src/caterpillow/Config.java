@@ -95,7 +95,7 @@ public class Config {
 
     public static UnitType nextResourceType(boolean deterministic) {
         if (!TowerTracker.broken) {
-//            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
+           indicate("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             double currentRatio = (double) TowerTracker.coinTowers / (double) rc.getNumberTowers();
             if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || rc.getChips() >= 3000) {
 //                System.out.println("paint tower");
