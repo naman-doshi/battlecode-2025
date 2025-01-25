@@ -1,10 +1,5 @@
 package caterpillow.robot.agents.soldier;
 
-import static caterpillow.Game.*;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -14,6 +9,12 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import static caterpillow.Config.canUpgrade;
 import caterpillow.Game;
+import static caterpillow.Game.gameStage;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.TraverseStrategy;
@@ -23,12 +24,11 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.GamePredicate;
 import caterpillow.util.Pair;
-
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isFriendly;
+import  static caterpillow.util.Util.isFriendly;
 import static caterpillow.util.Util.isOccupied;
-import  static caterpillow.world.GameStage.MID;
+import static caterpillow.world.GameStage.MID;
 
 public class SRPStrategy extends Strategy {
 
@@ -98,7 +98,7 @@ public class SRPStrategy extends Strategy {
         if (tryStrategy(attackTowerStrategy)) return;
         attackTowerStrategy = null;
 
-        if (handleRuinStrategy == null && towerStratCooldown <= 0) {
+        if (handleRuinStrategy == null) {
             MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && !hasVisited(c));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1);

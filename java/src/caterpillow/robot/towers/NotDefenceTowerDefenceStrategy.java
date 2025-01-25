@@ -1,13 +1,15 @@
 package caterpillow.robot.towers;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
 import static caterpillow.Game.centre;
 import static caterpillow.Game.rc;
-
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
-
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
 import static caterpillow.util.Util.getClosestNeighbourTo;
 import static caterpillow.util.Util.isFriendly;

@@ -2,19 +2,24 @@ package caterpillow.pathfinding;
 
 import java.util.HashMap;
 
-import battlecode.common.*;
-
-import static caterpillow.Game.*;
-
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
 import caterpillow.Game;
+import static caterpillow.Game.bot;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
+import static caterpillow.Game.trng;
 import caterpillow.robot.agents.Agent;
-import caterpillow.robot.agents.mopper.Mopper;
+import static caterpillow.tracking.CellTracker.mapInfos;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
-import caterpillow.util.Profiler;
-import static caterpillow.tracking.CellTracker.*;
 
 public class BugnavPathfinder {
     // temporary patch to make sure nothing breaks

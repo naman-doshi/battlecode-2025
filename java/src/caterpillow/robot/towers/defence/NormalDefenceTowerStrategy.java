@@ -4,21 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.RobotInfo;
+import static caterpillow.Config.isCentral;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
 import caterpillow.robot.towers.TowerStrategy;
-import caterpillow.robot.towers.NotDefenceTowerDefenceStrategy;
 import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.tracking.CellTracker.getNearestCell;
 import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.util.Util.*;
-import static caterpillow.Config.*;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
 
 public class NormalDefenceTowerStrategy extends TowerStrategy {
 
@@ -40,7 +42,7 @@ public class NormalDefenceTowerStrategy extends TowerStrategy {
 
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
-        strats.add(new NotDefenceTowerDefenceStrategy());
+        //strats.add(new NotDefenceTowerDefenceStrategy());
         strats.add(atkstrat = new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 new LoopedSpawner(
