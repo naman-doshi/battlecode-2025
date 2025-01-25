@@ -77,7 +77,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 x--;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -100,7 +100,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 y--;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -123,7 +123,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 x++;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -146,7 +146,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 x++;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -169,7 +169,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 y++;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -192,7 +192,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 y++;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -215,7 +215,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 x--;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;
@@ -238,7 +238,7 @@ public class Splasher extends Agent {
                 if(allyTiles == 3) break;
                 x--;
                 neigh = CellTracker.mapInfos[x][y];
-                if(neigh.isWall()) continue;
+                //if(neigh.isWall()) continue;
                 if(neigh.hasRuin()) {
                     RobotInfo robot = rc.senseRobotAtLocation(neigh.getMapLocation());
                     if(robot != null && robot.team != team) score += 1000;

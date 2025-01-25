@@ -2,20 +2,23 @@ package caterpillow.robot.agents.splasher;
 
 import java.util.List;
 
-import battlecode.common.*;
-import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.StrongAggroRoamStrategy;
-import caterpillow.robot.agents.splasher.SplasherAttackTowerStrategy;
-import static caterpillow.tracking.RobotTracker.getNearestRobot;
-import static caterpillow.tracking.TowerTracker.*;
+import caterpillow.robot.agents.roaming.AggroRoamStrategy;
+import static caterpillow.tracking.TowerTracker.getNearestVisibleTower;
 import caterpillow.util.GameSupplier;
-import static caterpillow.util.Util.*;
 import caterpillow.util.Pair;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.indicate;
 
 public class SplasherAggroStrategy extends Strategy {
 
@@ -48,11 +51,6 @@ public class SplasherAggroStrategy extends Strategy {
     public void runTick() throws GameActionException {
 
         indicate("SPLASHER");
-        // don't delete this, i want to test whether it should retreat to lastSeenTower or Game.origin on actual scrims
-        RobotInfo nearest = getNearestRobot(b -> isFriendly(b) && b.getType().isTowerType());
-        if (nearest != null) {
-            lastSeenTower = nearest.getLocation();
-        }
 
         if(strongRefillStrategy == null && getPaintLevel() < 0.2) {
             strongRefillStrategy = new StrongRefillStrategy(0.5);
