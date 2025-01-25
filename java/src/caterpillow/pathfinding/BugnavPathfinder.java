@@ -19,7 +19,7 @@ import static caterpillow.tracking.CellTracker.mapInfos;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
-import static caterpillow.util.Util.directions;
+import static caterpillow.util.Util.*;
 import caterpillow.util.Profiler;
 import static caterpillow.tracking.CellTracker.*;
 
@@ -1137,6 +1137,11 @@ print("}")
             topDir = bottomDir;
             leftTurn = true;
         }
+        if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
+            leftTurn = trng.nextInt(0, 1) == 0;
+            stackSize = 0;
+            topDir = bottomDir;
+        }
         int iters = 0;
         while (!canMove(topDir))  {
             MapLocation nextLoc = Game.pos.add(topDir);
@@ -1146,11 +1151,6 @@ print("}")
                 topDir = bottomDir;
                 stackSize = 0;
                 continue;
-            }
-            if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
-                leftTurn = trng.nextInt(0, 1) == 0;
-                stackSize = 0;
-                topDir = bottomDir;
             }
             if(alwaysLeftTurn) leftTurn = true;
             if (leftTurn) topDir = topDir.rotateLeft();
