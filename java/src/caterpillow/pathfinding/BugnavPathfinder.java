@@ -20,8 +20,7 @@ import caterpillow.tracking.RobotTracker;
 import caterpillow.util.GameFunction;
 import caterpillow.util.GamePredicate;
 import static caterpillow.util.Util.directions;
-import caterpillow.util.Profiler;
-import static caterpillow.tracking.CellTracker.*;
+import static caterpillow.util.Util.indicate;
 
 public class BugnavPathfinder {
     // temporary patch to make sure nothing breaks
@@ -59,14 +58,12 @@ public class BugnavPathfinder {
     }
 
     /*
-
     orth_directions = [
     (1, 0, "EAST"),
     (0, 1, "NORTH"),
     (-1, 0, "WEST"),
     (0, -1, "SOUTH")
 ]
-
 directions = [
     (0, 1, "NORTH"),
     (1, 1, "NORTHEAST"),
@@ -77,7 +74,6 @@ directions = [
     (-1, 0, "WEST"),
     (-1, 1, "NORTHWEST")
 ]
-
 def bruh(cap):
     print("int score = 0;")
     print("switch (topDir.ordinal()) {")
@@ -108,13 +104,11 @@ def bruh(cap):
             print("}")
         print("break;")
     print("}")
-
 print("if (alwaysLeftTurn) {")
 bruh(1);
 print("} else {")
 bruh(2);
 print("}")
-
      */
 
     public Direction getMove(MapLocation to) throws GameActionException {
@@ -1137,6 +1131,11 @@ print("}")
             topDir = bottomDir;
             leftTurn = true;
         }
+        if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
+            leftTurn = trng.nextInt(0, 1) == 0;
+            stackSize = 0;
+            topDir = bottomDir;
+        }
         int iters = 0;
         while (!canMove(topDir))  {
             MapLocation nextLoc = Game.pos.add(topDir);
@@ -1146,11 +1145,6 @@ print("}")
                 topDir = bottomDir;
                 stackSize = 0;
                 continue;
-            }
-            if (stackSize <= 1 && lastNonzeroStackTime < rc.getRoundNum() - 4) {
-                leftTurn = trng.nextInt(0, 1) == 0;
-                stackSize = 0;
-                topDir = bottomDir;
             }
             if(alwaysLeftTurn) leftTurn = true;
             if (leftTurn) topDir = topDir.rotateLeft();
