@@ -1,28 +1,36 @@
 package caterpillow.robot.agents.soldier;
 
+import java.util.ArrayList;
+
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
+import static battlecode.common.PaintType.EMPTY;
 import battlecode.common.UnitType;
 import caterpillow.Config;
-
-import static battlecode.common.PaintType.EMPTY;
 import static caterpillow.Config.nextTowerType;
 import caterpillow.Game;
-import caterpillow.pathfinding.*;
-
 import static caterpillow.Game.rc;
+import caterpillow.pathfinding.BugnavPathfinder;
+import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.RemoveMarkerStrategy;
-import caterpillow.robot.troll.QueueStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.util.Pair;
-import static caterpillow.util.Util.*;
 import caterpillow.util.Util;
-
-public class BuildTowerStrategy extends QueueStrategy {
+import static caterpillow.util.Util.VISION_RAD;
+import static caterpillow.util.Util.getCellColour;
+import static caterpillow.util.Util.hasTowerCompletionDefinitelyBeenClaimed;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isCellInTowerBounds;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.orthDirections;
+import static caterpillow.util.Util.paintLevel;
+import static caterpillow.util.Util.println;
+import static caterpillow.util.Util.shouldBuildTowerHere;
+public class BuildTowerStrategy extends Strategy {
 
     Soldier bot;
     MapLocation target;
@@ -32,16 +40,66 @@ public class BuildTowerStrategy extends QueueStrategy {
 
     final static UnitType[] poss = {UnitType.LEVEL_ONE_DEFENSE_TOWER, UnitType.LEVEL_ONE_MONEY_TOWER, UnitType.LEVEL_ONE_PAINT_TOWER};
 
-    public static final int[][] visitOrd = {
-            {2, 0},
-            {1, 1},
-            {0, 2},
-            {-1, 1},
-            {-2, 0},
-            {-1, -1},
-            {0, -2},
-            {1, -1}
-    };
+    private BugnavPathfinder orbitPathfinder;
+    public ArrayList<MapLocation> processedRuins;
+    public boolean shouldTroll(MapLocation ruin) throws GameActionException {
+        // if (processedRuins.contains(ruin)) {
+        //     return false;
+        // }
+        // for (Direction dir : Util.orthDirections) {
+        //     MapLocation bruh = ruin.add(dir);
+        //     if (Game.pos.distanceSquaredTo(bruh) <= VISION_RAD) {
+        //         if (rc.senseMapInfo(bruh).getMark() != PaintType.EMPTY) {
+        //             processedRuins.add(ruin);
+        //             return false;
+        //         }
+        //     }
+        // }
+        // for (int dx = -2; dx <= 2; dx++) {
+        //     for (int dy = -2; dy <= 2; dy++) {
+        //         MapLocation loc = target.translate(dx, dy);
+        //         if (Game.pos.distanceSquaredTo(loc) <= VISION_RAD) {
+        //             PaintType paint = rc.senseMapInfo(loc).getPaint();
+        //             if (paint.isAlly()) {
+        //                 processedRuins.add(ruin);
+        //                 return false;
+        //             } else if (paint == PaintType.EMPTY) {
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        // }
+        return false;
+    }
+//    public static final int[][] visitOrd = {
+//            {2, 0},
+//            {1, 1},
+//            {0, 2},
+//            {-1, 1},
+//            {-2, 0},
+//            {-1, -1},
+//            {0, -2},
+//            {1, -1}
+//    };
+//
+//    public int getNearestCellInVisitOrd() {
+//        int curX = Game.pos.x;
+//        int curY = Game.pos.y;
+//        int best = -1;
+//        MapLocation bestLoc = null;
+//        for (int i = visitOrd.length - 1; i >= 0; i--) {
+//            int x = target.x + visitOrd[i][0];
+//            int y = target.y + visitOrd[i][1];
+//            MapLocation loc = new MapLocation(x, y);
+//            if (Game.pos.distanceSquaredTo(loc) <= VISION_RAD && rc.senseRobotAtLocation(new MapLocation(x, y)) == null) {
+//                if (best == -1 && bestLoc.distanceSquaredTo(Game.pos) > loc.distanceSquaredTo(Game.pos)) {
+//                    best = i;
+//                    bestLoc = loc;
+//                }
+//            }
+//        }
+//        return best;
+//    }
 
     BugnavPathfinder pathfinder;
 
@@ -57,7 +115,7 @@ public class BuildTowerStrategy extends QueueStrategy {
         return null;
     }
 
-    boolean isInView() {
+    public boolean isInView() {
         int x = target.x - 2;
         int y = target.y - 2;
         if (Game.pos.distanceSquaredTo(new MapLocation(x, y)) > VISION_RAD) return false;
@@ -71,12 +129,10 @@ public class BuildTowerStrategy extends QueueStrategy {
     }
 
     /*
-
 print("int x = target.x;\nx -= 2;")
 print("int y = target.y;\ny -= 2;")
 for i in range(-2, 3):
     for j in range(-2, 3):
-
         if j == -2:
             print("// row " + str(i))
         print("loc = new MapLocation(x, y);")
@@ -84,7 +140,6 @@ for i in range(-2, 3):
         print("\tMapInfo info = CellTracker.mapInfos[x][y];")
         print("\tif (info.getPaint().isEnemy() || !info.isPassable()) return true;")
         print("}")
-
         if j < 2:
             if i % 2 == 0:
                 print("x++;")
@@ -92,7 +147,6 @@ for i in range(-2, 3):
                 print("x--;")
         else:
             print("y++;")
-
      */
 
     boolean shouldGiveUp() throws GameActionException {
@@ -255,6 +309,7 @@ for i in range(-2, 3):
     }
 
     boolean isInDanger() throws GameActionException {
+        if (rc.getPaint() == 0) return true; // wtfff
         return rc.getPaint() <= 10 && RobotTracker.getNearestRobot(c -> !isFriendly(c) && c.type.isRobotType()) != null;
     }
 
@@ -291,7 +346,6 @@ for i in range(-2, 3):
     }
 
     /*
-
 def add(x, dx):
     if dx > 0:
         return f"{x} + {dx}"
@@ -299,17 +353,14 @@ def add(x, dx):
         return f"{x} - {-dx}"
     else:
         return x
-
 print("""        MapInfo best = null, info;
         int x = target.x - 2;
         int y = target.y - 2;
         boolean[][] pattern = rc.getTowerPattern(type);""")
 for dy in range(-2, 3):
     for dx in range(-2, 3):
-
         if dx == -2:
             print("// row " + str(dy))
-
         out = f"""info = CellTracker.mapInfos[x][y];
 if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != pattern[{dx + 2}][{dy + 2}]) {{
     if (best == null || best.getMapLocation().distanceSquaredTo(Game.pos) > info.getMapLocation().distanceSquaredTo(Game.pos)) {{
@@ -318,7 +369,6 @@ if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != 
 }}"""
         if dx != 0 or dy != 0:
             print(out)
-
         if dx < 2:
             if dy % 2 == 0:
                 print("x++;")
@@ -331,7 +381,6 @@ print("""        if (best == null) {
         } else {
             return new Pair<>(best.getMapLocation(), getCellColour(target, best.getMapLocation(), type));
         }""")
-
      */
 
     Pair<MapLocation, Boolean> getNextTile(UnitType type) throws GameActionException {
@@ -520,9 +569,7 @@ print("""        if (best == null) {
     }
 
     /*
-
 // deprecated function for isComplete (which isnt being used)
-
 def add(x, dx):
     if dx > 0:
         return f"{x} + {dx}"
@@ -530,24 +577,20 @@ def add(x, dx):
         return f"{x} - {-dx}"
     else:
         return x
-
 print("""        MapInfo info;
         int x = target.x - 2;
         int y = target.y - 2;
         boolean[][] pattern = rc.getTowerPattern(type);""")
 for dy in range(-2, 3):
     for dx in range(-2, 3):
-
         if dx == -2:
             print("// row " + str(dy))
-
         out = f"""info = CellTracker.mapInfos[x][y];
 if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != pattern[{dx + 2}][{dy + 2}]) {{
     return false;
 }}"""
         if dx != 0 or dy != 0:
             print(out)
-
         if dx < 2:
             if dy % 2 == 0:
                 print("x++;")
@@ -556,53 +599,99 @@ if (info.getPaint().equals(PaintType.EMPTY) || info.getPaint().isSecondary() != 
         else:
             print("y++;")
 print("return true;")
-
      */
 
     public BuildTowerStrategy(MapLocation target) {
-        super();
         bot = (Soldier) Game.bot;
         this.target = target;
         patternToFinish = null;
         pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && Util.isInDanger(c.getMapLocation()));
+        orbitPathfinder = pathfinder;
+        processedRuins = new ArrayList<>();
+        processedRuins.add(target);
         cellsPlaced = 0;
     }
 
+    // ceebs moving into constructor
+    ArrayList<RemoveMarkerStrategy> marksToRemove = new ArrayList<>();
+    TrollRuinStrategy troll = null;
+    private boolean areMarksComplete() throws GameActionException {
+        while (!marksToRemove.isEmpty()) {
+            if (marksToRemove.getFirst().isComplete()) {
+                marksToRemove.removeFirst();
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean tryRemoveMark() throws GameActionException {
+        while (!marksToRemove.isEmpty()) {
+            marksToRemove.getFirst().runTick();
+            if (marksToRemove.getFirst().isComplete()) {
+                marksToRemove.removeFirst();
+            } else {
+                break;
+            }
+        }
+        return !areMarksComplete();
+    }
+    private boolean areMarkersGone() throws GameActionException {
+        for (Direction dir : orthDirections) {
+            if (rc.senseMapInfo(target.add(dir)).getMark() != EMPTY) {
+                return false;
+            }
+        }
+        return true;
+    }
     Pair<MapLocation, Boolean> todo;
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if (!super.isComplete()) return false;
         if (patternToFinish != null) {
             indicate("COMPLETING TOWER");
+        }
+        if (!areMarksComplete()) {
+            return false;
+        }
+        if (troll != null) {
+            if (!troll.isComplete()) {
+                return false;
+            }
         }
         if (Game.pos.distanceSquaredTo(target) > VISION_RAD) {
             return false;
         }
-        if (maxedTowers() && rc.senseRobotAtLocation(target) == null) {
+        if (!shouldBuildTowerHere(target)) {
+            println("dont build here\n");
             return true;
         }
-        if (shouldGiveUp()) {
+        if (patternToFinish == null && hasTowerCompletionDefinitelyBeenClaimed(target)) {
+            return true;
+        }
+        if (patternToFinish != null && isInDanger()) {
+            return areMarkersGone();
+        }
+        if (shouldGiveUp() && RobotTracker.countNearbyFriendly(c -> isFriendly(c) && c.getType() == UnitType.MOPPER) < 2) {
             println("ff");
             if (patternToFinish != null) {
                 // clean up
-                push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
-                push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
-                return super.isComplete();
-//                return rc.senseMapInfo(target.add(Direction.NORTH)).getMark() == EMPTY;
+                marksToRemove.add(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                marksToRemove.add(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
             } else {
-                return true;
+                UnitType t = getShownPattern();
+                if (t != null) {
+                    marksToRemove.add(new RemoveMarkerStrategy(target.add(getOffset(t))));
+                }
             }
-        }
-        if (patternToFinish != null) {
-            return rc.senseRobotAtLocation(target) != null;
-        }
-        if (!shouldBuildTowerHere(target)) {
+            if (!areMarksComplete()) {
+                return false;
+            }
             return true;
         }
-        if (hasTowerCompletionDefinitelyBeenClaimed(target)) {
-            return true;
-        }
+//        if (patternToFinish != null) {
+//            return rc.senseRobotAtLocation(target) != null;
+//        }
         if (!isInView()) {
             return false;
         }
@@ -643,32 +732,19 @@ print("return true;")
     @Override
     public void runTick() throws GameActionException {
         indicate("BUILDER");
-        if (!super.isComplete()) {
-            super.runTick();
-            if (!super.isComplete()) {
-                return;
-            }
-        }
+        if (tryRemoveMark()) return;
 
         // im putting this up here idc anymore
         if (patternToFinish != null) {
-            // obsolete
-//            if (shouldGiveUp()) {
-//                pathfinder.makeMove(target.add(Direction.NORTH));
-//                if (rc.canRemoveMark(target.add(Direction.NORTH))) {
-//                    rc.removeMark(target.add(Direction.NORTH));
-//                }
-//                return;
-//            }
-
             if (isInDanger()) {
-                pathfinder.makeMove(target.add(Direction.NORTH));
-                if (rc.canRemoveMark(target.add(Direction.NORTH))) {
-                    rc.removeMark(target.add(Direction.NORTH));
-                }
+                marksToRemove.add(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                marksToRemove.add(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
+                tryRemoveMark();
+                return;
             }
+            // how does this even happen
             if (!isInView()) {
-                pathfinder.makeMove(target);
+                pathfinder.makeMove(target.add(Direction.NORTH));
                 return;
             }
             Pair<MapLocation, Boolean> res = getNextTile(patternToFinish);
@@ -676,6 +752,7 @@ print("return true;")
                 if (rc.canAttack(res.first)) {
                     rc.attack(res.first, res.second);
                     cellsPlaced++;
+                    pathfinder.makeMove(target.add(Direction.NORTH));
                 } else {
                     pathfinder.makeMove(res.first);
                     if (rc.canAttack(res.first)) {
@@ -689,9 +766,10 @@ print("return true;")
             if (rc.canCompleteTowerPattern(patternToFinish, target)) {
                 if (patternToFinish == Config.nextResourceType(true) || ticksDelayed > 0) {
                     bot.build(patternToFinish, target);
-                    push(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
-                    push(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
-                    runTick();
+                    marksToRemove.add(new RemoveMarkerStrategy(target.add(Direction.NORTH)));
+                    marksToRemove.add(new RemoveMarkerStrategy(target.add(getOffset(patternToFinish))));
+                    tryRemoveMark();
+                    return;
                 }
                 ticksDelayed++;
             } else {
@@ -700,11 +778,26 @@ print("return true;")
             return;
         }
 
+        // ruin trolling
+        if (troll == null) {
+            for (int i = CellTracker.nearbyRuins.length - 1; i >= 0; i--) {
+                MapLocation ruin = CellTracker.nearbyRuins[i];
+                if (shouldTroll(ruin)) {
+                    troll = new TrollRuinStrategy(ruin);
+                    processedRuins.add(ruin);
+                    break;
+                }
+            }
+        }
+        if (tryStrategy(troll)) return;
+        troll = null;
         if (!isInView()) {
             pathfinder.makeMove(target);
-            MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7);
-            if (nearest != null) {
-                bot.checkerboardAttack(nearest.getMapLocation());
+            if (paintLevel() > 0.7) {
+                MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()));
+                if (nearest != null) {
+                    bot.checkerboardAttack(nearest.getMapLocation());
+                }
             }
             return;
         }
@@ -712,25 +805,33 @@ print("return true;")
         UnitType pattern = getShownPattern();
         if (pattern == null) {
             UnitType nextType = nextTowerType();
-            pathfinder.makeMove(target.add(getOffset(nextType)));
-            MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && paintLevel() > 0.7 && isCellInTowerBounds(target, c.getMapLocation()));
-            if (nearest != null) {
-                rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextType));
-                cellsPlaced++;
+            orbitPathfinder.makeMove(target.add(getOffset(nextType)));
+            if (paintLevel() > 0.7) {
+                MapInfo nearest = CellTracker.getNearestCell(c -> c.getPaint().equals(EMPTY) && rc.canAttack(c.getMapLocation()) && isCellInTowerBounds(target, c.getMapLocation()));
+                if (nearest != null) {
+                    rc.attack(nearest.getMapLocation(), getCellColour(target, nearest.getMapLocation(), nextType));
+                    cellsPlaced++;
+                }
             }
             return;
         }
 
         if (todo != null) {
+//            if (rc.canAttack(todo.first)) {
+//                rc.attack(todo.first, todo.second);
+//                cellsPlaced++;
+//            } else {
+//                pathfinder.makeMove(todo.first);
+//                if (rc.canAttack(todo.first)) {
+//                    rc.attack(todo.first, todo.second);
+//                    cellsPlaced++;
+//                }
+//            }
+            orbitPathfinder.makeMove(target);
+            todo = getNextTile(getShownPattern()); // rip optimisation
             if (rc.canAttack(todo.first)) {
                 rc.attack(todo.first, todo.second);
                 cellsPlaced++;
-            } else {
-                pathfinder.makeMove(todo.first);
-                if (rc.canAttack(todo.first)) {
-                    rc.attack(todo.first, todo.second);
-                    cellsPlaced++;
-                }
             }
         } else {
             pathfinder.makeMove(target.add(Direction.NORTH));
