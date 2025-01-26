@@ -8,6 +8,7 @@ import battlecode.common.*;
 import static battlecode.common.UnitType.MOPPER;
 import static caterpillow.Game.*;
 import caterpillow.tracking.TowerTracker;
+import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.util.Util.*;
 
 public class Config {
@@ -76,8 +77,10 @@ public class Config {
         return loc.distanceSquaredTo(centre) <= mapHeight * mapWidth / 25;
     }
 
-    public static UnitType nextTowerType(MapLocation loc) {
-        // if(isCentral(loc) && rc.getNumberTowers() > 8 && trng.nextInt(2) == 0) return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+    public static UnitType nextTowerType(MapLocation loc) throws GameActionException {
+        if(isCentral(loc) && rc.getNumberTowers() > 6 && trng.nextInt(2) == 0 && getNearestCell(c -> c.getPaint().isEnemy()) != null) {
+            return UnitType.LEVEL_ONE_DEFENSE_TOWER;
+        }
 
         boolean enemyVisible = false;
         for (RobotInfo r : rc.senseNearbyRobots()) {
