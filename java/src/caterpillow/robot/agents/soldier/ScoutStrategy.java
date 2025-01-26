@@ -3,19 +3,28 @@ package caterpillow.robot.agents.soldier;
 import java.util.LinkedList;
 import java.util.Random;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import caterpillow.Game;
-import static caterpillow.Game.*;
-import static caterpillow.util.Util.*;
-
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.seed;
+import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.StrongRefillStrategy;
-import caterpillow.robot.agents.WeakRefillStrategy;
-import caterpillow.robot.agents.roaming.WeakAggroRoamStrategy;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.isInDanger;
+import static caterpillow.util.Util.isOccupied;
 
 public class ScoutStrategy extends Strategy {
 
@@ -41,6 +50,15 @@ public class ScoutStrategy extends Strategy {
         refillCooldown = -1000000;
     }
 
+    public boolean hasVisited(MapLocation loc) {
+        for (Pair<MapLocation, Integer> vis : visitedRuins) {
+            if (vis.first.equals(loc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ScoutStrategy(MapLocation target) throws GameActionException {
         this();
         roamStrategy = new ScoutRoamStrategy(target);
@@ -63,7 +81,7 @@ public class ScoutStrategy extends Strategy {
         attackTowerStrategy = null;
 
         if (handleRuinStrategy == null) {
-            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && visitedRuins.stream().noneMatch(el -> el.first.equals(c)));
+            MapLocation target1 = CellTracker.getNearestRuin(c -> !isOccupied(c) && !hasVisited(c));
             if (target1 != null) {
                 handleRuinStrategy = new HandleRuinStrategy(target1);
             }
