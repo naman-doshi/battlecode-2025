@@ -406,6 +406,8 @@ public class Mopper extends Agent {
         pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
+        noPaintThreshold = 1;
+        noPaintTicks = 5;
     }
 
     @Override

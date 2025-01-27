@@ -29,6 +29,8 @@ public class Splasher extends Agent {
         pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Splasher) Game.bot;
+        noPaintThreshold = 5;
+        noPaintTicks = 10;
     }
 
     public boolean isEdge(MapLocation loc) throws GameActionException {

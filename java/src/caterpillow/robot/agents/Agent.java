@@ -7,11 +7,12 @@ import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.origin;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
+import caterpillow.robot.agents.mopper.Mopper;
+import caterpillow.robot.agents.soldier.Soldier;
 import caterpillow.tracking.CellTracker;
 import static caterpillow.tracking.CellTracker.postMove;
 import caterpillow.tracking.RobotTracker;
@@ -28,6 +29,8 @@ public abstract class Agent extends Robot {
 
     public Strategy primaryStrategy;
     public Strategy secondaryStrategy;
+    public int noPaintThreshold = 1; // exclusive
+    public int noPaintTicks = 20;
 
     public void build(UnitType type, MapLocation loc) throws GameActionException{
         rc.completeTowerPattern(type, loc);
@@ -103,13 +106,13 @@ public abstract class Agent extends Robot {
     public void runTick() throws GameActionException {
         lastMove = false;
         // kms so i dont bleed paint from other bots
-        if (rc.getPaint() < 5) {
+        if (rc.getPaint() < noPaintThreshold) {
             ticksRanOutOfPaint++;
         } else {
             ticksRanOutOfPaint = 0;
         }
 
-        if (ticksRanOutOfPaint >= 20) {
+        if (ticksRanOutOfPaint >= noPaintTicks) {
             dead("ran out of paint");
             System.out.println("kms");
             return;

@@ -39,6 +39,8 @@ public class Soldier extends Agent {
         if(!rc.senseMapInfo(rc.getLocation()).getPaint().isEnemy()) secondaryStrategy = new LinkStrategy(home);
         else secondaryStrategy = null;
         syncAttacks = time < 15;
+        noPaintThreshold = 5;
+        noPaintTicks = 20;
     }
 
     @Override
