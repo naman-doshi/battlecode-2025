@@ -1,6 +1,6 @@
 package caterpillow.robot.agents;
 
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -13,11 +13,11 @@ public class WanderStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     public WanderStrategy() {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
     }
 
     @Override

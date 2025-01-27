@@ -2,7 +2,7 @@ package caterpillow.robot.towers.money;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
@@ -31,7 +31,7 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
 
     // in case we get rushed
     int todo;
-    Random rng;
+    CustomRandom rng;
     Tower bot;
     boolean anyAlly = false;
     // we can *maybe* turn this into a special class if it gets too repetitive
@@ -41,7 +41,7 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
     public StarterMoneyTowerStrategy() throws GameActionException {
         todo = 2;
         bot = (Tower) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());

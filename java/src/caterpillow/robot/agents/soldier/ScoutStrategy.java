@@ -1,7 +1,7 @@
 package caterpillow.robot.agents.soldier;
 
 import java.util.LinkedList;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -34,7 +34,7 @@ public class ScoutStrategy extends Strategy {
 
     Soldier bot;
 
-    Random rng;
+    CustomRandom rng;
     HandleRuinStrategy handleRuinStrategy;
     Strategy refillStrategy;
     Strategy attackTowerStrategy;
@@ -44,7 +44,7 @@ public class ScoutStrategy extends Strategy {
     public ScoutStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
         visitedRuins = new LinkedList<>();
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         roamStrategy = new ScoutRoamStrategy();
         skipCooldown = (mapHeight + mapWidth) / 2;
         refillCooldown = -1000000;

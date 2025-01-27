@@ -2,7 +2,7 @@ package caterpillow.robot.towers.money;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
@@ -30,7 +30,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
 
     // in case we get rushed
     int seed;
-    Random rng;
+    CustomRandom rng;
     Tower bot;
     int nxt;
     boolean anyAlly = false;
@@ -41,8 +41,8 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
 
     public NormalMoneyTowerStrategy() throws GameActionException {
         bot = (Tower) Game.bot;
-        seed = new Random(rc.getID()).nextInt();
-        rng = new Random(seed);
+        seed = new CustomRandom(rc.getID()).nextInt();
+        rng = new CustomRandom(seed);
 
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());

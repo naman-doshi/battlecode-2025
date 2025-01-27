@@ -2,7 +2,7 @@ package caterpillow;
 
 import static java.lang.Math.*;
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.*;
 import static battlecode.common.UnitType.MOPPER;
@@ -98,17 +98,17 @@ public class Config {
 
     public static UnitType nextResourceType(boolean deterministic) {
         if (!TowerTracker.broken) {
-            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
+//            System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             double currentRatio = (double) TowerTracker.coinTowers / (double) rc.getNumberTowers();
             if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || rc.getChips() >= 3000) {
-                System.out.println("paint tower");
+//                System.out.println("paint tower");
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
-                System.out.println("money tower");
+//                System.out.println("money tower");
                 return UnitType.LEVEL_ONE_MONEY_TOWER;
             }
         } else {
-            System.out.println("BROKEN");
+//            System.out.println("BROKEN");
             if (trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
@@ -120,7 +120,7 @@ public class Config {
         return nextResourceType(false);
     }
 
-    public static MapLocation genExplorationTarget(Random rng) {
+    public static MapLocation genExplorationTarget(CustomRandom rng) {
         while (true) {
             int x = rng.nextInt(0, mapWidth - 1);
             int y = rng.nextInt(0, mapHeight - 1);
@@ -133,7 +133,7 @@ public class Config {
         }
     }
 
-    public static MapLocation genAggroTarget(Random rng) {
+    public static MapLocation genAggroTarget(CustomRandom rng) {
         while (true) {
             int x = rng.nextInt(0, mapWidth - 1);
             int y = rng.nextInt(0, mapHeight - 1);
@@ -147,7 +147,7 @@ public class Config {
         }
     }
 
-    public static MapLocation genPassiveTarget(Random rng) {
+    public static MapLocation genPassiveTarget(CustomRandom rng) {
         while (true) {
             int x = rng.nextInt(0, mapWidth - 1);
             int y = rng.nextInt(0, mapHeight - 1);
@@ -160,7 +160,7 @@ public class Config {
         }
     }
 
-    public static List<MapLocation> getEnemySpawnList(Random rng) throws GameActionException {
+    public static List<MapLocation> getEnemySpawnList(CustomRandom rng) throws GameActionException {
         List<MapLocation> locs = guessEnemyLocs(origin);
         return locs;
     }

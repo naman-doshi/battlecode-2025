@@ -1,6 +1,6 @@
 package caterpillow.robot.towers;
 
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -24,7 +24,7 @@ public class SplasherSpawnStrategy extends Strategy {
 
     public SplasherSpawnStrategy() {
         bot = (Tower) Game.bot;
-        seed = new Random(rc.getID()).nextInt();
+        seed = new CustomRandom(rc.getID()).nextInt();
     }
 
     @Override

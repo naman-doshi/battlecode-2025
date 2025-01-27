@@ -2,7 +2,7 @@ package caterpillow.robot.towers.paint;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
@@ -34,12 +34,12 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
     // in case we get rushed
     int todo;
     Tower bot;
-    Random rng;
+    CustomRandom rng;
     boolean anyAlly = false;
     public StarterPaintTowerStrategy() throws GameActionException {
         todo = 1;
         bot = (Tower) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         strats = new ArrayList<>();
         strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());

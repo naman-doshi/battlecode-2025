@@ -2,7 +2,7 @@ package caterpillow;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -26,7 +26,7 @@ public class Game {
     public static int seed;
     public static int spawnCoinPenalty;
     // this is for when we actually actually want random
-    public static Random trng;
+    public static CustomRandom trng;
     public static int MAX_MAP_SIZE = 60;
     public static int mapWidth;
     public static int mapHeight;
@@ -39,7 +39,7 @@ public class Game {
     public static void preInit() throws GameActionException {
         Game.pm = new PacketManager();
         Game.pos = rc.getLocation();
-        trng = new Random(rc.getID() ^ time);
+        trng = new CustomRandom(rc.getID() ^ time);
         symmetry = -1;
         isStarter = (time <= 10);
         if (isStarter) {

@@ -1,7 +1,7 @@
 package caterpillow.robot.agents.mopper;
 
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -24,7 +24,7 @@ public class MopperOffenceStrategy extends Strategy {
     public Mopper bot;
 
     public List<GameSupplier<MapInfo>> suppliers;
-    Random rng;
+    CustomRandom rng;
     public MapLocation lastSeenRuin;
     Strategy rescueStrategy;
     Strategy refillStrategy;
@@ -32,7 +32,7 @@ public class MopperOffenceStrategy extends Strategy {
 
     public MopperOffenceStrategy() throws GameActionException {
         bot = (Mopper) Game.bot;
-        rng = new Random();
+        rng = new CustomRandom();
 
         //suppliers = new ArrayList<>();
         // // mop and attack (in range)

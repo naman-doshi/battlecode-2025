@@ -1,7 +1,7 @@
 package caterpillow.robot.agents.roaming;
 
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -17,14 +17,14 @@ public class StrongAggroRoamStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     List<MapLocation> targets;
 
     public StrongAggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         //assert (Game.origin != null) : "origin is null";
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         targets = Config.getEnemySpawnList(rng);
         target = targets.getFirst();
     }

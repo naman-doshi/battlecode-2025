@@ -2,7 +2,7 @@ package caterpillow.robot.agents.roaming;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -17,14 +17,14 @@ public class AggroRoamStrategy extends Strategy {
 
     Agent bot;
     MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     List<MapLocation> targets;
 
     public AggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
         //assert (Game.origin != null) : "origin is null";
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         targets = new LinkedList<>();
         for (int i = 0; i < 3; i++) {
             targets.add(Config.genAggroTarget(rng));

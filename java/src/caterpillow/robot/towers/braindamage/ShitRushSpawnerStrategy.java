@@ -7,7 +7,7 @@ import caterpillow.packet.packets.StrategyPacket;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.towers.Tower;
 
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import static caterpillow.util.Util.*;
 import static caterpillow.Game.*;
@@ -20,7 +20,7 @@ public class ShitRushSpawnerStrategy extends Strategy {
 
     public ShitRushSpawnerStrategy() {
         bot = (Tower) Game.bot;
-        seed = new Random(rc.getID()).nextInt();
+        seed = new CustomRandom(rc.getID()).nextInt();
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ShitRushSpawnerStrategy extends Strategy {
             case EARLY:
                 if (rc.getPaint() >= 2 * UnitType.SOLDIER.paintCost && rc.getChips() >= 2 * UnitType.SOLDIER.moneyCost) {
                     todo = 2;
-                    Random random = new Random(seed);
+                    CustomRandom random = new CustomRandom(seed);
                     seed = random.nextInt();
                 }
                 if (todo > 0) {

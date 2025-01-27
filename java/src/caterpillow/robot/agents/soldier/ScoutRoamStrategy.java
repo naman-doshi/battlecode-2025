@@ -1,7 +1,7 @@
 package caterpillow.robot.agents.soldier;
 
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -21,13 +21,13 @@ import caterpillow.robot.agents.Agent;
 public class ScoutRoamStrategy extends Strategy {
     Soldier bot;
     public MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     List<MapLocation> targets;
 
     public ScoutRoamStrategy() throws GameActionException {
         bot = (Soldier) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         target = Config.genAggroTarget(rng);
     }
     public ScoutRoamStrategy(MapLocation target) throws GameActionException {

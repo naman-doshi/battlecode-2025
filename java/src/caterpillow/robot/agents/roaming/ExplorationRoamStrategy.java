@@ -8,7 +8,7 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.Config;
 
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
@@ -17,11 +17,11 @@ import static caterpillow.Game.seed;
 public class ExplorationRoamStrategy extends Strategy {
     Agent bot;
     public MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     public ExplorationRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
     }
     public ExplorationRoamStrategy(boolean b) throws GameActionException {
         this();

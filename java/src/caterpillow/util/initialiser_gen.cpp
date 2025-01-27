@@ -29,7 +29,7 @@ using vvb = vt<vt<bool>>;
 using vpi = vt<pi>;
 using vpl = vt<pl>;
 
-const int RANDOM = chrono::high_resolution_clock::now().time_since_epoch().count();
+const int CustomRandom = chrono::high_resolution_clock::now().time_since_epoch().count();
 
 struct chash { // large odd number for C
     const uint64_t C = ll(4e18 * acos(0)) | 71;

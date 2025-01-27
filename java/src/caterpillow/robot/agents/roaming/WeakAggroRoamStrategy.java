@@ -1,7 +1,7 @@
 package caterpillow.robot.agents.roaming;
 
 import java.util.List;
-import java.util.Random;
+import caterpillow.util.CustomRandom;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
@@ -22,13 +22,13 @@ public class WeakAggroRoamStrategy extends Strategy {
 
     Agent bot;
     public MapLocation target;
-    Random rng;
+    CustomRandom rng;
 
     List<MapLocation> targets;
 
     public WeakAggroRoamStrategy() throws GameActionException {
         bot = (Agent) Game.bot;
-        rng = new Random(seed);
+        rng = new CustomRandom(seed);
         target = Config.genAggroTarget(rng);
     }
     public WeakAggroRoamStrategy(MapLocation target) throws GameActionException {

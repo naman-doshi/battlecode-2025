@@ -136,7 +136,7 @@ public class Util {
         List<MapLocation> enemyLocs = new LinkedList<>();
 
         if (src == null) {
-            // give 3 random locations
+            // give 3 CustomRandom locations
             for (int i = 0; i < 3; i++) {
                 enemyLocs.addLast(genExplorationTarget(trng));
             }
