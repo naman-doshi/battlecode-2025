@@ -19,11 +19,12 @@ public class Config {
         if(rc.getNumberTowers() < moneyTowerThreshold()) return 1;
         //if (rc.getNumberTowers() == moneyTowerThreshold()) return 0;
         int area = mapHeight * mapWidth;
-        double ratio = area < 1500 ? 0.67 : 0.72;
+        // double ratio = area < 1500 ? 0.63 : 0.68;
+        double ratio = 0.66;
         return ratio;
     }
     public static int moneyTowerThreshold() {
-        if(mapHeight * mapWidth <= 900) return 3;
+        // if(mapHeight * mapWidth <= 900) return 3;
         if(mapHeight * mapWidth <= 1500) return 4;
         return 5;
     }
