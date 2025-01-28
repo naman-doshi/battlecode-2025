@@ -5,7 +5,7 @@ import random
 url = "https://api.battlecode.org/api/compete/bc25java/request/"
 
 # Your authorization token
-auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM3NzkyNjY3LCJpYXQiOjE3MzczNjA2NjcsImp0aSI6IjdlMTQ0ODUyNzc0YTRhOWM4NmZkNjNkNDc2ZTNlMmIzIiwidXNlcl9pZCI6MTM2NX0.D6-96c2iEyvsI7MrRJMoEbKnAcA7SU1a2l321Hm4EKE"
+auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MjI0ODcyLCJpYXQiOjE3Mzc3OTI4NzIsImp0aSI6Ijg2OTJmMjc5MmU2NzQ2NWVhOTFkMjVjNjZkNjVmYWZkIiwidXNlcl9pZCI6MTM2NX0.UF775lV0Jtf0C6_B_CoYH_lc-O3WcO9OoEmtVLttbIQ"
 
 # Configuration
 excluded_team_id = 1288  # Your team ID
@@ -38,7 +38,8 @@ def fetch_top_teams(auth_token, excluded_team_id, count=10):
         data = response.json()
 
         for team in data["results"]:
-            if team["id"] != excluded_team_id and team["profile"]["auto_accept_unranked"]:
+            #print(team["profile"])
+            if team["id"] != excluded_team_id and team["profile"]["auto_accept_reject_unranked"] == 'A':
                 ids.append(team["id"])
                 if len(ids) == count:
                     break
@@ -67,7 +68,7 @@ def send_match_requests(auth_token, team_ids):
         "is_ranked": False,
         "requested_to": None,
         "player_order": "+",
-        "map_names": random.sample(all_maps, 10),
+        "map_names": all_maps[10:20]
     }
 
     for team_id in team_ids:
