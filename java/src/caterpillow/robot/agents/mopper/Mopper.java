@@ -44,6 +44,8 @@ public class Mopper extends Agent {
             }
         }
 
+        
+
         // targetloc is a good place to move to
         MapLocation targetLoc = null;
 
@@ -343,6 +345,26 @@ public class Mopper extends Agent {
             indicate("mop swing!");
             rc.setIndicatorDot(Game.pos.add(best.second), 0, 255, 0);
             return targetLoc;
+        }
+
+        if (CellTracker.isNearRuin != null) {
+            MapInfo enemyPaintinRuinBound = CellTracker.getNearestCell(c -> c.getPaint().isEnemy() && CellTracker.isNearRuin[c.getMapLocation().x][c.getMapLocation().y]);
+            if (enemyPaintinRuinBound != null) {
+                indicate("enemy paint in ruin bound " + enemyPaintinRuinBound.getMapLocation());
+                MapLocation eloc = enemyPaintinRuinBound.getMapLocation();
+                if (rc.canAttack(eloc)) {
+                    rc.attack(eloc);
+                    return null;
+                } else {
+                    bot.pathfinder.makeMove(eloc);
+                    if (rc.canAttack(eloc)) {
+                        rc.attack(eloc);
+                        return null;
+                    } else {
+                        return eloc;
+                    }
+                }
+            }
         }
 
         // just paint

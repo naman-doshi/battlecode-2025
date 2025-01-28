@@ -1,17 +1,30 @@
 package caterpillow.tracking;
 
-import battlecode.common.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.MapInfo;
+import battlecode.common.MapLocation;
+import battlecode.common.PaintType;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
+import static battlecode.common.UnitType.SOLDIER;
 import caterpillow.Game;
+import static caterpillow.Game.bot;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.ticksExisted;
+import static caterpillow.Game.time;
+import static caterpillow.Game.trng;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.soldier.SRPStrategy;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
-import caterpillow.util.Pair;
-
-import static battlecode.common.UnitType.SOLDIER;
-import static caterpillow.Game.*;
-import static caterpillow.util.Util.*;
-import static java.lang.Math.*;
+import static caterpillow.util.Util.downgrade;
 
 public class CellTracker {
     public static final int SRP_DELAY = 1;
@@ -451,7 +464,21 @@ for i in range(3):
                     }
 
                     // special
-
+                    
+                    if (bot != null) {
+                        if (isNearRuin[loc.x][loc.y]) {
+                            int minX = Math.max(0, loc.x - 2);
+                            int minY = Math.max(0, loc.y - 2);
+                            int maxX = Math.min(mapWidth, loc.x + 2);
+                            int maxY = Math.min(mapHeight, loc.y + 2);
+                            for (int i = minX; i < maxX; i++) {
+                                for (int j = minY; j < maxY; j++) {
+                                    isNearRuin[i][j] = false;
+                                }
+                            }
+                        }
+                        continue;
+                    }
                     if (!isNearRuin[loc.x][loc.y]) {
                         int minX = Math.max(0, loc.x - 2);
                         int minY = Math.max(0, loc.y - 2);
