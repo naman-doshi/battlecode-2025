@@ -1,7 +1,7 @@
 package caterpillow.robot.towers.spawner.soldier;
 
 public class InstantSRPSpawner extends SRPSpawner {
-    InstantSRPSpawner() {
+    public InstantSRPSpawner() {
         super();
     }
     @Override

@@ -2,12 +2,13 @@ package caterpillow.robot.towers.paint;
 
 import java.util.ArrayList;
 import java.util.List;
-import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
 import caterpillow.Game;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
 import static caterpillow.Game.seed;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
@@ -19,11 +20,14 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.PainterSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import static caterpillow.tracking.CellTracker.getNearestCell;
+import caterpillow.util.CustomRandom;
 import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
@@ -50,6 +54,10 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 // trng.nextInt(0, 1) == 0 ? new RushSpawner() : new NullSpawner(),
+                new ConditionalSpawner(() -> mapHeight * mapWidth >= 1500,
+                        new InstantSRPSpawner(),
+                        new InstantScoutSpawner()
+                ),
                 new LoopedSpawner(
                         SRPSpawner::new,
                         () -> new ConditionalSpawner(

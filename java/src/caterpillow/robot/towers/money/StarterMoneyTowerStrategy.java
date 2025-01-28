@@ -2,7 +2,6 @@ package caterpillow.robot.towers.money;
 
 import java.util.ArrayList;
 import java.util.List;
-import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
@@ -22,6 +21,7 @@ import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import caterpillow.util.CustomRandom;
 import static caterpillow.util.Util.chebyshevDistance;
 import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;

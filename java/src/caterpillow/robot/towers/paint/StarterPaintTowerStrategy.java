@@ -2,10 +2,11 @@ package caterpillow.robot.towers.paint;
 
 import java.util.ArrayList;
 import java.util.List;
-import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import caterpillow.Game;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import caterpillow.robot.towers.RespawnStrategy;
@@ -18,11 +19,13 @@ import caterpillow.robot.towers.spawner.LoopedSpawner;
 import caterpillow.robot.towers.spawner.NullSpawner;
 import caterpillow.robot.towers.spawner.SpawnerStrategy;
 import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
+import caterpillow.robot.towers.spawner.soldier.InstantSRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.PainterSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
+import caterpillow.util.CustomRandom;
 import static caterpillow.util.Util.chebyshevDistance;
 import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
@@ -62,7 +65,11 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
-                new InstantScoutSpawner(),
+                new ConditionalSpawner(() -> mapHeight * mapWidth >= 1500,
+                        new InstantSRPSpawner(),
+                        new InstantScoutSpawner()
+                ),
+                //new InstantScoutSpawner(),
                 // new InstantOffenceMopperSpawner(),
                 // new LoopedSpawner(
                 //         () -> new LoopedSpawner(2,
