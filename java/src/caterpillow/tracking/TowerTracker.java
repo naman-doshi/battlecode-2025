@@ -144,14 +144,14 @@ public class TowerTracker {
     }
 
     public static int probablyMinCoinTowers() {
-        return max(0, coinTowers - (blindTicks + 2) / 3);
+        return max(max(0, coinTowers - 10), coinTowers - (blindTicks + 2) / 3);
     }
     public static int probablyMaxCoinTowers() {
-        return min(rc.getNumberTowers(), coinTowers + 1 + (blindTicks + 2) / 3);
+        return min(min(rc.getNumberTowers(), coinTowers + 10), coinTowers + 1 + (blindTicks + 2) / 3);
     }
-    public static int probablyMinSRP() { return max(0, srps - blindTicks); }
+    public static int probablyMinSRP() { return max(max(0, srps - 10), srps - blindTicks); }
     public static int probablyMaxSRP() {
-        return srps + 1 + blindTicks;
+        return max(srps + 10, srps + 1 + blindTicks);
     }
     public static int probablyMinGain() {
         return probablyMinCoinTowers() * 20 + probablyMinSRP() * 3;
@@ -197,20 +197,23 @@ public class TowerTracker {
                 if (score1 < score2) return a;
                 else return b;
             };
-
+            int mnsrp = probablyMinSRP();
+            int mxsrp = probablyMaxSRP();
+            int mncoin = probablyMinCoinTowers();
+            int mxcoin = probablyMaxCoinTowers();
             if (!hasStarterCoinDied) {
-                for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
+                for (int potSRP = mnsrp; potSRP <= mxsrp; potSRP++) {
                     int salary = 20 + 3 * potSRP;
-                    for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
+                    for (int pot = mncoin; pot <= mxcoin; pot++) {
                         if (pot * salary + 10 == x - px) {
                             bestSol = comp.apply(bestSol, new Tuple<Integer, Integer, Integer>(pot, potSRP, 0));
                         }
                     }
                 }
             }
-            for (int potSRP = probablyMinSRP(); potSRP <= probablyMaxSRP(); potSRP++) {
+            for (int potSRP = mnsrp; potSRP <= mxsrp; potSRP++) {
                 int salary = 20 + 3 * potSRP;
-                for (int pot = probablyMinCoinTowers(); pot <= probablyMaxCoinTowers(); pot++) {
+                for (int pot = mncoin; pot <= mxcoin; pot++) {
                     if (pot * salary == x - px) {
                         bestSol = comp.apply(bestSol, new Tuple<Integer, Integer, Integer>(pot, potSRP, 1));
                     }
