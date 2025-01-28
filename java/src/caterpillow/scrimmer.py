@@ -15,7 +15,16 @@ all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fos
             "Barcode", "Bread", "BunnyGame", "Filter", "fix", "Flower", "galaxy", "giver", "gridworld", "leavemealone", "Piglets2", "quack", "sayhi",
             "sierpinski", "Snowglobe", "windmill"]
 
-def fetch_top_teams(auth_token, excluded_team_id, count=10):
+# set diff seeds for each team
+# random sample 10 maps with seed 1509
+teamIds = [1509,1208,1070,1301,1186]
+bb = [1398,1182,1348,1278,1377]
+tenSets = {}
+for teamId in teamIds:
+    random.seed(teamId)
+    tenSets[teamId] = random.sample(all_maps, 10)
+
+def fetch_top_teams(auth_token, excluded_team_id, count=5):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
     headers = {
         "Authorization": f"Bearer {auth_token}",
@@ -48,6 +57,14 @@ def fetch_top_teams(auth_token, excluded_team_id, count=10):
 
     return ids
 
+def generate_payload(team_id):
+    return {
+        "is_ranked": False,
+        "requested_to": team_id,
+        "player_order": "+",
+        "map_names": tenSets[team_id]
+    }
+
 def send_match_requests(auth_token, team_ids):
     url = f"{base_url}/compete/bc25java/request/"
     headers = {
@@ -64,15 +81,8 @@ def send_match_requests(auth_token, team_ids):
         "Sec-Gpc": "1"
     }
 
-    payload_template = {
-        "is_ranked": False,
-        "requested_to": None,
-        "player_order": "+",
-        "map_names": all_maps[10:20]
-    }
-
     for team_id in team_ids:
-        payload = {**payload_template, "requested_to": team_id}
+        payload = {**generate_payload(int(team_id)), "requested_to": team_id}
         response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code == 201:
