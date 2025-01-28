@@ -6,6 +6,7 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.soldier.SRPStrategy;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
+import caterpillow.util.Pair;
 
 import static battlecode.common.UnitType.SOLDIER;
 import static caterpillow.Game.*;
@@ -414,6 +415,7 @@ for i in range(3):
     public static void updateChange() throws GameActionException {
         // run at the end of every turn loop
         if (rc.getType().isRobotType()) {
+            TowerTracker.flushEnemies();
             nearbyRuins = rc.senseNearbyRuins(20);
             if (ticksExisted >= 2) {
                 for (int k = nearbyRuins.length - 1; k >= 0; k--) {
@@ -425,15 +427,16 @@ for i in range(3):
                     if (bot == null) {
                         TowerTracker.paintLocs.remove(loc);
                         TowerTracker.nonPaintLocs.remove(loc);
-                        TowerTracker.enemyLocs.remove(loc);
+                        TowerTracker.removeEnemy(loc);
                     } else if (rc.getTeam() != bot.getTeam()) {
                         TowerTracker.paintLocs.remove(loc);
                         TowerTracker.nonPaintLocs.remove(loc);
-                        if (!TowerTracker.enemyLocs.contains(loc)) {
-                            TowerTracker.enemyLocs.add(loc);
+                        if (!TowerTracker.containsEnemy(loc)) {
+                            TowerTracker.enemyLocs.add(bot);
                         }
                     } else {
-                        TowerTracker.enemyLocs.remove(loc);
+//                        TowerTracker.enemyLocs.remove(bot);
+                        TowerTracker.removeEnemy(loc);
                         if (downgrade(bot.getType()).equals(UnitType.LEVEL_ONE_PAINT_TOWER)) {
                             TowerTracker.nonPaintLocs.remove(loc);
                             if (!TowerTracker.paintLocs.contains(loc)) {

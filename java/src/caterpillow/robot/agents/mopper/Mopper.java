@@ -17,10 +17,10 @@ import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
+import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isEnemyAgent;
-import static caterpillow.util.Util.isInDanger;
 
 public class Mopper extends Agent {
 
@@ -28,40 +28,18 @@ public class Mopper extends Agent {
     List<MapLocation> enemyLocs;
     MapLocation spawnLoc;
 
-    // public RobotInfo getBestTarget(GamePredicate<RobotInfo> pred) throws GameActionException {
-    //     return getBestRobot((a, b) -> {
-    //             int a1 = a.getType().ordinal();
-    //             int b1 = b.getType().ordinal();
-    //             int h1 = a.getPaintAmount();
-    //             int h2 = b.getPaintAmount();
-    //             if (a1 == b1) {
-    //                 if (h1 > h2) return b;
-    //                 else return a;
-    //             } else {
-    //                 if (a1 < b1) return a;
-    //                 else return b;
-    //             }
-    //         }, e -> !isFriendly(e) && e.getType().isRobotType() && pred.test(e));
-    // }
-
-    // public RobotInfo getBestTarget() throws GameActionException {
-    //     return getBestTarget(e -> true);
-    // }
-
-
+    public static boolean canMove(Direction dir) {
+        return rc.canMove(dir) && !TowerTracker.isCellInDanger(Game.pos.add(dir));
+    }
 
     public MapLocation doBestAttack() throws GameActionException {
         // im gonna kms
-        MapLocation currentLoc = rc.getLocation();
-        int currentX = currentLoc.x;
-        int currentY = currentLoc.y;
-
         bot.lastMove = true;
 
         Direction[] dirs = new Direction[9];
         int dcnt = 0;
         for (Direction dir : Direction.values()) {
-            if (dir == Direction.CENTER || rc.canMove(dir)) {
+            if (dir == Direction.CENTER || canMove(dir)) {
                 dirs[dcnt++] = dir;
             }
         }
@@ -81,8 +59,6 @@ public class Mopper extends Agent {
                 return false;
             });
 
-
-
         if (loc != null) {
 
             MapLocation locLocation = loc.getMapLocation();
@@ -95,10 +71,10 @@ public class Mopper extends Agent {
 
             for (int i = dcnt - 1; i >= 0; i--) {
                 Direction dir = dirs[i];
-                if (dir != Direction.CENTER && rc.canMove(dir)) {
-                    MapLocation nextLoc = currentLoc.add(dir);
+                if (dir != Direction.CENTER && canMove(dir)) {
+                    MapLocation nextLoc = Game.pos.add(dir);
                     // chucking constants to save bytecode rip
-                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && canMove(dir) && rc.isActionReady()) {
                         bot.move(dir);
                         rc.attack(locLocation);
                         return locLocation;
@@ -109,8 +85,6 @@ public class Mopper extends Agent {
             // otherwise update our target loc
             targetLoc = locLocation;
         }
-
-
 
         Team me = rc.getTeam();
         int cell00 = (RobotTracker.bot11 != null && RobotTracker.bot11.getTeam() != me && RobotTracker.bot11.getType().isRobotType() ? 1 : 0);
@@ -185,7 +159,7 @@ public class Mopper extends Agent {
             bestScore = score;
             best = new Pair<>(Direction.CENTER, Direction.SOUTH);
         }
-        if (rc.canMove(Direction.EAST)) {
+        if (canMove(Direction.EAST)) {
             score = cell53 + cell54 + cell52 + cell63 + cell64 + cell62;
             if (score > bestScore) {
                 bestScore = score;
@@ -207,7 +181,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.EAST, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.NORTHEAST)) {
+        if (canMove(Direction.NORTHEAST)) {
             score = cell54 + cell55 + cell53 + cell64 + cell65 + cell63;
             if (score > bestScore) {
                 bestScore = score;
@@ -229,7 +203,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.NORTHEAST, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.NORTH)) {
+        if (canMove(Direction.NORTH)) {
             score = cell44 + cell45 + cell43 + cell54 + cell55 + cell53;
             if (score > bestScore) {
                 bestScore = score;
@@ -251,7 +225,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.NORTH, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.NORTHWEST)) {
+        if (canMove(Direction.NORTHWEST)) {
             score = cell34 + cell35 + cell33 + cell44 + cell45 + cell43;
             if (score > bestScore) {
                 bestScore = score;
@@ -273,7 +247,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.NORTHWEST, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.WEST)) {
+        if (canMove(Direction.WEST)) {
             score = cell33 + cell34 + cell32 + cell43 + cell44 + cell42;
             if (score > bestScore) {
                 bestScore = score;
@@ -295,7 +269,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.WEST, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.SOUTHWEST)) {
+        if (canMove(Direction.SOUTHWEST)) {
             score = cell32 + cell33 + cell31 + cell42 + cell43 + cell41;
             if (score > bestScore) {
                 bestScore = score;
@@ -317,7 +291,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.SOUTHWEST, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.SOUTH)) {
+        if (canMove(Direction.SOUTH)) {
             score = cell42 + cell43 + cell41 + cell52 + cell53 + cell51;
             if (score > bestScore) {
                 bestScore = score;
@@ -339,7 +313,7 @@ public class Mopper extends Agent {
                 best = new Pair<>(Direction.SOUTH, Direction.SOUTH);
             }
         }
-        if (rc.canMove(Direction.SOUTHEAST)) {
+        if (canMove(Direction.SOUTHEAST)) {
             score = cell52 + cell53 + cell51 + cell62 + cell63 + cell61;
             if (score > bestScore) {
                 bestScore = score;
@@ -386,8 +360,8 @@ public class Mopper extends Agent {
             // moving?
             for (int i = dcnt - 1; i >= 0; i--) {
                 Direction dir = dirs[i];
-                MapLocation nextLoc = currentLoc.add(dir);
-                if (nextLoc.isWithinDistanceSquared(locLocation, 2) && rc.canMove(dir) && rc.isActionReady()) {
+                MapLocation nextLoc = Game.pos.add(dir);
+                if (nextLoc.isWithinDistanceSquared(locLocation, 2) && canMove(dir) && rc.isActionReady()) {
                     bot.move(dir);
                     rc.attack(locLocation);
                     return targetLoc;
@@ -403,7 +377,7 @@ public class Mopper extends Agent {
     @Override
     public void init() throws GameActionException {
         super.init();
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || TowerTracker.isCellInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Mopper) Game.bot;
         noPaintThreshold = 1;

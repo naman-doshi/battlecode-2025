@@ -23,7 +23,6 @@ import caterpillow.util.Pair;
 import static caterpillow.util.Util.getPaintLevel;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInDanger;
 import static caterpillow.util.Util.isOccupied;
 
 public class ScoutStrategy extends Strategy {
@@ -122,7 +121,7 @@ public class ScoutStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
-        indicate("SCOUTING " + isInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
+        indicate("SCOUTING " + TowerTracker.isCellInDanger(rc.getLocation()) + " " + rc.getLocation().toString());
         visitedRuins.removeIf(el -> time >= el.second + skipCooldown);
 
         if(tryStrats()) return;

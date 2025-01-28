@@ -11,6 +11,7 @@ import caterpillow.robot.Strategy;
 import static caterpillow.tracking.CellTracker.*;
 import static caterpillow.util.Util.*;
 import caterpillow.pathfinding.*;
+import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
 import caterpillow.util.Profiler;
 import static java.lang.Math.*;
@@ -57,24 +58,24 @@ public class SplasherAttackTowerStrategy extends Strategy {
     @Override
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER AT " + target);
-        if(isInDanger(rc.getLocation())) {
+        if(TowerTracker.isCellInDanger(rc.getLocation())) {
             tryAttack();
-            if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
-                safeSquare = getNearestLocation(loc -> !isInDanger(loc));
+            if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || TowerTracker.isCellInDanger(safeSquare)) {
+                safeSquare = getNearestLocation(loc -> !TowerTracker.isCellInDanger(loc));
             }
             pathfinder.makeMove(safeSquare);
         } else if(rc.isMovementReady()) {
             if(downgrade(rc.senseRobotAtLocation(target).type) == UnitType.LEVEL_ONE_DEFENSE_TOWER) {
                 safeSquare = null;
             } else {
-                if(safeSquare == null || isInDanger(safeSquare) || !canHitTower(safeSquare)) {
-                    safeSquare = getNearestLocation(loc -> canHitTower(loc) && !isInDanger(loc));
+                if(safeSquare == null || TowerTracker.isCellInDanger(safeSquare) || !canHitTower(safeSquare)) {
+                    safeSquare = getNearestLocation(loc -> canHitTower(loc) && !TowerTracker.isCellInDanger(loc));
                 }
             }
             if(safeSquare != null) indicate("SAFE SQUARE: " + safeSquare);
             else indicate("NO SAFE SQUARE");
             Direction move = safeSquare != null ? pathfinder.getMove(safeSquare) : pathfinder.getMove(target);
-            if(move != null && rc.canMove(move) && (!isInDanger(rc.getLocation().add(move)) || rc.isActionReady())) {
+            if(move != null && rc.canMove(move) && (!TowerTracker.isCellInDanger(rc.getLocation().add(move)) || rc.isActionReady())) {
                 pathfinder.makeMove(move);
             }
             tryAttack();

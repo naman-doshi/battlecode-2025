@@ -17,12 +17,8 @@ all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fos
 
 # set diff seeds for each team
 # random sample 10 maps with seed 1509
-teamIds = [1509,1208,1070,1301,1186]
-bb = [1398,1182,1348,1278,1377]
-tenSets = {}
-for teamId in teamIds:
-    random.seed(teamId)
-    tenSets[teamId] = random.sample(all_maps, 10)
+# teamIds = [1509,1208,1070,1301,1186]
+# bb = [1398,1182,1348,1278,1377]
 
 def fetch_top_teams(auth_token, excluded_team_id, count=5):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
@@ -57,15 +53,15 @@ def fetch_top_teams(auth_token, excluded_team_id, count=5):
 
     return ids
 
-def generate_payload(team_id):
+def generate_payload(team_id, ten_sets):
     return {
         "is_ranked": False,
         "requested_to": team_id,
         "player_order": "+",
-        "map_names": tenSets[team_id]
+        "map_names": ten_sets[team_id]
     }
 
-def send_match_requests(auth_token, team_ids):
+def send_match_requests(auth_token, team_ids, ten_sets):
     url = f"{base_url}/compete/bc25java/request/"
     headers = {
         "Authorization": f"Bearer {auth_token}",
@@ -82,7 +78,7 @@ def send_match_requests(auth_token, team_ids):
     }
 
     for team_id in team_ids:
-        payload = {**generate_payload(int(team_id)), "requested_to": team_id}
+        payload = {**generate_payload(int(team_id), ten_sets), "requested_to": team_id}
         response = requests.post(url, headers=headers, json=payload)
 
         if response.status_code == 201:
@@ -95,9 +91,12 @@ if __name__ == "__main__":
         print("Fetching top teams...")
         team_ids = fetch_top_teams(auth_token, excluded_team_id)
         print(f"Top team IDs: {team_ids}")
-
+        ten_sets = {}
+        for team_id in team_ids:
+            random.seed(team_id)
+            ten_sets[team_id] = random.sample(all_maps, 10)
         print("Sending match requests...")
-        send_match_requests(auth_token, team_ids)
+        send_match_requests(auth_token, team_ids, ten_sets)
 
     except Exception as e:
         print(f"An error occurred: {e}")

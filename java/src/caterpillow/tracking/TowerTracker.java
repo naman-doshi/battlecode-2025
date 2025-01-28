@@ -1,6 +1,7 @@
 package caterpillow.tracking;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
@@ -11,6 +12,7 @@ import static caterpillow.Game.rc;
 import static caterpillow.util.Util.println;
 import static java.lang.Math.*;
 
+import caterpillow.Game;
 import caterpillow.packet.packets.InitPacket;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
@@ -34,7 +36,45 @@ public class TowerTracker {
     public static int srps = 0;
 
     public static ArrayList<MapLocation> paintLocs, nonPaintLocs;
-    public static ArrayList<MapLocation> enemyLocs;
+    public static ArrayList<RobotInfo> enemyLocs;
+
+    public static void flushEnemies() {
+        Iterator<RobotInfo> iterator = enemyLocs.iterator();
+        while (iterator.hasNext()) {
+            RobotInfo b = iterator.next();
+            if (b.getLocation().distanceSquaredTo(Game.pos) >= 144) {
+                iterator.remove();
+            }
+        }
+    }
+
+    public static void removeEnemy(MapLocation loc) {
+        for (int i = enemyLocs.size() - 1; i >= 0; i--) {
+            if (enemyLocs.get(i).location.equals(loc)) {
+                enemyLocs.remove(i);
+                return;
+            }
+        }
+    }
+
+    public static boolean containsEnemy(MapLocation loc) {
+        for (int i = enemyLocs.size() - 1; i >= 0; i--) {
+            if (enemyLocs.get(i).location.equals(loc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isCellInDanger(MapLocation loc) {
+        for (int i = enemyLocs.size() - 1; i >= 0; i--) {
+            RobotInfo bot = enemyLocs.get(i);
+            if (bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static void init() {
         paintLocs = new ArrayList<>();
@@ -102,7 +142,7 @@ public class TowerTracker {
         RobotInfo best = null;
         MapLocation cur = rc.getLocation();
         for (int i = enemyLocs.size() - 1; i >= 0; i--) {
-            MapLocation loc = enemyLocs.get(i);
+            MapLocation loc = enemyLocs.get(i).getLocation();
             RobotInfo info = rc.senseRobotAtLocation(loc);
             if (info != null && pred.test(info)) {
                 if (best == null || best.getLocation().distanceSquaredTo(cur) > info.getLocation().distanceSquaredTo(cur)) {

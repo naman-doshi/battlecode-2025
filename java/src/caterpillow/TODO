@@ -1,21 +1,9 @@
 changes made:
-- gave building and spr painting priority over refills
-    - havnet done very conclusive tests, can be reverted
-- gave aggro splashers and moppers a different roam strategy
-    - havnet done very conclusive tests, can be reverted
-- minor bytecode optimisation, adding optoin to flag certain movement strategies as "lastMove" which saves some bytecodes on the trackers
-- seems to be similar to andy's previous commit
-    - will need to see how these different version perform against other bots
+- better isCellInDanger function for towertracker
+- removed rush for more consistent matches
 
 general:
-- fix tle
-- hill climb macro strats
-    - kinda sus of refill
-- after optimising srp stuff, make scouts double as srp placers
-- make soldiers prioritise ruin trolling even when doing other stuff like building
-- splasher tower kiting
-- add more gamestages for better macro
 - make scouts turn into srps later into the game
-
-alex:
-- why are you using markers to communicate what tower type when you could have just started building
+- try make moppers bleed less paint
+- work on some mopper stuff
+- try a better implementation of mid-tower build ruin trolling

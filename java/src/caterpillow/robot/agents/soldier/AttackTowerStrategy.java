@@ -8,10 +8,11 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
+import caterpillow.tracking.TowerTracker;
+
 import static caterpillow.tracking.CellTracker.getNearestLocation;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
-import static caterpillow.util.Util.isInDanger;
 
 // pathfinding testing
 public class AttackTowerStrategy extends Strategy {
@@ -48,13 +49,13 @@ public class AttackTowerStrategy extends Strategy {
     public void runTick() throws GameActionException {
         indicate("ATTACKING TOWER AT " + target);
         if(safeSquare != null) indicate("SAFE SQUARE " + safeSquare.toString());
-        if(isInDanger(rc.getLocation())) {
+        if(TowerTracker.isCellInDanger(rc.getLocation())) {
             tryAttack();
-            if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || isInDanger(safeSquare)) {
+            if(safeSquare == null || !rc.getLocation().isAdjacentTo(safeSquare) || TowerTracker.isCellInDanger(safeSquare)) {
                 indicate("RESET SAFE SQUARE");
                 if(safeSquare == null) indicate("NULL");
                 else indicate(safeSquare.toString());
-                safeSquare = getNearestLocation(loc -> !isInDanger(loc) && !rc.senseMapInfo(loc).isWall());
+                safeSquare = getNearestLocation(loc -> !TowerTracker.isCellInDanger(loc) && !rc.senseMapInfo(loc).isWall());
             }
             if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
         } else {

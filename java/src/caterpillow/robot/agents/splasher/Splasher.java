@@ -13,6 +13,8 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import static caterpillow.util.Util.*;
+
+import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Pair;
 import caterpillow.tracking.CellTracker;
 import caterpillow.util.Profiler;
@@ -26,7 +28,7 @@ public class Splasher extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || isInDanger(c.getMapLocation()));
+        pathfinder = new BugnavPathfinder(c -> c.getPaint().isEnemy() || TowerTracker.isCellInDanger(c.getMapLocation()));
         primaryStrategy = new EmptyStrategy();
         bot = (Splasher) Game.bot;
         noPaintThreshold = 5;

@@ -13,10 +13,11 @@ import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.EmptyStrategy;
 import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.LinkStrategy;
+import caterpillow.tracking.TowerTracker;
+
 import static caterpillow.util.Util.checkerboardPaint;
 import static caterpillow.util.Util.decodeLoc;
 import static caterpillow.util.Util.indicate;
-import static caterpillow.util.Util.isInDanger;
 
 
 public class Soldier extends Agent {
@@ -26,7 +27,7 @@ public class Soldier extends Agent {
     public void init() throws GameActionException {
         super.init();
 
-        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && isInDanger(c.getMapLocation()), c -> {
+        pathfinder = new BugnavPathfinder(c -> rc.getHealth() <= 25 && TowerTracker.isCellInDanger(c.getMapLocation()), c -> {
                 MapLocation loc = c.getMapLocation();
                 int res = 0;
                 if(loc.x < 4) res += 4 - loc.x;
