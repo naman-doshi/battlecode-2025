@@ -59,7 +59,6 @@ public class AttackTowerStrategy extends Strategy {
             if(safeSquare != null) bot.pathfinder.makeMove(safeSquare);
         } else {
             safeSquare = rc.getLocation();
-            
 
             // try all directions
             boolean canGetInRange = false;
