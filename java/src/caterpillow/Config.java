@@ -100,7 +100,7 @@ public class Config {
         if (!TowerTracker.broken) {
             System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             double currentRatio = (double) TowerTracker.coinTowers / (double) rc.getNumberTowers();
-            if(abs(currentRatio - targetRatio()) >= 0.2) deterministic = true;
+            if(abs(currentRatio - targetRatio()) >= 0.05) deterministic = true;
             if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || rc.getChips() >= 3000) {
                 System.out.println("paint tower");
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
