@@ -17,6 +17,7 @@ import caterpillow.tracking.CellTracker;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.*;
+import caterpillow.util.Profiler;
 
 public class RobotPlayer {
 
@@ -101,6 +102,7 @@ public class RobotPlayer {
 
         while (true) {
             try {
+                indicatorString = "";
                 // Initialiser.upd();
                 time = rc.getRoundNum();
                 if (ticksExisted > 0) {
@@ -113,8 +115,6 @@ public class RobotPlayer {
                 bot.runTick();
                 pm.flush();
                 ticksExisted++;
-                rc.setIndicatorString(indicatorString);
-                indicatorString = "";
                 Clock.yield();
             } catch (Exception e) {
                 e.printStackTrace();

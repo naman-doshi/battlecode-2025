@@ -3,6 +3,7 @@ package caterpillow.util;
 import battlecode.common.Clock;
 
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.*;
 
 public class Profiler {
     private static int cnt = 0, turnNum = 0;
@@ -30,11 +31,13 @@ public class Profiler {
         running = false;
     }
     public static void report() {
-        System.out.println((acc - 11) + (acc >= 17500 ? " EXCEEDED" : ""));
+        // System.out.println((acc - 11) + (acc >= 17500 ? " EXCEEDED" : ""));
+        indicate(acc + (acc >= 17500 ? " EXCEEDED" : ""));
         acc = 0;
     }
     public static void report(Object obj) {
-        System.out.println(obj.toString() + ": " + (acc - 12) + (acc >= 17500 ? " EXCEEDED" : ""));
+        // System.out.println(obj.toString() + ": " + (acc - 12) + (acc >= 17500 ? " EXCEEDED" : ""));
+        indicate(obj.toString() + ": " + acc + (acc >= 17500 ? " EXCEEDED" : ""));
         acc = 0;
     }
 }

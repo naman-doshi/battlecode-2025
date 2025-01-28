@@ -95,6 +95,7 @@ public class Util {
     public static String indicatorString = "";
     public static void indicate(String str) {
         indicatorString += str + ";";
+        rc.setIndicatorString(indicatorString);
     }
 
     public static int manhattan(MapLocation a, MapLocation b) {
