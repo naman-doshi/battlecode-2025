@@ -6,6 +6,7 @@ import java.util.List;
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
 import battlecode.common.UnitType;
+import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
 import caterpillow.Game;
 import static caterpillow.Game.mapHeight;
 import static caterpillow.Game.mapWidth;
@@ -54,21 +55,33 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
                 // trng.nextInt(0, 1) == 0 ? new RushSpawner() : new NullSpawner(),
-                new ConditionalSpawner(() -> mapHeight * mapWidth >= 1500,
+                new ConditionalSpawner(() -> mapHeight * mapWidth > 1500,
                         new InstantSRPSpawner(),
                         new InstantScoutSpawner()
                 ),
                 new LoopedSpawner(
-                        SRPSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> shouldHaveSuicidalMoneyTowers(), 
+                                new ScoutSpawner(), 
+                                new SRPSpawner()
+                        ),
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new SRPSpawner(),
+                                new ConditionalSpawner(
+                                        () -> shouldHaveSuicidalMoneyTowers(), 
+                                        new ScoutSpawner(),
+                                        new SRPSpawner()
+                                ),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new ScoutSpawner(),
+                                new ConditionalSpawner(
+                                        () -> shouldHaveSuicidalMoneyTowers(), 
+                                        new ScoutSpawner(),
+                                        new SRPSpawner()
+                                ),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,

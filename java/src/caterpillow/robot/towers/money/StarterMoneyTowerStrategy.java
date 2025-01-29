@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import battlecode.common.GameActionException;
+import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
 import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
@@ -20,10 +21,9 @@ import caterpillow.robot.towers.spawner.mopper.OffenceMopperSpawner;
 import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.util.CustomRandom;
-import static caterpillow.util.Util.chebyshevDistance;
-import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
@@ -69,7 +69,11 @@ public class StarterMoneyTowerStrategy extends TowerStrategy {
                         () -> new LoopedSpawner(2,
                                 () -> new ConditionalSpawner(
                                         () -> Game.gameStage == GameStage.EARLY,
-                                        new SRPSpawner(),
+                                        new ConditionalSpawner(
+                                                () -> shouldHaveSuicidalMoneyTowers(), 
+                                                new ScoutSpawner(),
+                                                new SRPSpawner()
+                                        ),
                                         new SplasherSpawner()
                                 )
                         )

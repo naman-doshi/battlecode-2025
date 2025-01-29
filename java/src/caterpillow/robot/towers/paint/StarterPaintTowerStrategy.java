@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import battlecode.common.GameActionException;
+import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
 import caterpillow.Game;
 import static caterpillow.Game.mapHeight;
 import static caterpillow.Game.mapWidth;
-import static caterpillow.Game.rc;
 import static caterpillow.Game.seed;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
@@ -24,10 +24,9 @@ import caterpillow.robot.towers.spawner.soldier.InstantScoutSpawner;
 import caterpillow.robot.towers.spawner.soldier.PainterSpawner;
 import caterpillow.robot.towers.spawner.soldier.RushSpawner;
 import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
+import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.util.CustomRandom;
-import static caterpillow.util.Util.chebyshevDistance;
-import static caterpillow.util.Util.guessEnemyLocs;
 import static caterpillow.util.Util.indicate;
 import caterpillow.world.GameStage;
 
@@ -66,7 +65,7 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
-                new ConditionalSpawner(() -> mapHeight * mapWidth >= 1500,
+                new ConditionalSpawner(() -> mapHeight * mapWidth > 1500,
                         new InstantSRPSpawner(),
                         new InstantScoutSpawner()
                 ),
@@ -83,16 +82,28 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //         OffenceMopperSpawner::new
                 // )
                 new LoopedSpawner(
-                        SRPSpawner::new,
+                        () -> new ConditionalSpawner(
+                                () -> shouldHaveSuicidalMoneyTowers(), 
+                                new ScoutSpawner(), 
+                                new SRPSpawner()
+                        ),
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new SRPSpawner(),
+                                new ConditionalSpawner(
+                                        () -> shouldHaveSuicidalMoneyTowers(), 
+                                        new ScoutSpawner(),
+                                        new SRPSpawner()
+                                ),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new SRPSpawner(),
+                                new ConditionalSpawner(
+                                        () -> shouldHaveSuicidalMoneyTowers(), 
+                                        new ScoutSpawner(),
+                                        new SRPSpawner()
+                                ),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,

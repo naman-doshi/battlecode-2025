@@ -1,22 +1,42 @@
 package caterpillow;
 
-import static java.lang.Math.*;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 import java.util.List;
-import caterpillow.util.CustomRandom;
 
-import battlecode.common.*;
+import battlecode.common.GameActionException;
+import battlecode.common.MapLocation;
+import battlecode.common.RobotInfo;
+import battlecode.common.UnitType;
 import static battlecode.common.UnitType.MOPPER;
-import static caterpillow.Game.*;
+import static caterpillow.Game.centre;
+import static caterpillow.Game.mapHeight;
+import static caterpillow.Game.mapWidth;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.trng;
+import static caterpillow.tracking.CellTracker.getNearestCell;
 import caterpillow.tracking.TowerTracker;
-import static caterpillow.tracking.CellTracker.*;
-import static caterpillow.util.Util.*;
+import caterpillow.util.CustomRandom;
+import static caterpillow.util.Util.getPaintLevel;
+import static caterpillow.util.Util.guessEnemyLocs;
+import static caterpillow.util.Util.isFriendly;
+import static caterpillow.util.Util.logisticSample;
+import static caterpillow.util.Util.project;
+import static caterpillow.util.Util.subtract;
 
 public class Config {
     // idea : dynamically update this based on coin amt
     // right now, we have too much paint in the endgame (when most towers are maxed)
     // we also need more chips on larger maps
+
+    public static boolean shouldHaveSuicidalMoneyTowers() {
+        return false;
+    }
+
     public static double targetRatio() {
         if(rc.getNumberTowers() < moneyTowerThreshold()) return 1;
+        if (shouldHaveSuicidalMoneyTowers()) return 0.9;
         //if (rc.getNumberTowers() == moneyTowerThreshold()) return 0;
         int area = mapHeight * mapWidth;
         // double ratio = area < 1500 ? 0.63 : 0.68;
@@ -98,11 +118,16 @@ public class Config {
     }
 
     public static UnitType nextResourceType(boolean deterministic) {
+
+        if (shouldHaveSuicidalMoneyTowers()) {
+            return UnitType.LEVEL_ONE_MONEY_TOWER;
+        }
+        
         if (!TowerTracker.broken) {
             System.out.println("i have " + TowerTracker.coinTowers + " coin towers and my ratio is " + (double) TowerTracker.coinTowers / (double) rc.getNumberTowers());
             double currentRatio = (double) TowerTracker.coinTowers / (double) rc.getNumberTowers();
             if(abs(currentRatio - targetRatio()) >= 0.05) deterministic = true;
-            if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || rc.getChips() >= 3000) {
+            if ((deterministic ? currentRatio > targetRatio() : logisticSample(currentRatio - targetRatio(), 10)) || (rc.getChips() >= 3000 && !shouldHaveSuicidalMoneyTowers())) {
                 System.out.println("paint tower");
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
@@ -111,7 +136,7 @@ public class Config {
             }
         } else {
             System.out.println("BROKEN");
-            if (trng.nextDouble() > targetRatio() || rc.getChips() >= 3000) {
+            if (trng.nextDouble() > targetRatio() || (rc.getChips() >= 3000 && !shouldHaveSuicidalMoneyTowers())) {
                 return UnitType.LEVEL_ONE_PAINT_TOWER;
             } else {
                 return UnitType.LEVEL_ONE_MONEY_TOWER;

@@ -5,8 +5,12 @@ import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
 import battlecode.common.RobotInfo;
 import static caterpillow.Config.shouldConvertMoneyToPaint;
-import static caterpillow.Game.*;
+import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
+import caterpillow.Game;
+import static caterpillow.Game.rc;
+import static caterpillow.Game.team;
 import caterpillow.robot.towers.TowerStrategy;
+import caterpillow.util.CustomRandom;
 
 public class ConvertToPaintTowerStrategy extends TowerStrategy {
     final boolean[][] paintTowerPattern = {
@@ -16,6 +20,14 @@ public class ConvertToPaintTowerStrategy extends TowerStrategy {
         {false, true, false, true, false},
         {true, false, false, false, true},
     };
+
+    int specialSuicideModulus;
+
+    public ConvertToPaintTowerStrategy() {
+        CustomRandom rand = new CustomRandom(rc.getID());
+        specialSuicideModulus = rand.nextInt(1, 5) * 7;
+
+    }
 
     @Override
     public void runTick() throws GameActionException {
@@ -34,7 +46,7 @@ public class ConvertToPaintTowerStrategy extends TowerStrategy {
                 }
                 if(!convertToPaintTower) break;
             }
-            if(convertToPaintTower) {
+            if(convertToPaintTower && !shouldHaveSuicidalMoneyTowers()) {
                 System.out.println("converting to paint tower at " + loc.toString());
                 // donate paint to surrounding bots
                 RobotInfo[] bots = rc.senseNearbyRobots();
@@ -53,5 +65,26 @@ public class ConvertToPaintTowerStrategy extends TowerStrategy {
                 rc.disintegrate();
             }
         }
+
+        // include the suicide case here cause why not
+        if (shouldHaveSuicidalMoneyTowers() && rc.getPaint() < 100 && rc.getChips() >= 2000 && Game.time % specialSuicideModulus == 0) {
+            System.out.println("suiciding " + rc.getLocation());
+                // donate paint to surrounding bots
+                RobotInfo[] bots = rc.senseNearbyRobots();
+                for (RobotInfo bot : bots) {
+                    if (bot.getTeam() == team && bot.getType().isRobotType()) {
+                        int missing = bot.getType().paintCapacity - bot.getPaintAmount();
+                        if (missing > 0) {
+                            int amt = Math.min(rc.getPaint(), missing);
+                            if (rc.getPaint() == 0) break;
+                            if (rc.canTransferPaint(bot.location, amt)) {
+                                rc.transferPaint(bot.location, amt);
+                            }
+                        }
+                    }
+                }
+                rc.disintegrate();
+        }
+
     }
 }
