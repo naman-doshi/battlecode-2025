@@ -77,11 +77,7 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new ConditionalSpawner(
-                                        () -> shouldHaveSuicidalMoneyTowers(), 
-                                        new ScoutSpawner(),
-                                        new SRPSpawner()
-                                ),
+                                new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,
