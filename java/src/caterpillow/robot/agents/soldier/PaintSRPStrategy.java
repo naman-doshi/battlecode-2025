@@ -22,20 +22,54 @@ public class PaintSRPStrategy extends Strategy {
     Agent bot;
     public MapLocation centre;
 
+    public int[][] lastChange; // prevent deadlocks with tower builders
+    public boolean[][] done; // track which cells have been painted correctly
+    public boolean[][] lastDone; // last turn's done
+    public int doneTimestamp;
+    public boolean shouldGiveUp = false;
+
     public PaintSRPStrategy(MapLocation centre) {
         bot = (Agent)Game.bot;
         this.centre = centre;
+        lastChange = new int[5][5];
+        done = new boolean[5][5];
+        lastDone = new boolean[5][5];
+        doneTimestamp = -1;
+    }
+
+    public void updateDone() throws GameActionException { // can unroll this if slow
+        if(doneTimestamp == time) return;
+        doneTimestamp = time;
+        for(int i = 4; i >= 0; i--) {
+            for(int j = 4; j >= 0; j--) {
+                lastDone[i][j] = done[i][j];
+                MapLocation loc = new MapLocation(centre.x - 2 + i, centre.y - 2 + j);
+                if(rc.canSenseLocation(loc)) {
+                    MapInfo cell = rc.senseMapInfo(loc);
+                    if(cell.getPaint().isAlly() && cell.getPaint().equals(PaintType.ALLY_SECONDARY) == SRP[i][j]) {
+                        done[i][j] = true;
+                    } else {
+                        done[i][j] = false;
+                    }
+                    if(lastDone[i][j] && !done[i][j] && cell.getPaint().isAlly()) {
+                        if(lastChange[i][j] >= time - 5) {
+                            shouldGiveUp = true;
+                        }
+                        lastChange[i][j] = time;
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean isComplete() throws GameActionException {
-        for(int i = centre.x - 2; i <= centre.x + 2; i++) {
-            for(int j = centre.y - 2; j <= centre.y + 2; j++) {
-                if(!rc.canSenseLocation(new MapLocation(i, j))) return false;
-                MapInfo cell = rc.senseMapInfo(new MapLocation(i, j));
-                if(cell.getPaint().isEnemy()) return true;
-                if(!cell.getPaint().isAlly()) return false;
-                if(cell.getPaint().equals(PaintType.ALLY_SECONDARY) != SRP[i - centre.x + 2][j - centre.y + 2]) return false;
+        if(CellTracker.ignoreCooldown[centre.x][centre.y] >= time) return true;
+        updateDone();
+        for(int i = 4; i >= 0; i--) {
+            for(int j = 4; j >= 0; j--) {
+                if(!rc.canSenseLocation(new MapLocation(centre.x + i - 2, centre.y + j - 2))) return false;
+                if(!done[i][j]) return false;
             }
         }
         return rc.senseMapInfo(centre).isResourcePatternCenter();
@@ -43,6 +77,7 @@ public class PaintSRPStrategy extends Strategy {
 
     @Override
     public void runTick() throws GameActionException {
+        updateDone();
         if(rc.isMovementReady()) {
             Direction dir = null;
             if(rc.getLocation().equals(centre)) {
@@ -57,17 +92,11 @@ public class PaintSRPStrategy extends Strategy {
         rc.setIndicatorLine(rc.getLocation(), centre, 255, 255, 0);
         if(rc.canCompleteResourcePattern(centre)) {
             rc.completeResourcePattern(centre);
-        }
-        MapInfo cell = CellTracker.getNearestCell(c -> {
-                MapLocation loc = c.getMapLocation();
-                if(abs(loc.x - centre.x) > 2 || abs(loc.y - centre.y) > 2) return false;
-                if(c.getPaint().isEnemy()) return false;
-                if(!c.getPaint().isAlly()) return true;
-                return c.getPaint().equals(PaintType.ALLY_SECONDARY) != SRP[loc.x - centre.x + 2][loc.y - centre.y + 2];
-            });
-        MapLocation loc = cell == null ? null : cell.getMapLocation();
-        if(loc != null && rc.canAttack(loc)) {
-            rc.attack(loc, SRP[loc.x - centre.x + 2][loc.y - centre.y + 2]);
+        } else {
+            MapLocation loc = CellTracker.getNearestLocation(loc2 -> abs(loc2.x - centre.x) <= 2 && abs(loc2.y - centre.y) <= 2 && !done[loc2.x - centre.x + 2][loc2.y - centre.y + 2]);
+            if(loc != null && rc.canAttack(loc)) {
+                rc.attack(loc, SRP[loc.x - centre.x + 2][loc.y - centre.y + 2]);
+            }
         }
     }
 }

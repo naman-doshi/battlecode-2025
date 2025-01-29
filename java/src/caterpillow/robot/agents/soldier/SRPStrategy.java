@@ -133,7 +133,7 @@ public class SRPStrategy extends Strategy {
 
         if (paintSRPStrategy != null) {
             indicate("ignoreCooldown: " + CellTracker.ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y]);
-            if(paintSRPStrategy.isComplete() || CellTracker.ignoreCooldown[paintSRPStrategy.centre.x][paintSRPStrategy.centre.y] >= time) {
+            if(paintSRPStrategy.isComplete()) {
                 paintSRPStrategy = null;
             } else {
                 paintSRPStrategy.runTick();
