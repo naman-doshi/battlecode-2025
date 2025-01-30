@@ -63,11 +63,11 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
-                new InstantScoutSpawner(),
                 new ConditionalSpawner(() -> mapHeight * mapWidth > 1500,
                         new InstantSRPSpawner(),
                         new InstantScoutSpawner()
                 ),
+                new InstantScoutSpawner(),
                 // new InstantScoutSpawner(),
                 // new InstantOffenceMopperSpawner(),
                 // new LoopedSpawner(
