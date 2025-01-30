@@ -6,9 +6,7 @@ import java.util.List;
 import battlecode.common.GameActionException;
 import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
 import caterpillow.Game;
-import static caterpillow.Game.mapHeight;
-import static caterpillow.Game.mapWidth;
-import static caterpillow.Game.seed;
+import static caterpillow.Game.*;
 import caterpillow.robot.towers.RespawnStrategy;
 import caterpillow.robot.towers.Tower;
 import caterpillow.robot.towers.TowerAttackStrategy;
@@ -27,7 +25,7 @@ import caterpillow.robot.towers.spawner.soldier.SRPSpawner;
 import caterpillow.robot.towers.spawner.soldier.ScoutSpawner;
 import caterpillow.robot.towers.spawner.splasher.SplasherSpawner;
 import caterpillow.util.CustomRandom;
-import static caterpillow.util.Util.indicate;
+import static caterpillow.util.Util.*;
 import caterpillow.world.GameStage;
 
 public class StarterPaintTowerStrategy extends TowerStrategy {
@@ -46,8 +44,8 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
         strats.add(new RespawnStrategy());
         strats.add(new UnstuckStrategy());
         strats.add(new TowerAttackStrategy());
-//        boolean shouldRush = chebyshevDistance(rc.getLocation(), guessEnemyLocs(rc.getLocation(), true).get(0)) <= 10;
-        boolean shouldRush = false;
+        boolean shouldRush = chebyshevDistance(rc.getLocation(), guessEnemyLocs(rc.getLocation(), true).get(0)) <= 10;
+        // boolean shouldRush = false;
         strats.add(new SpawnerStrategy(
                 // new ConditionalSpawner(
                 //     () -> expectedRushDistance(Game.rc.getLocation()) < 20,
