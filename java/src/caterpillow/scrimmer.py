@@ -5,7 +5,7 @@ import random
 url = "https://api.battlecode.org/api/compete/bc25java/request/"
 
 # Your authorization token
-auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4MjI0ODcyLCJpYXQiOjE3Mzc3OTI4NzIsImp0aSI6Ijg2OTJmMjc5MmU2NzQ2NWVhOTFkMjVjNjZkNjVmYWZkIiwidXNlcl9pZCI6MTM2NX0.UF775lV0Jtf0C6_B_CoYH_lc-O3WcO9OoEmtVLttbIQ"
+auth_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzM4Njg2NTI4LCJpYXQiOjE3MzgyNTQ1MjgsImp0aSI6IjljMmEyMTM3OTA3OTQ5ZDQ4ZDlhNjQ2NDc3NDU3NDllIiwidXNlcl9pZCI6MTM2NX0.-H3AxNP5b05DGPbnjGvkEcB7RuRD9em3t_WwE4gTOCM"
 
 # Configuration
 excluded_team_id = 1288  # Your team ID
@@ -20,7 +20,7 @@ all_maps = ["DefaultSmall", "DefaultMedium", "DefaultLarge", "DefaultHuge", "Fos
 # teamIds = [1509,1208,1070,1301,1186]
 # bb = [1398,1182,1348,1278,1377]
 
-def fetch_top_teams(auth_token, excluded_team_id, count=5):
+def fetch_top_teams(auth_token, excluded_team_id, count=15):
     url = f"{base_url}/team/bc25java/t/?ordering=-rating%2Cname"
     headers = {
         "Authorization": f"Bearer {auth_token}",
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         print(f"Top team IDs: {team_ids}")
         ten_sets = {}
         for team_id in team_ids:
-            random.seed(team_id + 1)
+            random.seed(team_id + 2)
             ten_sets[team_id] = random.sample(all_maps, 10)
         print("Sending match requests...")
         send_match_requests(auth_token, team_ids, ten_sets)

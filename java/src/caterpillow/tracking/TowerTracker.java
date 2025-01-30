@@ -9,6 +9,7 @@ import battlecode.common.RobotInfo;
 import static caterpillow.Game.origin;
 import static caterpillow.Game.pm;
 import static caterpillow.Game.rc;
+import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.println;
 import static java.lang.Math.*;
 
@@ -34,6 +35,7 @@ public class TowerTracker {
     public static int blindTicks = 0;
     public static boolean hasReceivedInitPacket = false;
     public static int srps = 0;
+    public static int lastRound = 0;
 
     public static ArrayList<MapLocation> paintLocs, nonPaintLocs;
     public static ArrayList<RobotInfo> enemyLocs;
@@ -198,8 +200,11 @@ public class TowerTracker {
     }
 
     public static void runTick() throws GameActionException {
+        indicate(coinTowers + " " + srps + " " + blindTicks);
         curTowers = rc.getNumberTowers();
         coinTowers = min(coinTowers, curTowers);
+        int actualLastRound = lastRound;
+        lastRound = rc.getRoundNum();
 
         if (curTowers > peakTowers) {
             lastTowerChange = rc.getRoundNum();
@@ -223,9 +228,10 @@ public class TowerTracker {
         }
         blindTicks++;
 
-        if (processedTicks == 1) {
+        if (processedTicks == 1 || (rc.getRoundNum() - actualLastRound > 1)) {
             return;
         }
+        indicate("gain: " + (x - px));
 
         if (x - px >= probablyMinGain()) {
             Tuple<Integer, Integer, Integer> bestSol = null;
