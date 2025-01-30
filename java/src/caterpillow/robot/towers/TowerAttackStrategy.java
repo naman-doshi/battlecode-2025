@@ -3,7 +3,7 @@ package caterpillow.robot.towers;
 import battlecode.common.GameActionException;
 import battlecode.common.RobotInfo;
 import caterpillow.Game;
-import static caterpillow.Game.rc;
+import static caterpillow.Game.*;
 import static caterpillow.tracking.RobotTracker.getBestRobot;
 import static caterpillow.util.Util.isFriendly;
 
@@ -24,6 +24,7 @@ public class TowerAttackStrategy extends TowerStrategy {
 
     public TowerAttackStrategy() {
         bot = (Tower) Game.bot;
+        lastAttack = time;
     }
 
     @Override
