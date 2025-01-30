@@ -63,11 +63,12 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
 
                 //new InstantScoutSpawner(),
                 //new InstantScoutSpawner(),
+                new InstantScoutSpawner(),
                 new ConditionalSpawner(() -> mapHeight * mapWidth > 1500,
                         new InstantSRPSpawner(),
                         new InstantScoutSpawner()
                 ),
-                //new InstantScoutSpawner(),
+                // new InstantScoutSpawner(),
                 // new InstantOffenceMopperSpawner(),
                 // new LoopedSpawner(
                 //         () -> new LoopedSpawner(2,
@@ -80,25 +81,17 @@ public class StarterPaintTowerStrategy extends TowerStrategy {
                 //         OffenceMopperSpawner::new
                 // )
                 new LoopedSpawner(
-                        () -> new ConditionalSpawner(
-                                () -> shouldHaveSuicidalMoneyTowers(), 
-                                new ScoutSpawner(), 
-                                new SRPSpawner()
-                        ),
+                        () -> shouldHaveSuicidalMoneyTowers() ? new ScoutSpawner() : new NullSpawner(),
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new ConditionalSpawner(
-                                        () -> shouldHaveSuicidalMoneyTowers(), 
-                                        new ScoutSpawner(),
-                                        new SRPSpawner()
-                                ),
+                                shouldHaveSuicidalMoneyTowers() ? new ScoutSpawner() : new SRPSpawner(),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
                                 new ConditionalSpawner(
-                                        () -> shouldHaveSuicidalMoneyTowers(), 
+                                        () -> shouldHaveSuicidalMoneyTowers(),
                                         new ScoutSpawner(),
                                         new SRPSpawner()
                                 ),

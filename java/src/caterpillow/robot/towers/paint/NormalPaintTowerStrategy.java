@@ -60,24 +60,16 @@ public class NormalPaintTowerStrategy extends TowerStrategy {
                         new InstantScoutSpawner()
                 ),
                 new LoopedSpawner(
-                        () -> new ConditionalSpawner(
-                                () -> shouldHaveSuicidalMoneyTowers(), 
-                                new ScoutSpawner(), 
-                                new SRPSpawner()
-                        ),
+                        () -> shouldHaveSuicidalMoneyTowers() ? new ScoutSpawner() : new NullSpawner(),
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new ConditionalSpawner(
-                                        () -> shouldHaveSuicidalMoneyTowers(), 
-                                        new ScoutSpawner(),
-                                        new SRPSpawner()
-                                ),
+                                new ScoutSpawner(),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,
                         () -> new ConditionalSpawner(
                                 () -> Game.gameStage == GameStage.EARLY,
-                                new ScoutSpawner(),
+                                shouldHaveSuicidalMoneyTowers() ? new ScoutSpawner() : new SRPSpawner(),
                                 new SplasherSpawner()
                         ),
                         OffenceMopperSpawner::new,

@@ -24,14 +24,14 @@ import caterpillow.robot.agents.Agent;
 import caterpillow.robot.agents.soldier.SRPStrategy;
 import caterpillow.util.GameBinaryOperator;
 import caterpillow.util.GamePredicate;
-import static caterpillow.util.Util.downgrade;
+import static caterpillow.util.Util.*;
 
 public class CellTracker {
     public static final int SRP_DELAY = 1;
 
     public static final int infCooldown = 10000000;
     private static int cooldownValue;
-    public static final int ignoreCooldownReset = 30;
+    public static final int ignoreCooldownReset = 2;
     public static int[][] ignoreCooldown; // the time until which we want to treat this cell as not a valid centre
     public static int[][] processed;
 
@@ -496,6 +496,7 @@ for i in range(3):
                 // cheapish
                 for (int i = nearbyRuins.length - 1; i >= 0; i--) {
                     MapLocation ruin = nearbyRuins[i];
+                    indicate("ruin at " + ruin.toString());
                     if (rc.senseRobotAtLocation(ruin) != null) {
                         continue;
                     }

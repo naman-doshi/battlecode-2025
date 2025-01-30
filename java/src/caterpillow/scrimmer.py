@@ -93,7 +93,7 @@ if __name__ == "__main__":
         print(f"Top team IDs: {team_ids}")
         ten_sets = {}
         for team_id in team_ids:
-            random.seed(team_id)
+            random.seed(team_id + 1)
             ten_sets[team_id] = random.sample(all_maps, 10)
         print("Sending match requests...")
         send_match_requests(auth_token, team_ids, ten_sets)
