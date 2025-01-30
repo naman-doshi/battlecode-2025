@@ -1,5 +1,7 @@
 package caterpillow.robot.towers.money;
 
+import java.util.Random;
+
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.PaintType;
@@ -10,7 +12,6 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.team;
 import caterpillow.robot.towers.TowerStrategy;
-import caterpillow.util.CustomRandom;
 
 public class ConvertToPaintTowerStrategy extends TowerStrategy {
     final boolean[][] paintTowerPattern = {
@@ -24,8 +25,8 @@ public class ConvertToPaintTowerStrategy extends TowerStrategy {
     int specialSuicideModulus;
 
     public ConvertToPaintTowerStrategy() {
-        CustomRandom rand = new CustomRandom(rc.getID());
-        specialSuicideModulus = rand.nextInt(1, 5) * 7;
+        Random r = new Random();
+        specialSuicideModulus = r.nextInt(1, 5) * 17;
 
     }
 

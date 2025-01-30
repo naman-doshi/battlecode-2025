@@ -6,19 +6,20 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import battlecode.common.UnitType;
 import caterpillow.Config;
+import static caterpillow.Config.shouldHaveSuicidalMoneyTowers;
 import caterpillow.Game;
-import static caterpillow.Game.*;
+import static caterpillow.Game.origin;
+import static caterpillow.Game.rc;
 import caterpillow.pathfinding.BugnavPathfinder;
 import caterpillow.robot.Robot;
 import caterpillow.robot.Strategy;
-import caterpillow.robot.agents.mopper.Mopper;
-import caterpillow.robot.agents.soldier.Soldier;
 import caterpillow.tracking.CellTracker;
 import static caterpillow.tracking.CellTracker.postMove;
 import caterpillow.tracking.RobotTracker;
 import caterpillow.tracking.TowerTracker;
 import caterpillow.util.Util;
-import static caterpillow.util.Util.*;
+import static caterpillow.util.Util.dead;
+import static caterpillow.util.Util.missingPaint;
 
 public abstract class Agent extends Robot {
     public BugnavPathfinder pathfinder;
@@ -39,6 +40,8 @@ public abstract class Agent extends Robot {
 
     public int refill(RobotInfo bot) throws GameActionException {
         int pool = bot.getPaintAmount();
+        if (bot.getType().isTowerType() && !shouldHaveSuicidalMoneyTowers()) pool -= 100;
+        if (pool <= 0) return 0;
         int missing = missingPaint();
         if (rc.canTransferPaint(bot.getLocation(), -Math.min(pool, missing))) {
             rc.transferPaint(bot.getLocation(), -Math.min(pool, missing));

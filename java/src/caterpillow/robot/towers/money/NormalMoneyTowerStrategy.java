@@ -51,7 +51,7 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
         strats.add(new TowerAttackStrategy());
         strats.add(new SpawnerStrategy(
                 //new ScoutSpawner(),
-                TowerTracker.coinTowers % 3 == 0 || shouldHaveSuicidalMoneyTowers() ? new InstantScoutSpawner() : new NullSpawner(),
+                TowerTracker.coinTowers % 3 == 0 && !shouldHaveSuicidalMoneyTowers() ? new InstantScoutSpawner() : new NullSpawner(),
                 // trng.nextInt(4) == 0
                 //     ? Game.gameStage == GameStage.EARLY ? new InstantScoutSpawner() : new InstantSRPSpawner()
                 //     : trng.nextInt(3) != 0
@@ -63,10 +63,31 @@ public class NormalMoneyTowerStrategy extends TowerStrategy {
                         new LoopedSpawner(
                             () -> new ConditionalSpawner(() -> rng.nextDouble() < 0.5, 
                                 new LoopedSpawner(
+                                    () -> new ConditionalSpawner(
+                                        () -> Game.gameStage == GameStage.EARLY,
+                                        new ScoutSpawner(), 
+                                        new SplasherSpawner()
+                                    ),
+                                    () -> new ConditionalSpawner(
+                                        () -> Game.gameStage == GameStage.EARLY,
+                                        new ScoutSpawner(), 
+                                        new NullSpawner()
+                                    ),
                                     OffenceMopperSpawner::new,
                                     OffenceMopperSpawner::new
+                                    
                                 ),
-                                new SplasherSpawner()
+                                new LoopedSpawner(
+                                    ScoutSpawner::new,
+                                    () -> new ConditionalSpawner(
+                                        () -> Game.gameStage == GameStage.EARLY,
+                                        new ScoutSpawner(), 
+                                        new SplasherSpawner()
+                                    ),
+                                    OffenceMopperSpawner::new,
+                                    OffenceMopperSpawner::new,
+                                    SplasherSpawner::new
+                                )
                             )
                         ),
                         new LoopedSpawner(

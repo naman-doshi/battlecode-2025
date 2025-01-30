@@ -31,7 +31,7 @@ public class Config {
     // we also need more chips on larger maps
 
     public static boolean shouldHaveSuicidalMoneyTowers() {
-        return false;
+        return mapHeight * mapWidth <= 1500;
     }
 
     public static double targetRatio() {
@@ -39,8 +39,8 @@ public class Config {
         if (shouldHaveSuicidalMoneyTowers()) return 0.9;
         //if (rc.getNumberTowers() == moneyTowerThreshold()) return 0;
         int area = mapHeight * mapWidth;
-        // double ratio = area < 1500 ? 0.63 : 0.68;
-        double ratio = 0.66;
+        double ratio = area < 1500 ? 0.63 : 0.68;
+        //double ratio = 0.66;
         return ratio;
     }
     public static int moneyTowerThreshold() {
@@ -50,10 +50,11 @@ public class Config {
     }
 
     public static boolean canUpgrade(int level) {
+        if (shouldHaveSuicidalMoneyTowers()) return false;
         if (level == 2) {
-            return rc.getChips() >= 3500;
+            return rc.getChips() >= 2500;
         } else if (level == 3) {
-            return rc.getChips() >= 6500;
+            return rc.getChips() >= 5000;
         }
         return false;
     }
@@ -99,6 +100,9 @@ public class Config {
     }
 
     public static UnitType nextTowerType(MapLocation loc) throws GameActionException {
+
+        if (shouldHaveSuicidalMoneyTowers()) return UnitType.LEVEL_ONE_MONEY_TOWER;
+
         if(isCentral(loc) && rc.getNumberTowers() > 6 && trng.nextInt(2) == 0 && getNearestCell(c -> c.getPaint().isEnemy()) != null) {
             return UnitType.LEVEL_ONE_DEFENSE_TOWER;
         }

@@ -8,9 +8,8 @@ import caterpillow.Game;
 import static caterpillow.Game.rc;
 import static caterpillow.Game.time;
 import caterpillow.robot.Strategy;
-import caterpillow.tracking.TowerTracker;
-
 import static caterpillow.tracking.CellTracker.getNearestLocation;
+import caterpillow.tracking.TowerTracker;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isFriendly;
 
@@ -29,10 +28,12 @@ public class AttackTowerStrategy extends Strategy {
 
     @Override
     public boolean isComplete() throws GameActionException {
-        if(rc.getHealth() < 30) return true;
+        //if(rc.getHealth() < 40) return true;
+        //int numEnemyMoppers = RobotTracker.countNearbyFriendly(b -> isEnemyAgent(b) && b.getType() == UnitType.MOPPER);
+        //if (numEnemyMoppers >= 4) return true;
         if (rc.canSenseLocation(target)) {
-            RobotInfo bot = rc.senseRobotAtLocation(target);
-            return bot == null || isFriendly(bot);
+            RobotInfo bot1 = rc.senseRobotAtLocation(target);
+            return bot1 == null || isFriendly(bot1) || rc.getHealth() <= bot1.getType().attackStrength + 5;
         }
         return true;
     }

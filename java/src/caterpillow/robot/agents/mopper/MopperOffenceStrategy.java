@@ -1,7 +1,6 @@
 package caterpillow.robot.agents.mopper;
 
 import java.util.List;
-import caterpillow.util.CustomRandom;
 
 import battlecode.common.GameActionException;
 import battlecode.common.MapInfo;
@@ -9,11 +8,11 @@ import battlecode.common.MapLocation;
 import battlecode.common.RobotInfo;
 import caterpillow.Config;
 import caterpillow.Game;
-import static caterpillow.Game.*;
 import caterpillow.robot.Strategy;
 import caterpillow.robot.agents.WeakRefillStrategy;
 import caterpillow.robot.agents.roaming.AggroRoamStrategy;
 import caterpillow.tracking.RobotTracker;
+import caterpillow.util.CustomRandom;
 import caterpillow.util.GameSupplier;
 import static caterpillow.util.Util.indicate;
 import static caterpillow.util.Util.isAllyAgent;
@@ -99,6 +98,7 @@ public class MopperOffenceStrategy extends Strategy {
         // attack
         MapLocation target = bot.doBestAttack();
         if (target != null) {
+            indicate("target " + target);
             bot.pathfinder.makeMove(target);
         } else {
             roamStrategy.runTick();

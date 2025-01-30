@@ -27,6 +27,7 @@ public class Mopper extends Agent {
     Mopper bot;
     List<MapLocation> enemyLocs;
     MapLocation spawnLoc;
+    int spawnTime;
 
     public static boolean canMove(Direction dir) {
         return rc.canMove(dir) && !TowerTracker.isCellInDanger(Game.pos.add(dir));
@@ -53,33 +54,38 @@ public class Mopper extends Agent {
         // greedy bc i cbb and i doubt it makes a real difference
 
         // try to steal paint from enemy
-        MapInfo loc = CellTracker.getNearestCell(c -> {
-                if (c.getPaint().isAlly()) return false;
-                RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
-                if (nearbot == null) return false;
-                if (isEnemyAgent(nearbot)) return true;
-                return false;
-            });
+        // MapInfo loc = CellTracker.getNearestCell(c -> {
+        //         //if (c.getPaint().isAlly()) return false;
+        //         RobotInfo nearbot = rc.senseRobotAtLocation(c.getMapLocation());
+        //         if (nearbot == null) return false;
+        //         if (isEnemyAgent(nearbot)) return true;
+        //         return false;
+        //     });
 
-        if (loc != null) {
+        RobotInfo bot1 = RobotTracker.getNearestRobot(b -> isEnemyAgent(b) && b.getType().isRobotType());
+        int enemyCount = RobotTracker.countNearbyFriendly(b -> isEnemyAgent(b) && b.getType().isRobotType());
 
-            MapLocation locLocation = loc.getMapLocation();
+        if (bot1 != null) {
 
-            // if u can attack rn obv do that
-            if (rc.canAttack(locLocation)) {
-                rc.attack(locLocation);
-                return locLocation;
-            }
+            MapLocation locLocation = bot1.getLocation();
 
-            for (int i = dcnt - 1; i >= 0; i--) {
-                Direction dir = dirs[i];
-                if (dir != Direction.CENTER && canMove(dir)) {
-                    MapLocation nextLoc = Game.pos.add(dir);
-                    // chucking constants to save bytecode rip
-                    if (nextLoc.isWithinDistanceSquared(locLocation, 2) && canMove(dir) && rc.isActionReady()) {
-                        bot.move(dir);
-                        rc.attack(locLocation);
-                        return locLocation;
+            if (rc.getPaint() <= 95 || enemyCount == 1) {
+                // if u can attack rn obv do that
+                if (rc.canAttack(locLocation)) {
+                    rc.attack(locLocation);
+                    return locLocation;
+                }
+
+                for (int i = dcnt - 1; i >= 0; i--) {
+                    Direction dir = dirs[i];
+                    if (dir != Direction.CENTER && canMove(dir)) {
+                        MapLocation nextLoc = Game.pos.add(dir);
+                        // chucking constants to save bytecode rip
+                        if (nextLoc.isWithinDistanceSquared(locLocation, 2) && canMove(dir) && rc.isActionReady()) {
+                            bot.move(dir);
+                            rc.attack(locLocation);
+                            return locLocation;
+                        }
                     }
                 }
             }
@@ -354,12 +360,12 @@ public class Mopper extends Agent {
                 MapLocation eloc = enemyPaintinRuinBound.getMapLocation();
                 if (rc.canAttack(eloc)) {
                     rc.attack(eloc);
-                    return null;
+                    return targetLoc;
                 } else {
                     bot.pathfinder.makeMove(eloc);
                     if (rc.canAttack(eloc)) {
                         rc.attack(eloc);
-                        return null;
+                        return targetLoc;
                     } else {
                         return eloc;
                     }
@@ -369,7 +375,7 @@ public class Mopper extends Agent {
 
         // just paint
 
-        loc = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
+        MapInfo loc = CellTracker.getNearestCell(c -> c.getPaint().isEnemy());
         if (loc != null) {
 
             // not moving
@@ -404,6 +410,7 @@ public class Mopper extends Agent {
         bot = (Mopper) Game.bot;
         noPaintThreshold = 1;
         noPaintTicks = 5;
+        spawnTime = Game.time;
     }
 
     @Override

@@ -6,6 +6,9 @@ import caterpillow.tracking.CellTracker;
 import static caterpillow.Config.*;
 import static caterpillow.Game.*;
 import java.util.*;
+
+import javax.lang.model.type.UnionType;
+
 import static java.lang.Math.*;
 
 public class Util {
@@ -577,6 +580,15 @@ public class Util {
     public static boolean isInDanger(MapLocation loc) throws GameActionException {
         for (RobotInfo bot : rc.senseNearbyRobots()) {
             if (bot.getType().isTowerType() && !isFriendly(bot) && bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isInRobotDanger(MapLocation loc) throws GameActionException {
+        for (RobotInfo bot : rc.senseNearbyRobots()) {
+            if ((bot.getType().isTowerType() || bot.getType() == UnitType.MOPPER) && !isFriendly(bot) && bot.location.distanceSquaredTo(loc) <= bot.getType().actionRadiusSquared) {
                 return true;
             }
         }

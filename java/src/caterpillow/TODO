@@ -7,3 +7,8 @@ general:
 - try make moppers bleed less paint
 - work on some mopper stuff
 - try a better implementation of mid-tower build ruin trolling
+- have towers not donate paint below 100 paint so they can always spawn def mopper
+- better emergency mopper spawning logic
+- better mopper chasing
+- screw tower attack if we see >= 2 moppers
+- stop tower ratios being retarded
