@@ -1,6 +1,6 @@
-# MIT Battlecode 2025 — 6th Place Overall
+# MIT Battlecode 2025 — 5th Place Overall
 
-Competition bot for **MIT Battlecode 2025** (Java), placing **6th overall**.
+Competition bot for **MIT Battlecode 2025** (Java), placing **5th overall**.
 
 ## Architecture
 
