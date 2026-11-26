@@ -1,16 +1,17 @@
-# Battlecode 2025 Scaffold
+# MIT Battlecode 2025 — 6th Place Overall
 
-This is the Battlecode 2025 scaffold, containing starter code and useful scripts for running and compiling your bot.
+Competition bot for **MIT Battlecode 2025** (Java), placing **6th overall**.
 
-**We are using a rewritten version of the client this year, so please let teh devs know 
-if you encounter any issues or have any feedback!**
+## Architecture
 
-### Project Structure
+The final tournament bot lives in [`java/src/caterpillow/`](java/src/caterpillow/):
 
-- `java/`
-   Scaffold for the Java engine. If Java is your preferred language, please use this 
-   subdirectory and follow the README file included there.
-- `python/`
-   Scaffold for the Python engine. If Python is your preferred language, please use this subdirectory and follow the README file included there.
+- `robot/` — Per-unit strategy and micro controllers (soldiers, moppers, splashers, and paint/money/defense towers), including ruin/SRP scheduling, deadlock resolution, and tower-ratio management.
+- `pathfinding/` — Bytecode-budgeted navigation and map traversal.
+- `tracking/` & `world/` — Distributed map state tracking (`TowerTracker`, ruin/resource bookkeeping).
+- `packet/` — Compact inter-unit messaging under Battlecode's per-turn communication limits.
+- `scrimmer.py` — Automated local scrimmage runner for evaluating bot iterations.
 
-Keep in mind, Python is **EXPERIMENTAL**, and not eligible to participate against other java bots. Please see the website for more details.
+## Running
+
+See [`java/README.md`](java/README.md) for Gradle build and match-running commands.
